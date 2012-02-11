@@ -2,5 +2,3 @@
 bin/**
 local.properties
 .settings/
-.project
-.classpath
