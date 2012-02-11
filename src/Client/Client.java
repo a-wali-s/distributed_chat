@@ -7,14 +7,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-public class Client{
+public class Client implements Runnable{
 	Socket requestSocket;
 	ObjectOutputStream out;
  	ObjectInputStream in;
  	BufferedReader usrIn;
  	String message;
-	Client(){}
-	void run()
+	public Client(){}
+	public void run()
 	{
 		try{
 			//1. creating a socket to connect to the server

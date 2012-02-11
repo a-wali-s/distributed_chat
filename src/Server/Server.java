@@ -5,16 +5,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-public class Server{
+public class Server implements Runnable{
 	
 	ServerSocket providerSocket;
 	Socket connection = null;
 	ObjectOutputStream out;
 	ObjectInputStream in;
 	String message;
-	Server(){}
+	public Server(){}
 	
-	void run()
+	public void run()
 	{
 		try{
 			//1. creating a server socket
