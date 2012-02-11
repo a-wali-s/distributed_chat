@@ -7,13 +7,13 @@ public class Server {
 	public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;
 		try {
-			serverSocket = new ServerSocket(Integer.parseInt(args[1]));
-			System.out.printf("Listening on port: %s\n", args[1]);
-		} 
+			serverSocket = new ServerSocket(Integer.parseInt(args[0]));
+			System.out.printf("Listening on port: %s\n", args[0]);
+		}
 		catch (IOException e) {
-			System.out.printf("Could not listen on port: %s", args[1]);
+			System.out.printf("Could not listen on port: %s", args[0]);
 			System.exit(-1);
-		}        
+		}
 		Socket clientSocket = null;
         try {
             clientSocket = serverSocket.accept();
