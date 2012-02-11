@@ -1,9 +1,7 @@
-import Server.Server;
-import Client.Client;
 
 
 
-public class test {
+public class main {
 	
 	public static void main(String[] args) {
 		Thread client = new Thread(new Client(),"T1");
