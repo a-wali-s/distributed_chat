@@ -13,6 +13,25 @@ public class Server {
 		catch (IOException e) {
 			System.out.printf("Could not listen on port: %s", args[1]);
 			System.exit(-1);
-		}
+		}        
+		Socket clientSocket = null;
+        try {
+            clientSocket = serverSocket.accept();
+        } catch (IOException e) {
+            System.err.println("Accept failed.");
+            System.exit(1);
+        }
+        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(
+                clientSocket.getInputStream()));
+        String inputLine, outputLine;
+        while ((inputLine = in.readLine()) != null) {
+        	System.out.println(inputLine);
+        }
+        in.close();
+        out.close();
+        clientSocket.close();
+        serverSocket.close();
 	}
 }
