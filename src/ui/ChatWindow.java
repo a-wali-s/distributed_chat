@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -36,17 +37,18 @@ public class ChatWindow implements GenericUI {
 		JFrame frame = new JFrame("Chat Window");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JLabel label = new JLabel("blah");
-		textArea = (JTextArea) initMsgScreen();
 		
 		frame.getContentPane().add(initTextInput(), BorderLayout.CENTER);
-		frame.getContentPane().add(textArea, BorderLayout.NORTH);
+		frame.getContentPane().add(initMsgScreen(), BorderLayout.NORTH);
 		frame.pack();
 		frame.setVisible(true);
 		
 	}
 	private JComponent initMsgScreen(){
-		JComponent result = new JTextArea(TEXTAREA_ROWS, TEXTAREA_COLUMNS);
-		return result;
+		textArea = new JTextArea(TEXTAREA_ROWS, TEXTAREA_COLUMNS);
+		JComponent scrollPane = new JScrollPane(textArea);
+		((JScrollPane) scrollPane).setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		return scrollPane;
 	}
 	private JComponent initTextInput(){
 		JComponent result = new JTextField();
@@ -54,11 +56,8 @@ public class ChatWindow implements GenericUI {
 			public void keyReleased(KeyEvent e) {
 			JTextField textField = (JTextField) e.getSource();
 			if(e.getKeyCode() == KeyEvent.VK_ENTER){
-				sentMsg("\n");
+				sentMsg(((JTextField) e.getSource()).getText() + "\n");
 				textField.setText("");
-			}else{
-				String text = String.valueOf(e.getKeyChar());
-				sentMsg(text);
 			}
 			}
 		});

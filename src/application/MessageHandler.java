@@ -6,7 +6,7 @@ import ui.GenericUI;
 public class MessageHandler {
 	private static MessageHandler instance;
 	private GenericUI ui;
-	Server server;
+	MultiSocketServer server;
 	Client client;
 	private MessageHandler(){
 		ui = new ChatWindow();
@@ -22,7 +22,7 @@ public class MessageHandler {
 		ui.init();
 		client = new Client();
 		Thread clientThread = new Thread(client,"T1");
-		server = new Server();
+		server = new MultiSocketServer();
 		Thread serverThread = new Thread(server,"T2");
 		clientThread.start();
 	    serverThread.start();

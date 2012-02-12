@@ -13,12 +13,28 @@ public class MultiSocketServer implements Runnable {
 	ObjectOutputStream out;
 	ObjectInputStream in;
 	String message;
+	int count = 0;
+	private final static int PORT = 2004;
 	
 	public static void main(String[] args) {
-		int port = 2004;
-		int count = 0;
+		
+		
+			
+	}
+	  
+	MultiSocketServer(Socket s, int i) {
+		this.connection = s;
+		this.ID = i;
+		
+	}
+	MultiSocketServer(){
+		
+	}
+
+	public void run() {
+		try {
 			try{
-				ServerSocket socket1 = new ServerSocket(port);
+				ServerSocket socket1 = new ServerSocket(PORT);
 				System.out.println("MultipleSocketServer Initialized");
 				while (true) {
 					Socket connection = socket1.accept();
@@ -28,15 +44,8 @@ public class MultiSocketServer implements Runnable {
 				}
 		    }
 		    catch (Exception e) {}
-	}
-	  
-	MultiSocketServer(Socket s, int i) {
-		this.connection = s;
-		this.ID = i;
-	}
-
-	public void run() {
-		try {
+			
+			
 			System.out.println("Connection received from " + connection.getInetAddress().getHostName());
 			//3. get Input and Output streams
 			out = new ObjectOutputStream(connection.getOutputStream());
@@ -47,6 +56,7 @@ public class MultiSocketServer implements Runnable {
 			do{
 				try{
 					message = (String)in.readObject();
+					MessageHandler.getInstance().reseiveMsg(message);
 					System.out.println("client>" + message);
 					if (message.equals("bye"))
 						sendMessage("bye");
