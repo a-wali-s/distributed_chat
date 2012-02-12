@@ -63,7 +63,6 @@ public class Client implements Runnable{
 		try{
 			out.writeObject(msg);
 			out.flush();
-			System.out.println("client>" + msg);
 		}
 		catch(IOException ioException){
 			ioException.printStackTrace();
