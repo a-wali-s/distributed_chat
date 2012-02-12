@@ -25,8 +25,6 @@ public class Server implements Runnable{
 			connection = providerSocket.accept();
 			System.out.println("Connection received from " + connection.getInetAddress().getHostName());
 			//3. get Input and Output streams
-			out = new ObjectOutputStream(connection.getOutputStream());
-			out.flush();
 			in = new ObjectInputStream(connection.getInputStream());
 			sendMessage("Connection successful");
 			//4. The two parts communicate via the input and output streams

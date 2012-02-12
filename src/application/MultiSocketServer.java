@@ -14,7 +14,7 @@ public class MultiSocketServer implements Runnable {
 	ObjectInputStream in;
 	String message;
 	
-	public static void main(String[] args) {
+	public MultiSocketServer() {
 		int port = 2004;
 		int count = 0;
 			try{
@@ -30,8 +30,10 @@ public class MultiSocketServer implements Runnable {
 		    catch (Exception e) {}
 	}
 	  
-	MultiSocketServer(Socket s, int i) {
+	MultiSocketServer(Socket s, int i) throws IOException {
 		this.connection = s;
+		User newUser = new User(s);
+		main.users.add(newUser);
 		this.ID = i;
 	}
 
@@ -39,8 +41,6 @@ public class MultiSocketServer implements Runnable {
 		try {
 			System.out.println("Connection received from " + connection.getInetAddress().getHostName());
 			//3. get Input and Output streams
-			out = new ObjectOutputStream(connection.getOutputStream());
-			out.flush();
 			in = new ObjectInputStream(connection.getInputStream());
 			sendMessage("Connection successful");
 			//4. The two parts communicate via the input and output streams
@@ -52,6 +52,7 @@ public class MultiSocketServer implements Runnable {
 						sendMessage("bye");
 					else{
 						message = "Server receipted message: " + message;
+						System.out.println("client count = " + main.users.size());
 						sendMessage(message);
 					}
 				}
@@ -78,8 +79,10 @@ public class MultiSocketServer implements Runnable {
 	void sendMessage(String msg)
 	{
 		try{
-			out.writeObject(msg);
-			out.flush();
+			for(int i = 0;i < main.users.size();i++)
+			{
+				main.users.get(i).sendMessageToUser(msg + i);
+			}
 			System.out.println("server>" + msg);
 		}
 		catch(IOException ioException){
