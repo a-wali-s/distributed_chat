@@ -18,7 +18,7 @@ public class Message {
 		timestamp = new Date();
 		id = msgText.hashCode() + username.hashCode() + timestamp.hashCode();
 	}
-
+ 
 	public String getMsgText() {
 		return msgText;
 	}
