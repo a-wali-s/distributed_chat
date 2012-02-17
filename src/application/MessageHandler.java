@@ -28,7 +28,7 @@ public class MessageHandler {
 	public void sendMsg(Message msg){
 		client.sendMessage(msg);
 	}
-	public static void receiveMsg(Message msg){
+	public void receiveMsg(Message msg){
 		ui.msgReceived(msg);
 	}
 }

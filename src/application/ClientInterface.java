@@ -21,6 +21,6 @@ public class ClientInterface{
 	}
 	void receiveMessage(Message msg)
 	{
-		MessageHandler.receiveMsg(msg);
+		MessageHandler.getInstance().receiveMsg(msg);
 	}
 }
