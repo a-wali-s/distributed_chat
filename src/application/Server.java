@@ -10,8 +10,8 @@ public class Server implements Runnable{
 	
 	ServerSocket providerSocket;
 	Socket connection = null;
-	ObjectOutputStream out;
-	ObjectInputStream in;
+//	ObjectOutputStream out;
+//	ObjectInputStream in;
 	String message;
 	ClientInterface client;
 	public Server(ClientInterface client){
@@ -31,24 +31,24 @@ public class Server implements Runnable{
 			Connection connWrapper = new Connection(connection, client);
 			Thread connThread = new Thread(connWrapper);
 			connThread.start();
-			client.addConnection(connWrapper, connThread);
-			sendMessage("Connection successful");
+			client.addConnection(connWrapper);
+//			sendMessage("Connection successful");
 			//4. The two parts communicate via the input and output streams
-			do{
-				try{
-					message = (String)in.readObject();
-					System.out.println("client>" + message);
-					if (message.equals("bye"))
-						sendMessage("bye");
-					else{
-						MessageHandler.getInstance().reseiveMsg(message);
-						sendMessage(message);
-					}
-				}
-				catch(ClassNotFoundException classnot){
-					System.err.println("Data received in unknown format");
-				}
-			}while(!message.equals("bye"));
+//			do{
+//				try{
+//					message = (String)in.readObject();
+//					System.out.println("client>" + message);
+//					if (message.equals("bye"))
+//						sendMessage("bye");
+//					else{
+//						MessageHandler.getInstance().reseiveMsg(message);
+//						sendMessage(message);
+//					}
+//				}
+//				catch(ClassNotFoundException classnot){
+//					System.err.println("Data received in unknown format");
+//				}
+//			}while(!message.equals("bye"));
 		}
 		catch(IOException ioException){
 			ioException.printStackTrace();
@@ -56,8 +56,8 @@ public class Server implements Runnable{
 		finally{
 			//4: Closing connection
 			try{
-				in.close();
-				out.close();
+//				in.close();
+//				out.close();
 				providerSocket.close();
 			}
 			catch(IOException ioException){
@@ -65,23 +65,23 @@ public class Server implements Runnable{
 			}
 		}
 	}
-	void sendMessage(String msg)
-	{
-		try{
-			out.writeObject(msg);
-			out.flush();
-			System.out.println("server>" + msg);
-		}
-		catch(IOException ioException){
-			ioException.printStackTrace();
-		}
-	}
-	public static void main(String args[])
-	{
-		Server srvr = new Server();
-		while(true){
-			srvr.run();
-		}
-	}
+//	void sendMessage(String msg)
+//	{
+//		try{
+//			out.writeObject(msg);
+//			out.flush();
+//			System.out.println("server>" + msg);
+//		}
+//		catch(IOException ioException){
+//			ioException.printStackTrace();
+//		}
+//	}
+//	public static void main(String args[])
+//	{
+//		Server srvr = new Server();
+//		while(true){
+//			srvr.run();
+//		}
+//	}
 }
 

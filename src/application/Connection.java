@@ -19,8 +19,10 @@ public class Connection implements Runnable {
 	
 	public void run(){
 		try {
-			inBuffer = (String)in.readObject();
-			receiveMessage(inBuffer);
+			while(true) {
+				inBuffer = (String)in.readObject();
+				receiveMessage(inBuffer);
+			}
 		}
 		catch(IOException e){
 			e.printStackTrace();
