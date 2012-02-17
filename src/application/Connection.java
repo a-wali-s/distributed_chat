@@ -7,7 +7,7 @@ public class Connection implements Runnable {
 	public Socket socket = null;
 	public ObjectOutputStream out = null;
 	public ObjectInputStream in = null;
-	String inBuffer = null;
+	Message inBuffer = null;
 	ClientInterface client = null;
 	
 	public Connection(Socket socket, ClientInterface client) throws IOException{
@@ -20,7 +20,7 @@ public class Connection implements Runnable {
 	public void run(){
 		try {
 			while(true) {
-				inBuffer = (String)in.readObject();
+				inBuffer = (Message)in.readObject();
 				receiveMessage(inBuffer);
 			}
 		}
@@ -32,7 +32,7 @@ public class Connection implements Runnable {
 		}
 	}
 	
-	public int sendMessage(String msg) {
+	public int sendMessage(Message msg) {
 		try {
 			out.writeObject(msg);
 			return 0;
@@ -42,7 +42,7 @@ public class Connection implements Runnable {
 		}
 	}
 	
-	public void receiveMessage(String msg) {
+	public void receiveMessage(Message msg) {
 		client.receiveMessage(msg);
 	}
 }

@@ -11,7 +11,7 @@ public class ClientInterface{
 	void addConnection(Connection conn){
 		connections.add(conn);
 	}
-	void sendMessage(String msg)
+	void sendMessage(Message msg)
 	{
 		if (connections.size() > 0){
 			for(int x=0;x<connections.size();x++){
@@ -19,8 +19,8 @@ public class ClientInterface{
 			}
 		}
 	}
-	void receiveMessage(String msg)
+	void receiveMessage(Message msg)
 	{
-		//TODO: Send message to messageAPI
+		MessageHandler.receiveMsg(msg);
 	}
 }
