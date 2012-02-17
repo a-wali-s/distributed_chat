@@ -3,16 +3,31 @@ package application;
 import java.io.*;
 import java.net.Socket;
 
-public class Connection {
+public class Connection implements Runnable {
 	public Socket socket = null;
 	public ObjectOutputStream out = null;
 	public ObjectInputStream in = null;
 	String inBuffer = null;
+	ClientInterface client = null;
 	
-	public Connection(Socket socket) throws IOException{
+	public Connection(Socket socket, ClientInterface client) throws IOException{
 		this.socket = socket;
+		this.client = client;
 		out = new ObjectOutputStream(socket.getOutputStream());
 		in = new ObjectInputStream(socket.getInputStream());
+	}
+	
+	public void run(){
+		try {
+			inBuffer = (String)in.readObject();
+			receiveMessage(inBuffer);
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}
 	}
 	
 	public int sendMessage(String msg) {
@@ -25,16 +40,7 @@ public class Connection {
 		}
 	}
 	
-	public String receiveMessage() {
-		try {
-			inBuffer = in.readObject().toString();
-			return String.copyValueOf(inBuffer.toCharArray());
-		}
-		catch(IOException e){
-			return "-1";
-		}
-		catch(ClassNotFoundException e){
-			return "String not received";
-		}
+	public void receiveMessage(String msg) {
+		client.receiveMessage(msg);
 	}
 }

@@ -11,14 +11,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ListIterator;
-public class Client implements Runnable{
+public class ClientInterface implements Runnable{
 	Socket requestSocket;
 	ObjectOutputStream out;
  	ObjectInputStream in;
  	BufferedReader usrIn;
  	ArrayList<Connection> connections;
  	String message;
-	public Client(){
+	public ClientInterface(){
 		connections = new ArrayList<Connection>();
 	}
 	public void run()
@@ -74,10 +74,9 @@ public class Client implements Runnable{
 			}
 		}
 	}
-	String receiveMessage(String msg)
+	void receiveMessage(String msg)
 	{
-		
-		return "";
+		//TODO: Send message to messageAPI
 	}
 //	public static void main(String args[])
 //	{

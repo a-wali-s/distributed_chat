@@ -13,7 +13,10 @@ public class Server implements Runnable{
 	ObjectOutputStream out;
 	ObjectInputStream in;
 	String message;
-	public Server(){}
+	ClientInterface client;
+	public Server(ClientInterface client){
+		this.client = client;
+	}
 	
 	public void run()
 	{
@@ -25,7 +28,10 @@ public class Server implements Runnable{
 			connection = providerSocket.accept();
 			System.out.println("Connection received from " + connection.getInetAddress().getHostName());
 			//3. get Input and Output streams
-			in = new ObjectInputStream(connection.getInputStream());
+			Connection connWrapper = new Connection(connection, client);
+			Thread connThread = new Thread(connWrapper);
+			connThread.start();
+			client.addConnection(connWrapper, connThread);
 			sendMessage("Connection successful");
 			//4. The two parts communicate via the input and output streams
 			do{
