@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-public class Server implements Runnable{
+public class ConnectionListener implements Runnable{
 	
 	ServerSocket providerSocket;
 	Socket connection = null;
@@ -14,7 +14,7 @@ public class Server implements Runnable{
 //	ObjectInputStream in;
 	String message;
 	ClientInterface client;
-	public Server(ClientInterface client){
+	public ConnectionListener(ClientInterface client){
 		this.client = client;
 	}
 	
