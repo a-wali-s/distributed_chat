@@ -32,6 +32,10 @@ public class Connection implements Runnable {
 		}
 	}
 	
+	/*
+	 * Sends Message Object through this particular socket connection.
+	 * This should only be called if the connection is alive.
+	 */
 	public int sendMessage(Message msg) {
 		try {
 			out.writeObject(msg);
