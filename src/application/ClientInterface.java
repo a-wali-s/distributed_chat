@@ -43,6 +43,7 @@ public class ClientInterface{
 				connections.get(x).sendMessage(msg);
 			}
 		}
+		receiveMessage(msg);
 	}
 	public void sendMessage(String msg){
 		sendMessage(new Message(msg, userid));

@@ -91,7 +91,8 @@ public class ChatWindow implements GenericUI, Observer {
 	@Override
 	public void update(Observable messageAPI, Object msg) {
 		if (messageAPI instanceof MessageAPI) {
-			//TODO implement method to print to screen
+			Message message = (Message) msg;
+			textArea.append(message.getMsgText());
 		}
 	}
 
