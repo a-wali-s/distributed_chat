@@ -56,6 +56,7 @@ public class ClientInterface{
 		for(int x=0;x<connections.size();x++){
 			connections.get(x).sendMessage(msg);
 		}
+		receiveMessage(msg);
 	}
 	
 	/*
