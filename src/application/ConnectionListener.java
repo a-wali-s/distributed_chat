@@ -28,8 +28,6 @@ public class ConnectionListener implements Runnable{
 				System.out.println("Connection received from " + connection.getInetAddress().getHostName());
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
-				Thread connThread = new Thread(connWrapper);
-				connThread.start();
 				ClientInterface.getInstance().addConnection(connWrapper);
 			}
 		}

@@ -28,6 +28,8 @@ public class ClientInterface{
 	 * Sends a connection acknowledgment message to the newly connected peer.
 	 */
 	void addConnection(Connection conn){
+		Thread connThread = new Thread(conn);
+		connThread.start();
 		connections.add(conn);
 		conn.sendMessage(new Message("ACK:connection",null));
 	}
