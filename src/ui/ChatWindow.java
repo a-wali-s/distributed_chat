@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -17,10 +19,11 @@ import javax.swing.JTextField;
 import application.Message;
 import application.MessageAPI;
 
-public class ChatWindow implements GenericUI {
+public class ChatWindow implements GenericUI, Observer {
 	JTextArea textArea;
 	private static final int TEXTAREA_ROWS = 20;
 	private static final int TEXTAREA_COLUMNS = 20;
+	private static MessageAPI messageAPI = MessageAPI.getInstance();
 	public ChatWindow(){
 		
 	}
@@ -33,7 +36,7 @@ public class ChatWindow implements GenericUI {
 
 	@Override
 	public void sentMsg(String msg) {
-		MessageAPI.getInstance().sendMsg(msg);
+		messageAPI.sendMsg(msg);
 
 	}
 	@Override
@@ -47,6 +50,7 @@ public class ChatWindow implements GenericUI {
 		frame.pack();
 		frame.setVisible(true);
 		
+		messageAPI.addObserver(this);
 	}
 	private JComponent initConnectionButton(){
 		final JButton button = new JButton("Connect");
@@ -82,6 +86,14 @@ public class ChatWindow implements GenericUI {
 			}
 		});
 		return result;
+	}
+
+	@Override
+	public void update(Observable messageAPI, Object msg) {
+		if (messageAPI instanceof MessageAPI) {
+			Message message = (Message) msg;
+			textArea.append(message.getMsgText());
+		}
 	}
 
 }

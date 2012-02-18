@@ -18,6 +18,7 @@ public class Connection implements Runnable {
 	public void run(){
 		try {
 			while(true) {
+				System.out.println("Wait for object");
 				inBuffer = (Message)in.readObject();
 				receiveMessage(inBuffer);
 			}
