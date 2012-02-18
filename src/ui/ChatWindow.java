@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -57,9 +56,9 @@ public class ChatWindow implements GenericUI {
             {
             	button.setEnabled(false);
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
-                String port = JOptionPane.showInputDialog(null, "Port of Peer:");
+//                String port = JOptionPane.showInputDialog(null, "Port of Peer:");
                 MessageAPI handler = MessageAPI.getInstance();
-                //handler.addConnection(addr, Integer.getInteger(port));
+                handler.createConnection(addr);
                 button.setEnabled(true);
             }
         });
