@@ -19,9 +19,9 @@ public class ConnectionListener implements Runnable{
 	public void run()
 	{
 		try{
+			//1. creating a server socket
+			providerSocket = new ServerSocket(2004, 10);
 			while(run) {
-				//1. creating a server socket
-				providerSocket = new ServerSocket(2004, 10);
 				//2. Wait for connection
 				System.out.println("Waiting for connection");
 				connection = providerSocket.accept();
