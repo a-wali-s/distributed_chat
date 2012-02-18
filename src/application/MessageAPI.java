@@ -1,15 +1,17 @@
 package application;
 
-import ui.ChatWindow;
-import ui.GenericUI;
+import java.util.Observable;
 
-public class MessageAPI {
+//import ui.ChatWindow;
+//import ui.GenericUI;
+
+public class MessageAPI extends Observable {
 	private static MessageAPI instance;
-	private GenericUI ui;
+	//private GenericUI ui;
 	ConnectionListener server;
 	ClientInterface client;
 	private MessageAPI(){
-		ui = new ChatWindow();
+		//ui = new ChatWindow();
 		
 	}
 	public static MessageAPI getInstance(){
@@ -19,7 +21,7 @@ public class MessageAPI {
 		return instance;
 	}
 	public void init(){
-		ui.init();
+		//ui.init();
 		client = ClientInterface.getInstance();
 		server = new ConnectionListener();
 		Thread serverThread = new Thread(server,"T2");
@@ -29,7 +31,8 @@ public class MessageAPI {
 		client.sendMessage(msg);
 	}
 	public void receiveMsg(Message msg){
-		ui.msgReceived(msg);
+		setChanged();
+		notifyObservers(msg);
 	}
 	public void createConnection(String host){
 		client.createConnection(host);
