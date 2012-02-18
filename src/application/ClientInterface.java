@@ -75,5 +75,10 @@ public class ClientInterface{
 	{
 		if( msg.getUsername() != null )
 			MessageAPI.getInstance().receiveMsg(msg);
+		else if(msg.getMsgText().equals("ACK:connection"))
+			System.out.println("Connection request accepted!");
+		else
+			System.out.println("Unknown system message received.");
+			
 	}
 }
