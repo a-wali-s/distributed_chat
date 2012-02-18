@@ -2,6 +2,8 @@ package ui;
 
 import java.util.Scanner;
 
+import application.Message;
+
 public class ConsoleInterface implements GenericUI {
 	private String address;
 	private String port;
@@ -24,7 +26,7 @@ public class ConsoleInterface implements GenericUI {
 		System.out.println("Enter port:");
 		port = s.nextLine();
 	}
-	public void msgReceived(String msg){
+	public void msgReceived(Message msg){
 		System.out.println(msg);
 	}
 	public void sentMsg(String msg){
