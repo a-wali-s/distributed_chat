@@ -45,7 +45,8 @@ public class Message implements Serializable {
 		this.msgText = msgText;
 		this.username = username;
 		timestamp = new Date();
-		id = msgText.hashCode() + username.hashCode() + timestamp.hashCode();
+		id = msgText.hashCode() + timestamp.hashCode();
+		if (username != null) id += username.hashCode();
 	}
  
 	/*
