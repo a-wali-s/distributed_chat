@@ -9,10 +9,7 @@ public class ConnectionListener implements Runnable{
 	ServerSocket providerSocket;
 	Socket connection = null;
 	String message;
-	ClientInterface client;
-	public ConnectionListener(ClientInterface client){
-		this.client = client;
-	}
+	public ConnectionListener(){}
 	
 	public void run()
 	{
@@ -25,10 +22,10 @@ public class ConnectionListener implements Runnable{
 				connection = providerSocket.accept();
 				System.out.println("Connection received from " + connection.getInetAddress().getHostName());
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
-				Connection connWrapper = new Connection(connection, client);
+				Connection connWrapper = new Connection(connection);
 				Thread connThread = new Thread(connWrapper);
 				connThread.start();
-				client.addConnection(connWrapper);
+				ClientInterface.getInstance().addConnection(connWrapper);
 			}
 		}
 		catch(IOException ioException){

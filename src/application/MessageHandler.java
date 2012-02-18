@@ -20,8 +20,8 @@ public class MessageHandler {
 	}
 	public void init(){
 		ui.init();
-		client = new ClientInterface();
-		server = new ConnectionListener(client);
+		client = ClientInterface.getInstance();
+		server = new ConnectionListener();
 		Thread serverThread = new Thread(server,"T2");
 	    serverThread.start();
 	}
