@@ -28,10 +28,19 @@ public class Message implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/*
+	 * 
+	 */
 	public Message(){
 		timestamp = new Date();
 	}
 	
+	/* 
+	 * Generate Message object to be sent through the chat network.
+	 * 		- 'null' username indicates a System Message
+	 * 		System messages will be used for passing user data, connections acks, and more.
+	 * 		ie. messages that users will not read
+	 */
 	public Message(String msgText, String username) {
 		this.msgText = msgText;
 		this.username = username;
@@ -39,6 +48,9 @@ public class Message implements Serializable {
 		id = msgText.hashCode() + username.hashCode() + timestamp.hashCode();
 	}
  
+	/*
+	 * Extracts actual text of a message
+	 */
 	public String getMsgText() {
 		return msgText;
 	}

@@ -18,6 +18,7 @@ public class Connection implements Runnable {
 	public void run(){
 		try {
 			while(true) {
+				System.out.println("Wait for object");
 				inBuffer = (Message)in.readObject();
 				receiveMessage(inBuffer);
 			}
@@ -30,6 +31,10 @@ public class Connection implements Runnable {
 		}
 	}
 	
+	/*
+	 * Sends Message Object through this particular socket connection.
+	 * This should only be called if the connection is alive.
+	 */
 	public int sendMessage(Message msg) {
 		try {
 			out.writeObject(msg);
