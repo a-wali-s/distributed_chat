@@ -62,7 +62,9 @@ public class ChatWindow implements GenericUI, Observer {
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
 //                String port = JOptionPane.showInputDialog(null, "Port of Peer:");
                 MessageAPI handler = MessageAPI.getInstance();
-                handler.createConnection(addr);
+                if(addr != null){
+                	handler.createConnection(addr);
+                }
                 button.setEnabled(true);
             }
         });
