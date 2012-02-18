@@ -9,15 +9,20 @@ public class ConnectionListener implements Runnable{
 	ServerSocket providerSocket;
 	Socket connection = null;
 	String message;
+	boolean run = true;
 	ClientInterface client;
 	public ConnectionListener(ClientInterface client){
 		this.client = client;
 	}
 	
+	public void stop(){
+		run = false;
+	}
+	
 	public void run()
 	{
 		try{
-			while(true) {
+			while(run) {
 				//1. creating a server socket
 				providerSocket = new ServerSocket(2004, 10);
 				//2. Wait for connection
