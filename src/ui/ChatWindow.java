@@ -16,7 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import application.Message;
-import application.MessageHandler;
+import application.MessageAPI;
 
 public class ChatWindow implements GenericUI {
 	JTextArea textArea;
@@ -34,7 +34,7 @@ public class ChatWindow implements GenericUI {
 
 	@Override
 	public void sentMsg(String msg) {
-		MessageHandler.getInstance().sendMsg(msg);
+		MessageAPI.getInstance().sendMsg(msg);
 
 	}
 	@Override
@@ -58,8 +58,8 @@ public class ChatWindow implements GenericUI {
             	button.setEnabled(false);
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
                 String port = JOptionPane.showInputDialog(null, "Port of Peer:");
-                MessageHandler handler = MessageHandler.getInstance();
-                handler.addConnection(addr, Integer.getInteger(port));
+                MessageAPI handler = MessageAPI.getInstance();
+                //handler.addConnection(addr, Integer.getInteger(port));
                 button.setEnabled(true);
             }
         });

@@ -8,15 +8,16 @@ import java.util.ArrayList;
 public class ClientInterface{
 	private static ClientInterface instance;
  	ArrayList<Connection> connections;
- 	String message;
- 	
+ 	String message;	
+ 	// FIXME: should have some sort of authentication system for userid
+ 	String userid = "";
+ 	 	
 	public static ClientInterface getInstance(){
 		if(instance == null){
 			instance = new ClientInterface();
 		}
 		return instance;
 	}
-	
 	public ClientInterface(){
 		connections = new ArrayList<Connection>();
 	}
@@ -43,8 +44,11 @@ public class ClientInterface{
 			}
 		}
 	}
+	public void sendMessage(String msg){
+		sendMessage(new Message(msg, userid));
+	}
 	void receiveMessage(Message msg)
 	{
-		MessageHandler.getInstance().receiveMsg(msg);
+		MessageAPI.getInstance().receiveMsg(msg);
 	}
 }
