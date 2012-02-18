@@ -38,10 +38,8 @@ public class ClientInterface{
 	}
 	void sendMessage(Message msg)
 	{
-		if (connections.size() > 0){
-			for(int x=0;x<connections.size();x++){
-				connections.get(x).sendMessage(msg);
-			}
+		for(int x=0;x<connections.size();x++){
+			connections.get(x).sendMessage(msg);
 		}
 	}
 	public void sendMessage(String msg){
