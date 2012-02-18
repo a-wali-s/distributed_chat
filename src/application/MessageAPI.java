@@ -31,4 +31,7 @@ public class MessageAPI {
 	public void receiveMsg(Message msg){
 		ui.msgReceived(msg);
 	}
+	public void createConnection(String host){
+		client.createConnection(host);
+	}
 }
