@@ -59,11 +59,12 @@ public class ChatWindow implements GenericUI, Observer {
             public void actionPerformed(ActionEvent e)
             {
             	button.setEnabled(false);
+            	String username = JOptionPane.showInputDialog(null, "Enter an username: ");
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
 //                String port = JOptionPane.showInputDialog(null, "Port of Peer:");
                 MessageAPI handler = MessageAPI.getInstance();
                 if(addr != null){
-                	handler.createConnection(addr);
+                	handler.createConnection(username, addr);
                 }
                 button.setEnabled(true);
             }

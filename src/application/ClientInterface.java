@@ -67,6 +67,10 @@ public class ClientInterface{
 		sendMessage(new Message(msg, userid));
 	}
 	
+	public void setUsername(String username) {
+		this.userid = username;
+	}
+	
 	/*
 	 * A new message has been received from one of the connections.
 	 * Check for the message originator.  If null, then this is a system message - do not send to UI
