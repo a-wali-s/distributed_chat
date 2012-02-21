@@ -24,21 +24,17 @@ public class ChatWindow implements GenericUI, Observer {
 	private static final int TEXTAREA_ROWS = 20;
 	private static final int TEXTAREA_COLUMNS = 20;
 	private static MessageAPI messageAPI = MessageAPI.getInstance();
+	
+	/**
+	 * Constructor
+	 */
 	public ChatWindow(){
 		
 	}
-
-	@Override
-	public void msgReceived(Message msg) {
-		textArea.append(msg.getMsgText());
-
-	}
-
-	@Override
-	public void sentMsg(String msg) {
-		messageAPI.sendMsg(msg);
-
-	}
+	
+	/**
+	 * Function implementation from GenericUI
+	 */
 	@Override
 	public void init() {
 		JFrame frame = new JFrame("Chat Window");
@@ -52,6 +48,19 @@ public class ChatWindow implements GenericUI, Observer {
 		
 		messageAPI.addObserver(this);
 	}
+	@Override
+	public void msgReceived(Message msg) {
+		textArea.append(msg.getMsgText());
+	}
+	@Override
+	public void sentMsg(String msg) {
+		messageAPI.sendMsg(msg);
+	}
+	
+	/**
+	 * Window UI components including connect button, message field, and input field
+	 * @return
+	 */
 	private JComponent initConnectionButton(){
 		final JButton button = new JButton("Connect");
 		button.addActionListener(new ActionListener() {
@@ -59,11 +68,11 @@ public class ChatWindow implements GenericUI, Observer {
             public void actionPerformed(ActionEvent e)
             {
             	button.setEnabled(false);
-            	String username = JOptionPane.showInputDialog(null, "Enter an username: ");
+            	String username = JOptionPane.showInputDialog(null, "Enter an user name: ");
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
-//                String port = JOptionPane.showInputDialog(null, "Port of Peer:");
+                //String port = JOptionPane.showInputDialog(null, "Port of Peer:");
                 MessageAPI handler = MessageAPI.getInstance();
-                if(addr != null){
+                if(username != "" && addr != null){
                 	handler.createConnection(username, addr);
                 }
                 button.setEnabled(true);
@@ -92,10 +101,14 @@ public class ChatWindow implements GenericUI, Observer {
 		return result;
 	}
 
+	/**
+	 * Observer function
+	 */
 	@Override
 	public void update(Observable messageAPI, Object msg) {
 		if (messageAPI instanceof MessageAPI) {
 			Message message = (Message) msg;
+			// Prints message to the message field in the format of time stamp, user name, and received message
 			textArea.append(message.getTimestamp().toString().substring(10, 19) + " " + message.getUsername() + " said: "+ message.getMsgText());
 		}
 	}
