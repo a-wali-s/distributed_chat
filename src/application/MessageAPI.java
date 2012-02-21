@@ -42,8 +42,7 @@ public class MessageAPI extends Observable {
 		client.setUsername(username);
 	}
 	
-	public void createConnection(String newUsername, String host){
-		client.setUsername(newUsername);
+	public void createConnection(String host){
 		client.createConnection(host);
 	}
 }

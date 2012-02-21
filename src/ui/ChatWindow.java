@@ -55,6 +55,12 @@ public class ChatWindow implements GenericUI {
 		frame.pack();
 		frame.setVisible(true);
 		
+		frame.setEnabled(false);
+		String username = JOptionPane.showInputDialog(null, "Enter an user name: ");
+		MessageAPI handler = MessageAPI.getInstance();
+		handler.setUsername(username);
+		frame.setEnabled(true);
+		
 		messageAPI.addObserver(this);
 	}
 	@Override
@@ -79,11 +85,10 @@ public class ChatWindow implements GenericUI {
             public void actionPerformed(ActionEvent e)
             {
             	button.setEnabled(false);
-            	String username = JOptionPane.showInputDialog(null, "Enter an user name: ");
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
                 MessageAPI handler = MessageAPI.getInstance();
-                if(username != null || addr != null){
-                	handler.createConnection(username, addr);
+                if(addr != null){
+                	handler.createConnection(addr);
                 }else{
                 	JOptionPane.showMessageDialog(null, "Invalid Input!");
                 }
