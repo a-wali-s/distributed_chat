@@ -5,9 +5,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 public class ClientInterface{
 	private static ClientInterface instance;
- 	ArrayList<Connection> connections;
+ 	List<Connection> connections;
  	String message;	
  	String username = "";
 
@@ -70,6 +71,7 @@ public class ClientInterface{
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	
 	/*
 	 * A new message has been received from one of the connections.

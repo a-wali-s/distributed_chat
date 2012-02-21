@@ -157,6 +157,8 @@ public class ChatWindow implements GenericUI {
 			Message message = (Message) msg;
 			// Prints message to the message field in the format of time stamp, user name, and received message
 			textArea.append(getFormattedMessage(message));
+			// Force the text area to scroll to the bottom.
+			textArea.setCaretPosition(textArea.getDocument().getLength());
 		}
 	}
 
