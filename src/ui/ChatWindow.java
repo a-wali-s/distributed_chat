@@ -1,17 +1,19 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.text.SimpleDateFormat;
 import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -19,7 +21,7 @@ import javax.swing.JTextField;
 import application.Message;
 import application.MessageAPI;
 
-public class ChatWindow implements GenericUI, Observer {
+public class ChatWindow implements GenericUI {
 	JTextArea textArea;
 	private static final int TEXTAREA_ROWS = 20;
 	private static final int TEXTAREA_COLUMNS = 20;
@@ -40,9 +42,16 @@ public class ChatWindow implements GenericUI, Observer {
 		JFrame frame = new JFrame("Chat Window");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		frame.getContentPane().add(initTextInput(), BorderLayout.CENTER);
-		frame.getContentPane().add(initMsgScreen(), BorderLayout.NORTH);
-		frame.getContentPane().add(initConnectionButton(), BorderLayout.SOUTH);
+		GridLayout inputPanelLayout = new GridLayout(3, 1);
+		JPanel inputPanel = new JPanel();
+		inputPanel.setLayout(inputPanelLayout);
+
+		inputPanel.add(initTextInput());
+		inputPanel.add(initConnectionButton());
+		inputPanel.add(initChangeUsernameButton());
+
+		frame.getContentPane().add(initMsgScreen(), BorderLayout.CENTER);
+		frame.getContentPane().add(inputPanel, BorderLayout.SOUTH);
 		frame.pack();
 		frame.setVisible(true);
 		
@@ -57,6 +66,8 @@ public class ChatWindow implements GenericUI, Observer {
 		messageAPI.sendMsg(msg);
 	}
 	
+
+	
 	/**
 	 * Window UI components including connect button, message field, and input field
 	 * @return
@@ -70,16 +81,38 @@ public class ChatWindow implements GenericUI, Observer {
             	button.setEnabled(false);
             	String username = JOptionPane.showInputDialog(null, "Enter an user name: ");
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
-                //String port = JOptionPane.showInputDialog(null, "Port of Peer:");
                 MessageAPI handler = MessageAPI.getInstance();
-                if(username != "" && addr != null){
+                if(username != null || addr != null){
                 	handler.createConnection(username, addr);
+                }else{
+                	JOptionPane.showMessageDialog(null, "Invalid Input!");
                 }
                 button.setEnabled(true);
             }
         });
 		return button;
 	}
+	
+	private JComponent initChangeUsernameButton() {
+		final JButton button = new JButton("Change Username");
+		button.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				button.setEnabled(false);
+				String username = JOptionPane
+						.showInputDialog(null, "Enter an user name: ");
+				MessageAPI handler = MessageAPI.getInstance();
+				if (username != null) {
+					handler.setUsername(username);
+				} else {
+					JOptionPane.showMessageDialog(null, "Invalid Input!");
+				}
+				button.setEnabled(true);
+			}
+		});
+		return button;
+	}
+	
 	private JComponent initMsgScreen(){
 		textArea = new JTextArea(TEXTAREA_ROWS, TEXTAREA_COLUMNS);
 		textArea.setEditable(false);
@@ -102,6 +135,15 @@ public class ChatWindow implements GenericUI, Observer {
 	}
 
 	/**
+	 * Returns Human readable message
+	 */
+	private static String getFormattedMessage(Message message) {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		return String.format("%s (%s): %s", message.getUsername(), sdf.format(message.getTimestamp()),
+				message.getMsgText());
+	}
+	
+	/**
 	 * Observer function
 	 */
 	@Override
@@ -109,7 +151,7 @@ public class ChatWindow implements GenericUI, Observer {
 		if (messageAPI instanceof MessageAPI) {
 			Message message = (Message) msg;
 			// Prints message to the message field in the format of time stamp, user name, and received message
-			textArea.append(message.getTimestamp().toString().substring(10, 19) + " " + message.getUsername() + " said: "+ message.getMsgText());
+			textArea.append(getFormattedMessage(message));
 		}
 	}
 

@@ -9,8 +9,7 @@ public class ClientInterface{
 	private static ClientInterface instance;
  	ArrayList<Connection> connections;
  	String message;	
- 	// FIXME: should have some sort of authentication system for userid
- 	String userid = "";
+ 	String username = "";
 
 	public static ClientInterface getInstance(){
 		if(instance == null){
@@ -46,6 +45,7 @@ public class ClientInterface{
 			ioException.printStackTrace();
 		}
 	}
+	
 
 	/*
 	 * Broadcasts message to all peers that are directly connected to this host
@@ -64,11 +64,11 @@ public class ClientInterface{
 	 * This is called by the UI layer to broadcast a newly generated user message
 	 */
 	public void sendMessage(String msg){
-		sendMessage(new Message(msg, userid));
+		sendMessage(new Message(msg, username));
 	}
 	
 	public void setUsername(String username) {
-		this.userid = username;
+		this.username = username;
 	}
 	
 	/*

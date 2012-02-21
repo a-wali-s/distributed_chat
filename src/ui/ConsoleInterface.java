@@ -1,5 +1,6 @@
 package ui;
 
+import java.util.Observable;
 import java.util.Scanner;
 
 import application.Message;
@@ -30,6 +31,11 @@ public class ConsoleInterface implements GenericUI {
 		System.out.println(msg);
 	}
 	public void sentMsg(String msg){
+		
+	}
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
 		
 	}
 }
