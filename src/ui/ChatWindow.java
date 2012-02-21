@@ -72,6 +72,7 @@ public class ChatWindow implements GenericUI, Observer {
 	}
 	private JComponent initMsgScreen(){
 		textArea = new JTextArea(TEXTAREA_ROWS, TEXTAREA_COLUMNS);
+		textArea.setEditable(false);
 		JComponent scrollPane = new JScrollPane(textArea);
 		((JScrollPane) scrollPane).setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		return scrollPane;
@@ -94,7 +95,7 @@ public class ChatWindow implements GenericUI, Observer {
 	public void update(Observable messageAPI, Object msg) {
 		if (messageAPI instanceof MessageAPI) {
 			Message message = (Message) msg;
-			textArea.append(message.getMsgText());
+			textArea.append(message.getTimestamp().toString().substring(10, 19) + " " + message.getUsername() + " said: "+ message.getMsgText());
 		}
 	}
 
