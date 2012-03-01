@@ -1,0 +1,13 @@
+ahmad = multicast, sending to all users. then getting people connected efficiently with spanning tree
+
+
+darren = message synchronizing
+
+
+aaron = failure recovery, with FoF
+
+
+william = show list of users, make usernames unique
+
+
+dominic = graph visualization of system for debugging
