@@ -9,8 +9,11 @@ public class ConnectionListener implements Runnable{
 	ServerSocket providerSocket;
 	Socket connection = null;
 	String message;
+	int port;
 	boolean run = true;
-	public ConnectionListener(){}
+	public ConnectionListener(int port){
+		this.port = port;
+	}
 	
 	public void stop(){
 		run = false;
@@ -20,7 +23,7 @@ public class ConnectionListener implements Runnable{
 	{
 		try{
 			//1. creating a server socket
-			providerSocket = new ServerSocket(2004, 10);
+			providerSocket = new ServerSocket(port, 10);
 			while(run) {
 				//2. Wait for connection
 				System.out.println("Waiting for connection");

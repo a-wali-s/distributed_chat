@@ -33,13 +33,14 @@ public class ClientInterface{
 		connThread.start();
 		connections.add(conn);
 		conn.sendMessage(new Message("ACK:connection",null));
-		System.out.println(DistributedChat.getInstance().getNodeDepth().toString());
-		conn.sendMessage(new Message(DistributedChat.getInstance().getNodeDepth().toString(),null, 101));
+		System.out.println(ChatController.getInstance().getNodeDepth().toString());
+		conn.sendMessage(new Message(ChatController.getInstance().getNodeDepth().toString(),null, 101));
 	}
+
 	
-	void createConnection(String hostname){
+	void createConnection(String hostname, int port){
 		try {
-			Socket newConn = new Socket(hostname, 2004);
+			Socket newConn = new Socket(hostname, port);
 			addConnection(new Connection(newConn));
 		}
 		catch(UnknownHostException unknownHost) {
@@ -71,7 +72,7 @@ public class ClientInterface{
 		for(int x=0;x<connections.size();x++){
 			connections.get(x).sendMessage(msg);
 		}
-		MessageAPI.getInstance().receiveMsg(msg);
+		ChatController.getInstance().receiveMsg(msg);
 	}
 	
 	/*
@@ -95,16 +96,15 @@ public class ClientInterface{
 	{
 		if( msg.getUsername() != null )
 		{
-			MessageAPI.getInstance().receiveMsg(msg);
+			ChatController.getInstance().receiveMsg(msg);
 			forwardMessage(msg, conn);
 		}
 		else if(msg.getMsgText().equals("ACK:connection"))
 			System.out.println("Connection request accepted!");
 		else if(msg.getMessageCode() == 101)
 		{
-			DistributedChat.getInstance();
-			DistributedChat.setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
-			msg.setMessageCode(DistributedChat.getNodeDepth());
+			ChatController.getInstance().setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
+			msg.setMessageCode(ChatController.getInstance().getNodeDepth());
 			forwardMessage(msg, conn);
 			System.out.println("after connection, set nodeDepth to " + (Integer.parseInt(msg.getMsgText())));
 		}

@@ -19,13 +19,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import application.Message;
-import application.MessageAPI;
+import application.ChatController;
 
 public class ChatWindow implements GenericUI {
 	JTextArea textArea;
 	private static final int TEXTAREA_ROWS = 20;
 	private static final int TEXTAREA_COLUMNS = 20;
-	private static MessageAPI messageAPI = MessageAPI.getInstance();
+	private static ChatController messageAPI = ChatController.getInstance();
 	
 	/**
 	 * Constructor
@@ -57,12 +57,31 @@ public class ChatWindow implements GenericUI {
 		
 		frame.setEnabled(false);
 		String username = JOptionPane.showInputDialog(null, "Enter an user name: ");
-		MessageAPI handler = MessageAPI.getInstance();
+		ChatController handler = ChatController.getInstance();
 		handler.setUsername(username);
+		handler.initListener(ensureValidPortInput());
 		frame.setEnabled(true);
 		
 		messageAPI.addObserver(this);
 	}
+	private int ensureValidPortInput(){
+		String port = JOptionPane.showInputDialog(null, "Enter the port for connection: ");
+		while (port.equals("") && isParsableToInt(port)){
+			JOptionPane.showMessageDialog(null, "invalid Port");
+			port = JOptionPane.showInputDialog(null, "Enter the port for connection: ");
+		}
+		return Integer.parseInt(port);
+	}
+
+	private boolean isParsableToInt(String i) {
+		try {
+			Integer.parseInt(i);
+			return true;
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+	}
+	 
 	@Override
 	public void msgReceived(Message msg) {
 		textArea.append(msg.getMsgText());
@@ -86,17 +105,20 @@ public class ChatWindow implements GenericUI {
             {
             	button.setEnabled(false);
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
-                MessageAPI handler = MessageAPI.getInstance();
+                ChatController handler = ChatController.getInstance();
                 if(addr != null){
-                	handler.createConnection(addr);
+                	handler.createConnection(addr, ensureValidPortInput());
+                	button.setEnabled(false);
                 }else{
                 	JOptionPane.showMessageDialog(null, "Invalid Input!");
+                	button.setEnabled(true);
                 }
-                button.setEnabled(true);
+                
             }
         });
 		return button;
 	}
+	
 	
 	private JComponent initChangeUsernameButton() {
 		final JButton button = new JButton("Change Username");
@@ -106,7 +128,7 @@ public class ChatWindow implements GenericUI {
 				button.setEnabled(false);
 				String username = JOptionPane
 						.showInputDialog(null, "Enter an user name: ");
-				MessageAPI handler = MessageAPI.getInstance();
+				ChatController handler = ChatController.getInstance();
 				if (username != null) {
 					handler.setUsername(username);
 				} else {
@@ -153,7 +175,7 @@ public class ChatWindow implements GenericUI {
 	 */
 	@Override
 	public void update(Observable messageAPI, Object msg) {
-		if (messageAPI instanceof MessageAPI) {
+		if (messageAPI instanceof ChatController) {
 			Message message = (Message) msg;
 			// Prints message to the message field in the format of time stamp, user name, and received message
 			textArea.append(getFormattedMessage(message));
