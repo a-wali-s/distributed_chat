@@ -26,9 +26,10 @@ public class ConnectionListener implements Runnable{
 			providerSocket = new ServerSocket(port, 10);
 			while(run) {
 				//2. Wait for connection
-				System.out.println("Waiting for connection");
+				ChatController.getInstance().receiveDebugMessage("Waiting for connection");
 				connection = providerSocket.accept();
-				System.out.println("Connection received from " + connection.getInetAddress().getHostName());
+				ChatController.getInstance().receiveDebugMessage("Connection received from " + connection.getInetAddress().getHostName() 
+						+ ":" + connection.getPort());
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
 				ClientInterface.getInstance().addConnection(connWrapper);

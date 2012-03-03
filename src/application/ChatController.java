@@ -39,6 +39,11 @@ public class ChatController extends Observable {
 		setChanged();
 		notifyObservers(msg);
 	}
+	public void receiveDebugMessage(String sMessage){
+		if(DistributedChat.DEBUG){
+			receiveMsg(new Message(sMessage, "SystemMsg"));
+		}
+	}
 	
 	public void setUsername(String username) {
 		client.setUsername(username);

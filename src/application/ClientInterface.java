@@ -34,7 +34,7 @@ public class ClientInterface{
 		connThread.start();
 		connections.add(conn);
 		conn.sendMessage(new Message("ACK:connection",null));
-		System.out.println(getNodeDepth().toString());
+		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),null, 101));
 	}
 
@@ -101,18 +101,19 @@ public class ClientInterface{
 			forwardMessage(msg, conn);
 		}
 		else if(msg.getMsgText().equals("ACK:connection"))
-			System.out.println("Connection request accepted!");
+			ChatController.getInstance().receiveDebugMessage("Connection request accepted!");
 		else if(msg.getMessageCode() == 101)
 		{
 			setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
 			msg.setMsgText(getNodeDepth().toString());
 			forwardMessage(msg, conn);
-			System.out.println("after connection, set nodeDepth to " + (Integer.parseInt(msg.getMsgText())));
+			ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + (Integer.parseInt(msg.getMsgText())));
 		}
 		else
-			System.out.println("Unknown system message received.");
+			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
 			
 	}
+	
 	private Integer getNodeDepth() {
 		return nodeDepth;
 	}
