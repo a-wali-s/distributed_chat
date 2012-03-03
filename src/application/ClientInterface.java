@@ -110,7 +110,7 @@ public class ClientInterface{
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_ACK){
 			ChatController.getInstance().receiveMsg(msg);
 			if(DistributedChat.DEBUG){
-				conn.sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + ":" + msg.getUsername() + " -- " + 
+				sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + ":" + msg.getUsername() + " -- " + 
 						conn.socket.getLocalAddress() + ":" + username
 						,username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
 			}
