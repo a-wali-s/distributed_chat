@@ -33,7 +33,7 @@ public class ClientInterface{
 		Thread connThread = new Thread(conn);
 		connThread.start();
 		connections.add(conn);
-		conn.sendMessage(new Message("ACK:connection",null));
+		conn.sendMessage(new Message(conn.socket.getRemoteSocketAddress() + " -- " + conn.socket.getLocalAddress(),null));
 		System.out.println(getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),null, 101));
 	}
@@ -100,8 +100,11 @@ public class ClientInterface{
 			ChatController.getInstance().receiveMsg(msg);
 			forwardMessage(msg, conn);
 		}
-		else if(msg.getMsgText().equals("ACK:connection"))
+		else if(msg.getMsgText().contains("--") && msg.getUsername() == null)
+		{
 			System.out.println("Connection request accepted!");
+			DebugGraph.getInstance().addEdge(msg);
+		}
 		else if(msg.getMessageCode() == 101)
 		{
 			setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
