@@ -34,7 +34,9 @@ public class ClientInterface{
 		connThread.start();
 		connections.add(conn);
 		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
-		conn.sendMessage(new Message(conn.socket.getRemoteSocketAddress() + " -- " + conn.socket.getLocalSocketAddress(),username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
+		if(DistributedChat.DEBUG){
+			conn.sendMessage(new Message(conn.socket.getRemoteSocketAddress() + " -- " + conn.socket.getLocalSocketAddress(),username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
+		}
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
 	}
@@ -88,6 +90,9 @@ public class ClientInterface{
 	
 	public void setUsername(String username) {
 		this.username = username;
+		if(DistributedChat.DEBUG){
+			DebugGraph.createFile(username);
+		}
 	}
 
 	
@@ -107,8 +112,7 @@ public class ClientInterface{
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP)
 		{
-			ChatController.getInstance().receiveDebugMessage("Connection request accepted!");
-			DebugGraph.getInstance().addEdge(msg);
+			DebugGraph.addEdge(msg, this.username);
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_NODE_DEPTH_UPDATE)
 		{

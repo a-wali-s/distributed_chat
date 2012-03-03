@@ -3,37 +3,41 @@ package application;
 import java.io.*;
 
 public class DebugGraph {
-	private static DebugGraph instance;
-	
-	public DebugGraph(){}
-	
-	public static DebugGraph getInstance(){
-		if(instance == null){
-			instance = new DebugGraph();
-		}
-		return instance;
-	}
-	
-	public void addEdge(Message msg){
+	public static void addEdge(Message msg, String username){
 		String[] addresses = msg.getMsgText().replaceAll("/", "").split(" ");
 		String edge = "\"" + addresses[0] + "\" " + addresses[1] + " \"" + addresses[2] + "\"";
-		write(edge);
+		write(edge, username);
+	}
+	public static void createFile(String username){
+		File file = new File(username + "-graph.gv");
+		try {
+			FileWriter writer = new FileWriter(file);
+			writer.write("");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
-	private void write(String edge){
-		FileReader reader = null;
+	private static void write(String edge, String username){
+		BufferedReader input = null;
 		FileWriter writer = null;
-		File file = new File("graph.gv");
+		File file = new File(username + "-graph.gv");
 		try{
-			reader = new FileReader(file);
-			char[] cbuf = {};
-			String fileContents = null;
-			reader.read(cbuf);
-			reader.close();
-			fileContents = new String(cbuf);
-			fileContents.replace("{", "{\n  " + edge);
+			String line;
+			String fileContents = "";
+			input =  new BufferedReader(new FileReader(file));
+			while((line = input.readLine()) != null){
+				fileContents += line;
+			}
+			input.close();
 			writer = new FileWriter(file);
-			writer.write(fileContents);
+			if(fileContents.isEmpty()){
+				writer.write("graph {\n  " + edge + "\n}");
+			}else{
+				fileContents = fileContents.replace("{", "{\n  " + edge);
+				writer.write(fileContents);
+			}
 			writer.close();
 		}
 		catch (FileNotFoundException e){
@@ -42,7 +46,7 @@ public class DebugGraph {
 		catch (IOException e) {
 			System.out.printf("N34-Df+G33r");
 		}
-		if (reader == null) {
+		if (input == null) {
 			try {
 				writer = new FileWriter(file);
 			}
