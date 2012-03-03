@@ -34,9 +34,6 @@ public class ClientInterface{
 		connThread.start();
 		connections.add(conn);
 		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
-		if(DistributedChat.DEBUG){
-			conn.sendMessage(new Message(conn.socket.getRemoteSocketAddress() + " -- " + conn.socket.getLocalSocketAddress(),username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
-		}
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
 	}
@@ -44,8 +41,11 @@ public class ClientInterface{
 	
 	void createConnection(String hostname, int port){
 		try {
-			Socket newConn = new Socket(hostname, port);
-			addConnection(new Connection(newConn));
+			if(connections.isEmpty()){
+				Socket newConn = new Socket(hostname, port);
+				addConnection(new Connection(newConn));
+			}
+			
 
 		}
 		catch(UnknownHostException unknownHost) {
@@ -108,7 +108,12 @@ public class ClientInterface{
 			forwardMessage(msg, conn);
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_ACK){
-			ChatController.getInstance().receiveDebugMessage("Connection request accepted!", msg.getMessageCode());
+			ChatController.getInstance().receiveMsg(msg);
+			if(DistributedChat.DEBUG){
+				conn.sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + ":" + msg.getUsername() + " -- " + 
+						conn.socket.getLocalAddress() + ":" + username
+						,username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
+			}
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP)
 		{
