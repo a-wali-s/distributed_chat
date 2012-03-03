@@ -16,7 +16,7 @@ public class DebugGraph {
 	
 	public void addEdge(Message msg){
 		String[] addresses = msg.getMsgText().replaceAll("/", "").split(" ");
-		String edge = "\"" + addresses[0].split(":")[0] + "\" " + addresses[1] + " \"" + addresses[2] + "\"";
+		String edge = "\"" + addresses[0] + "\" " + addresses[1] + " \"" + addresses[2] + "\"";
 		write(edge);
 	}
 	

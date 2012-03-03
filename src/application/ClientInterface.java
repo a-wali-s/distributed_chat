@@ -33,7 +33,7 @@ public class ClientInterface{
 		Thread connThread = new Thread(conn);
 		connThread.start();
 		connections.add(conn);
-		conn.sendMessage(new Message(conn.socket.getRemoteSocketAddress() + " -- " + conn.socket.getLocalAddress(),null));
+		conn.sendMessage(new Message(conn.socket.getRemoteSocketAddress() + " -- " + conn.socket.getLocalSocketAddress(),null));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),null, 101));
 	}
