@@ -35,6 +35,21 @@ public class Connection implements Runnable {
 	 * Sends Message Object through this particular socket connection.
 	 * This should only be called if the connection is alive.
 	 */
+	public int sendSystemMessage(Message msg, Integer messageCode) {
+		try {
+			out.writeObject(msg);
+			return 0;
+		}
+		catch (IOException e) {
+			return -1;
+		}
+	}
+	
+	
+	/*
+	 * Sends Message Object through this particular socket connection.
+	 * This should only be called if the connection is alive.
+	 */
 	public int sendMessage(Message msg) {
 		try {
 			out.writeObject(msg);
@@ -46,6 +61,6 @@ public class Connection implements Runnable {
 	}
 	
 	public void receiveMessage(Message msg) {
-		ClientInterface.getInstance().receiveMessage(msg);
+		ClientInterface.getInstance().receiveMessage(msg, this);
 	}
 }

@@ -14,6 +14,10 @@ public class Message implements Serializable {
 	/**
 	 * @serial
 	 */
+	private int messageCode = 100;
+	/**
+	 * @serial
+	 */
 	private int id = -1;
 	/**
 	 * @serial
@@ -33,6 +37,15 @@ public class Message implements Serializable {
 	 */
 	public Message(){
 		timestamp = new Date();
+	}
+	
+	public Message(String msgText, String username, Integer messageCode) {
+		this.setMessageCode(messageCode);
+		this.msgText = msgText;
+		this.username = username;
+		timestamp = new Date();
+		id = msgText.hashCode() + timestamp.hashCode();
+		if (username != null) id += username.hashCode();
 	}
 	
 	/* 
@@ -99,4 +112,12 @@ public class Message implements Serializable {
       //perform the default serialization for all non-transient, non-static fields
       aOutputStream.defaultWriteObject();
     }
+
+	public int getMessageCode() {
+		return messageCode;
+	}
+
+	public void setMessageCode(int messageCode) {
+		this.messageCode = messageCode;
+	}
 }

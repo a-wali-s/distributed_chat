@@ -26,12 +26,15 @@ public class ClientInterface{
 	/*
 	 * Adds new connection to list of peers (that are directly connected to this host)
 	 * Sends a connection acknowledgment message to the newly connected peer.
+	 * Also sends it's nodeDepth to the newly connected peer, which should increment it and set it's own node depth
 	 */
 	void addConnection(Connection conn){
 		Thread connThread = new Thread(conn);
 		connThread.start();
 		connections.add(conn);
 		conn.sendMessage(new Message("ACK:connection",null));
+		System.out.println(DistributedChat.getInstance().getNodeDepth().toString());
+		conn.sendMessage(new Message(DistributedChat.getInstance().getNodeDepth().toString(),null, 101));
 	}
 	
 	void createConnection(String hostname){
@@ -47,6 +50,17 @@ public class ClientInterface{
 		}
 	}
 	
+	/*
+	 * Propagates the message to all connected peers except one, which is the one that sent it
+	 */
+	void forwardMessage(Message msg, Connection conn)
+	{
+		for(int x=0;x<connections.size();x++){
+			if(connections.get(x) != conn) // if it isn't from the connection that sent the message
+				connections.get(x).sendMessage(msg);
+		}
+		//receiveMessage(msg);
+	}
 
 	/*
 	 * Broadcasts message to all peers that are directly connected to this host
@@ -57,7 +71,7 @@ public class ClientInterface{
 		for(int x=0;x<connections.size();x++){
 			connections.get(x).sendMessage(msg);
 		}
-		receiveMessage(msg);
+		MessageAPI.getInstance().receiveMsg(msg);
 	}
 	
 	/*
@@ -77,12 +91,23 @@ public class ClientInterface{
 	 * A new message has been received from one of the connections.
 	 * Check for the message originator.  If null, then this is a system message - do not send to UI
 	 */
-	void receiveMessage(Message msg)
+	void receiveMessage(Message msg, Connection conn)
 	{
 		if( msg.getUsername() != null )
+		{
 			MessageAPI.getInstance().receiveMsg(msg);
+			forwardMessage(msg, conn);
+		}
 		else if(msg.getMsgText().equals("ACK:connection"))
 			System.out.println("Connection request accepted!");
+		else if(msg.getMessageCode() == 101)
+		{
+			DistributedChat.getInstance();
+			DistributedChat.setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
+			msg.setMessageCode(DistributedChat.getNodeDepth());
+			forwardMessage(msg, conn);
+			System.out.println("after connection, set nodeDepth to " + (Integer.parseInt(msg.getMsgText())));
+		}
 		else
 			System.out.println("Unknown system message received.");
 			
