@@ -153,7 +153,7 @@ public class ChatWindow implements GenericUI {
 			public void keyReleased(KeyEvent e) {
 			JTextField textField = (JTextField) e.getSource();
 			if(e.getKeyCode() == KeyEvent.VK_ENTER){
-				sentMsg(((JTextField) e.getSource()).getText() + "\n");
+				sentMsg(((JTextField) e.getSource()).getText());
 				textField.setText("");
 			}
 			}
@@ -167,7 +167,7 @@ public class ChatWindow implements GenericUI {
 	private static String getFormattedMessage(Message message) {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		return String.format("%s (%s): %s", message.getUsername(), sdf.format(message.getTimestamp()),
-				message.getMsgText());
+				message.getMsgText() + "\n");
 	}
 	
 	/**
