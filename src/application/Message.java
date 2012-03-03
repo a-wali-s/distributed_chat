@@ -68,6 +68,10 @@ public class Message implements Serializable {
 	public String getMsgText() {
 		return msgText;
 	}
+	
+	public void setMsgText(String msgText) {
+		this.msgText = msgText;
+	}
 
 	public int getId() {
 		return id;
@@ -113,6 +117,7 @@ public class Message implements Serializable {
       aOutputStream.defaultWriteObject();
     }
 
+    
 	public int getMessageCode() {
 		return messageCode;
 	}
