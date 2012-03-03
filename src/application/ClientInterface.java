@@ -11,6 +11,7 @@ public class ClientInterface{
  	List<Connection> connections;
  	String message;	
  	String username = "";
+	private Integer nodeDepth = 1;
 
 	public static ClientInterface getInstance(){
 		if(instance == null){
@@ -33,8 +34,8 @@ public class ClientInterface{
 		connThread.start();
 		connections.add(conn);
 		conn.sendMessage(new Message("ACK:connection",null));
-		System.out.println(ChatController.getInstance().getNodeDepth().toString());
-		conn.sendMessage(new Message(ChatController.getInstance().getNodeDepth().toString(),null, 101));
+		System.out.println(getNodeDepth().toString());
+		conn.sendMessage(new Message(getNodeDepth().toString(),null, 101));
 	}
 
 	
@@ -103,13 +104,20 @@ public class ClientInterface{
 			System.out.println("Connection request accepted!");
 		else if(msg.getMessageCode() == 101)
 		{
-			ChatController.getInstance().setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
-			msg.setMessageCode(ChatController.getInstance().getNodeDepth());
+			setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
+			msg.setMessageCode(getNodeDepth());
 			forwardMessage(msg, conn);
 			System.out.println("after connection, set nodeDepth to " + (Integer.parseInt(msg.getMsgText())));
 		}
 		else
 			System.out.println("Unknown system message received.");
 			
+	}
+	private Integer getNodeDepth() {
+		return nodeDepth;
+	}
+
+	private void setNodeDepth(Integer nodeDepth) {
+		this.nodeDepth = nodeDepth;
 	}
 }

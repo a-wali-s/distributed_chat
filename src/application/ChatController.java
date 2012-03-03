@@ -7,7 +7,6 @@ public class ChatController extends Observable {
 	private static ChatController instance;
 	ConnectionListener server;
 	ClientInterface client;
-	private Integer nodeDepth = 1;
 	
 	/**
 	 * Constructor
@@ -43,13 +42,6 @@ public class ChatController extends Observable {
 	
 	public void setUsername(String username) {
 		client.setUsername(username);
-	}
-	public Integer getNodeDepth() {
-		return nodeDepth;
-	}
-
-	public void setNodeDepth(Integer nodeDepth) {
-		this.nodeDepth = nodeDepth;
 	}
 	
 	public void createConnection(String host, int port){
