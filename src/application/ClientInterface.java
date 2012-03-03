@@ -118,6 +118,7 @@ public class ClientInterface{
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP)
 		{
 			DebugGraph.addEdge(msg, this.username);
+			forwardMessage(msg, conn);
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_NODE_DEPTH_UPDATE)
 		{
