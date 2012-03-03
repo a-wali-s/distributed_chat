@@ -108,7 +108,7 @@ public class ClientInterface{
 		else if(msg.getMessageCode() == 101)
 		{
 			setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
-			msg.setMessageCode(getNodeDepth());
+			msg.setMsgText(getNodeDepth().toString());
 			forwardMessage(msg, conn);
 			System.out.println("after connection, set nodeDepth to " + (Integer.parseInt(msg.getMsgText())));
 		}
