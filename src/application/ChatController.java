@@ -40,8 +40,11 @@ public class ChatController extends Observable {
 		notifyObservers(msg);
 	}
 	public void receiveDebugMessage(String sMessage){
+		receiveDebugMessage(sMessage, 0);
+	}
+	public void receiveDebugMessage(String sMessage, int msgCode){
 		if(DistributedChat.DEBUG){
-			receiveMsg(new Message(sMessage, "SystemMsg"));
+			receiveMsg(new Message(sMessage, "SystemMsg", msgCode));
 		}
 	}
 	

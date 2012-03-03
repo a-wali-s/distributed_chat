@@ -29,7 +29,7 @@ public class ConnectionListener implements Runnable{
 				ChatController.getInstance().receiveDebugMessage("Waiting for connection");
 				connection = providerSocket.accept();
 				ChatController.getInstance().receiveDebugMessage("Connection received from " + connection.getInetAddress().getHostName() 
-						+ ":" + connection.getPort());
+						+ ":" + connection.getPort(), Message.MESSAGE_CODE_CONNECTION_ACK);
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
 				ClientInterface.getInstance().addConnection(connWrapper);

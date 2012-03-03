@@ -26,6 +26,7 @@ public class ChatWindow implements GenericUI {
 	private static final int TEXTAREA_ROWS = 20;
 	private static final int TEXTAREA_COLUMNS = 20;
 	private static ChatController messageAPI = ChatController.getInstance();
+	private JComponent connectionButton;
 	
 	/**
 	 * Constructor
@@ -47,7 +48,8 @@ public class ChatWindow implements GenericUI {
 		inputPanel.setLayout(inputPanelLayout);
 
 		inputPanel.add(initTextInput());
-		inputPanel.add(initConnectionButton());
+		connectionButton = initConnectionButton();
+		inputPanel.add(connectionButton);
 		inputPanel.add(initChangeUsernameButton());
 
 		frame.getContentPane().add(initMsgScreen(), BorderLayout.CENTER);
@@ -103,12 +105,12 @@ public class ChatWindow implements GenericUI {
  
             public void actionPerformed(ActionEvent e)
             {
-            	button.setEnabled(false);
+//            	button.setEnabled(false);
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
                 ChatController handler = ChatController.getInstance();
                 if(addr != null){
                 	handler.createConnection(addr, ensureValidPortInput());
-                	button.setEnabled(false);
+//                	button.setEnabled(false);
                 }else{
                 	JOptionPane.showMessageDialog(null, "Invalid Input!");
                 	button.setEnabled(true);
@@ -176,12 +178,27 @@ public class ChatWindow implements GenericUI {
 	@Override
 	public void update(Observable messageAPI, Object msg) {
 		if (messageAPI instanceof ChatController) {
-			Message message = (Message) msg;
-			// Prints message to the message field in the format of time stamp, user name, and received message
-			textArea.append(getFormattedMessage(message));
-			// Force the text area to scroll to the bottom.
-			textArea.setCaretPosition(textArea.getDocument().getLength());
-		}
+			if(msg instanceof Message){
+				Message message = (Message) msg;
+				switch(message.getMessageCode()){
+				case Message.MESSAGE_CODE_REGULAR_MESSAGE:
+					// Prints message to the message field in the format of time stamp, user name, and received message
+					textArea.append(getFormattedMessage(message));
+					// Force the text area to scroll to the bottom.
+					textArea.setCaretPosition(textArea.getDocument().getLength());
+					break;
+				case Message.MESSAGE_CODE_CONNECTION_ACK:
+					connectionButton.setEnabled(false);
+					break;
+				case 0:
+					// Prints message to the message field in the format of time stamp, user name, and received message
+					textArea.append(getFormattedMessage(message));
+					// Force the text area to scroll to the bottom.
+					textArea.setCaretPosition(textArea.getDocument().getLength());
+				}
+				
+			}
+		} 
 	}
 
 }

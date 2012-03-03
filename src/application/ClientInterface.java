@@ -20,7 +20,7 @@ public class ClientInterface{
 		return instance;
 	}
 
-	public ClientInterface(){
+	private ClientInterface(){
 		connections = new ArrayList<Connection>();
 	}
 	
@@ -33,9 +33,9 @@ public class ClientInterface{
 		Thread connThread = new Thread(conn);
 		connThread.start();
 		connections.add(conn);
-		conn.sendMessage(new Message("ACK:connection",null));
+		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
-		conn.sendMessage(new Message(getNodeDepth().toString(),null, 101));
+		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
 	}
 
 	
@@ -43,6 +43,7 @@ public class ClientInterface{
 		try {
 			Socket newConn = new Socket(hostname, port);
 			addConnection(new Connection(newConn));
+
 		}
 		catch(UnknownHostException unknownHost) {
 			System.err.println("You are trying to connect to an unknown host!");
@@ -81,7 +82,7 @@ public class ClientInterface{
 	 * This is called by the UI layer to broadcast a newly generated user message
 	 */
 	public void sendMessage(String msg){
-		sendMessage(new Message(msg, username));
+		sendMessage(new Message(msg, username, Message.MESSAGE_CODE_REGULAR_MESSAGE));
 	}
 	
 	public void setUsername(String username) {
@@ -95,14 +96,15 @@ public class ClientInterface{
 	 */
 	void receiveMessage(Message msg, Connection conn)
 	{
-		if( msg.getUsername() != null )
+		if( msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE )
 		{
 			ChatController.getInstance().receiveMsg(msg);
 			forwardMessage(msg, conn);
 		}
-		else if(msg.getMsgText().equals("ACK:connection"))
-			ChatController.getInstance().receiveDebugMessage("Connection request accepted!");
-		else if(msg.getMessageCode() == 101)
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_ACK){
+			ChatController.getInstance().receiveDebugMessage("Connection request accepted!", msg.getMessageCode());
+		}
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_NODE_DEPTH_UPDATE)
 		{
 			setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
 			msg.setMsgText(getNodeDepth().toString());

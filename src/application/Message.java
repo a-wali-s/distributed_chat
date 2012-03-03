@@ -7,6 +7,16 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Message implements Serializable {
+	/*
+	 * Message code: 1xx - network informational code
+	 * 				 100 - regular message
+	 * 				 101 - update node depth
+	 * 				 102 - connection ACK
+	 */
+	public static final int MESSAGE_CODE_REGULAR_MESSAGE = 100;
+	public static final int MESSAGE_CODE_NODE_DEPTH_UPDATE = 101;
+	public static final int MESSAGE_CODE_CONNECTION_ACK = 102;
+	
 	/**
 	 * @serial
 	 */
@@ -55,11 +65,7 @@ public class Message implements Serializable {
 	 * 		ie. messages that users will not read
 	 */
 	public Message(String msgText, String username) {
-		this.msgText = msgText;
-		this.username = username;
-		timestamp = new Date();
-		id = msgText.hashCode() + timestamp.hashCode();
-		if (username != null) id += username.hashCode();
+		this(msgText, username, 100);
 	}
  
 	/*
