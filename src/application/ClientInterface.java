@@ -36,6 +36,8 @@ public class ClientInterface{
 		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
+		
+		// TODO: SEND FOF UPDATE
 	}
 
 	
@@ -126,6 +128,15 @@ public class ClientInterface{
 			msg.setMsgText(getNodeDepth().toString());
 			forwardMessage(msg, conn);
 			ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + (Integer.parseInt(msg.getMsgText())));
+		}
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_UPDATE)
+		{
+			// 1) process FOF
+			// 2) send ACK
+		}
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_ACK)
+		{
+			// Update some variable, don't need to reset ACK
 		}
 		else
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");

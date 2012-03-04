@@ -12,11 +12,15 @@ public class Message implements Serializable {
 	 * 				 100 - regular message
 	 * 				 101 - update node depth
 	 * 				 102 - connection ACK
+	 * 				 103 - Friends of Friend information Message
+	 * 				 104 - Friends of Friend information ACK
 	 * 				 201 - connection relationship
 	 */
 	public static final int MESSAGE_CODE_REGULAR_MESSAGE = 100;
 	public static final int MESSAGE_CODE_NODE_DEPTH_UPDATE = 101;
 	public static final int MESSAGE_CODE_CONNECTION_ACK = 102;
+	public static final int MESSAGE_CODE_FOF_UPDATE = 103;
+	public static final int MESSAGE_CODE_FOF_ACK = 104;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
 	
 	/**
