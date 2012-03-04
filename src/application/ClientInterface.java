@@ -25,14 +25,23 @@ public class ClientInterface{
 	}
 	
 	/*
-	 * Adds new connection to list of peers (that are directly connected to this host)
-	 * Sends a connection acknowledgment message to the newly connected peer.
-	 * Also sends it's nodeDepth to the newly connected peer, which should increment it and set it's own node depth
+	 * Adds a new connection and corresponding thread for both accepting and creating connections.
+	 * This function should generally not be touched unless current functionality drastically changes.
 	 */
 	void addConnection(Connection conn){
 		Thread connThread = new Thread(conn);
 		connThread.start();
 		connections.add(conn);
+		
+	}
+	
+	/*
+	 * Adds new connection to list of peers (that are directly connected to this host)
+	 * Sends a connection acknowledgment message to the newly connected peer.
+	 * Also sends it's nodeDepth to the newly connected peer, which should increment it and set it's own node depth
+	 */
+	void acceptConnection(Connection conn){
+		addConnection(conn);
 		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
@@ -44,8 +53,8 @@ public class ClientInterface{
 	void createConnection(String hostname, int port){
 		try {
 			if(connections.isEmpty()){
-				Socket newConn = new Socket(hostname, port);
-				addConnection(new Connection(newConn));
+				Socket newSock = new Socket(hostname, port);
+				addConnection(new Connection(newSock));
 			}
 			
 
@@ -124,10 +133,11 @@ public class ClientInterface{
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_NODE_DEPTH_UPDATE)
 		{
-			setNodeDepth(Integer.parseInt(msg.getMsgText())+1);
-			msg.setMsgText(getNodeDepth().toString());
+			Integer newNodeDepth = Integer.parseInt(msg.getMsgText())+1;
+			setNodeDepth(newNodeDepth);
+			ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + newNodeDepth);
+			msg.setMsgText(newNodeDepth.toString());
 			forwardMessage(msg, conn);
-			ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + (Integer.parseInt(msg.getMsgText())));
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_UPDATE)
 		{
