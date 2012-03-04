@@ -35,7 +35,7 @@ public class DebugGraph {
 			if(fileContents.isEmpty()){
 				writer.write("graph {\n  " + edge + "\n}");
 			}else{
-				fileContents = fileContents.replace("{", "{\n  " + edge);
+				fileContents = fileContents.replace("{", "{\n  " + edge + "\n");
 				writer.write(fileContents);
 			}
 			writer.close();
