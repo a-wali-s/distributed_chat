@@ -2,13 +2,16 @@ package application;
 
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 public class ClientInterface{
 	private static ClientInterface instance;
  	List<Connection> connections;
+ 	List<Friend> friends;
  	String message;	
  	String username = "";
 	private Integer nodeDepth = 1;
@@ -22,6 +25,7 @@ public class ClientInterface{
 
 	private ClientInterface(){
 		connections = new ArrayList<Connection>();
+		friends = new ArrayList<Friend>();
 	}
 	
 	/*
@@ -35,11 +39,12 @@ public class ClientInterface{
 		connections.add(conn);
 		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
+		System.out.println("Added new conection");
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
 		
-		// TODO: SEND FOF UPDATE
+		System.out.println("I'm going to send this: \n" + generateFriendsString());
+		// TODO: SEND FoF UPDATE
 	}
-
 	
 	void createConnection(String hostname, int port){
 		try {
@@ -47,8 +52,6 @@ public class ClientInterface{
 				Socket newConn = new Socket(hostname, port);
 				addConnection(new Connection(newConn));
 			}
-			
-
 		}
 		catch(UnknownHostException unknownHost) {
 			System.err.println("You are trying to connect to an unknown host!");
@@ -97,7 +100,6 @@ public class ClientInterface{
 		}
 	}
 
-	
 	/*
 	 * A new message has been received from one of the connections.
 	 * Check for the message originator.  If null, then this is a system message - do not send to UI
@@ -128,19 +130,77 @@ public class ClientInterface{
 			msg.setMsgText(getNodeDepth().toString());
 			forwardMessage(msg, conn);
 			ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + (Integer.parseInt(msg.getMsgText())));
+			ChatController.getInstance().receiveDebugMessage(msg.getUsername() + " has joined the Chat.");
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_UPDATE)
 		{
 			// 1) process FOF
 			// 2) send ACK
+			System.out.println("DEBUG: Received FOF Update.. processing...");
+			refreshFriends(msg.getMsgText());
+			conn.sendMessage(new Message("ACK:FoF", username, Message.MESSAGE_CODE_FOF_ACK));
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_ACK)
 		{
-			// Update some variable, don't need to reset ACK
+			System.out.println("FoF Ack Received");
+			
+			// TODO: Update some variable, so the program knows we don't need to resend FoF Update
 		}
 		else
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
 			
+	}
+	
+	/*
+	 * Parses through a FoF update message string for multiple friend nodes and 
+	 * generates a Friend object for each one before adding to the Friend list.
+	 */
+	private void refreshFriends(String flist) {
+		String [] nodes;  String [] hn; String host;  int port;  int priority;
+		
+		// Parse own host IP and Port   (given in format "0.0.0.0/0.0.0.0:5000")
+		host = (ChatController.getInstance().server.providerSocket.getLocalSocketAddress()).toString();
+		hn = host.split("[:/]");
+		String myHost = hn[0];
+		int myPort = Integer.parseInt(hn[2]);
+		
+		System.out.println("My hostname: " + myHost + "  |   My port: " + myPort);
+		
+		
+		friends.clear();
+		// split the FoF string by lines for separate friend nodes	
+		nodes = flist.split("\n");
+		
+		// Parse each FoF line for the (host, port, priority)
+		// Check if the FoF is self, if not.. add to Friends
+		for(int i=0; i<nodes.length; i++){
+			String [] tmp;
+			tmp = nodes[0].split("/");
+			if( tmp.length == 3){
+				host = tmp[0];
+				port = Integer.parseInt(tmp[1]);
+				priority = Integer.parseInt(tmp[2]);
+				if( (host == myHost) && (port == myPort) ){
+					System.out.println("Ignoring self..  ");
+				}
+				else{
+					friends.add(new Friend(host, port, priority));
+				}
+			}
+			else{
+				System.out.println("Unexpected Friend Info Format detected, ignoring");
+			}
+		}
+	}
+	
+	private String generateFriendsString() {
+		String rv = "";
+		Iterator<Connection> connList = connections.iterator();
+		while (connList.hasNext()) {
+			Object tmpConn = connList.next();
+			rv = rv + ((Connection) tmpConn).toFriendString() + "\n";
+		}
+		return rv;
 	}
 	
 	private Integer getNodeDepth() {

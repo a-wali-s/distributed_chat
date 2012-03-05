@@ -63,4 +63,14 @@ public class Connection implements Runnable {
 	public void receiveMessage(Message msg) {
 		ClientInterface.getInstance().receiveMessage(msg, this);
 	}
+	
+	/*
+	 * Returns connection info in a Friend format ("[ip]/[port]/[priority]")
+	 */
+	public String toFriendString() {
+		String ip = socket.getInetAddress().getHostAddress();
+		String port = Integer.toString(socket.getPort());
+		String priority = "1";
+		return (ip+"/"+port+"/"+priority);		
+	}
 }
