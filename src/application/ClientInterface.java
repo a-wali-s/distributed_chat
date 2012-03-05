@@ -131,7 +131,7 @@ public class ClientInterface{
 			conn.sendMessage(new Message(Integer.toString(ChatController.getInstance().server.port), username, Message.MESSAGE_CODE_PORT_INFO));
 		}
 		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP) {
-			System.out.println("Hello received connetion relationship");
+			ChatController.getInstance().receiveDebugMessage(msg.getUsername() + " has joined the Chat.");
 			DebugGraph.addEdge(msg, this.username);
 			forwardMessage(msg, conn);
 		}
