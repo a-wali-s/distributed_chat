@@ -150,6 +150,12 @@ public class ClientInterface{
 		case Message.MESSAGE_CODE_PORT_INFO:
 			processPortInfo(msg, conn);
 			break;
+		case Message.MESSAGE_CODE_TIME_REQUEST:
+			processTimeRequest();
+			break;
+		case Message.MESSAGE_CODE_TIME_ACK:
+			processTimeACK();
+			break;
 		default:
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
 		}
@@ -210,6 +216,12 @@ public class ClientInterface{
 		conn.updatePort(msg.getMsgText());
 		 			
 		sendMessage(new Message(generateFriendsString(), username, Message.MESSAGE_CODE_FOF_UPDATE));
+	}
+	private void processTimeRequest() {
+		
+	}
+	private void processTimeACK() {
+		
 	}
 
 	///////////////////////////////////////////////////////////

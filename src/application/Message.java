@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Message implements Serializable {
 	/*
@@ -14,6 +16,8 @@ public class Message implements Serializable {
 	 * 				 102 - connection ACK
 	 * 				 103 - Friends of Friend information Message
 	 * 				 104 - Friends of Friend information ACK
+	 * 				 110 - Time sync request
+	 * 				 111 - Time sync ACK
 	 * 			     2xx - network debug code
 	 * 				 201 - connection relationship
 	 */
@@ -25,6 +29,8 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_NEW_USERNAME_UPDATE = 105;
 	public static final int MESSAGE_CODE_USERNAME_LIST_UPDATE = 106;
 	public static final int MESSAGE_CODE_PORT_INFO = 107;
+	public static final int MESSAGE_CODE_TIME_REQUEST = 110;
+	public static final int MESSAGE_CODE_TIME_ACK = 111;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
 	
 	/**
@@ -42,7 +48,7 @@ public class Message implements Serializable {
 	/**
 	 * @serial
 	 */
-	private Date timestamp;
+	private Calendar timestamp;
 	/**
 	 * @serial
 	 */
@@ -56,14 +62,14 @@ public class Message implements Serializable {
 	 * 
 	 */
 	public Message(){
-		timestamp = new Date();
+		timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 	}
 	
 	public Message(String msgText, String username, Integer messageCode) {
 		this.setMessageCode(messageCode);
 		this.msgText = msgText;
 		this.username = username;
-		timestamp = new Date();
+		timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 		id = msgText.hashCode() + timestamp.hashCode();
 		if (username != null) id += username.hashCode();
 	}
@@ -94,7 +100,8 @@ public class Message implements Serializable {
 	}
 
 	public Date getTimestamp() {
-		return timestamp;
+		timestamp.setTimeZone(TimeZone.getDefault());
+		return timestamp.getTime();
 	}
 
 	public String getUsername() {
