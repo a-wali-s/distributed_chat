@@ -21,6 +21,7 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_CONNECTION_ACK = 102;
 	public static final int MESSAGE_CODE_FOF_UPDATE = 103;
 	public static final int MESSAGE_CODE_FOF_ACK = 104;
+	public static final int MESSAGE_CODE_PORT_INFO = 105;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
 	
 	/**

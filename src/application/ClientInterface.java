@@ -49,9 +49,6 @@ public class ClientInterface{
 		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
-		
-		System.out.println("I'm going to send this: \n" + generateFriendsString());
-		// TODO: SEND FoF UPDATE
 	}
 
 	
@@ -118,45 +115,51 @@ public class ClientInterface{
 	 */
 	void receiveMessage(Message msg, Connection conn)
 	{
-		if( msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE )
-		{
+		if( msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE ) {
 			ChatController.getInstance().receiveMsg(msg);
 			forwardMessage(msg, conn);
 		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_ACK){
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_ACK) {
+			System.out.println("Received connection ACK");
 			ChatController.getInstance().receiveMsg(msg);
 			if(DistributedChat.DEBUG){
 				sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + ":" + msg.getUsername() + " -- " + 
 						conn.socket.getLocalAddress() + ":" + username
 						,username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
 			}
+			// Send the peer our listening port number so they can update their Connection list
+			conn.sendMessage(new Message(Integer.toString(ChatController.getInstance().server.port), username, Message.MESSAGE_CODE_PORT_INFO));
 		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP)
-		{
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP) {
+			System.out.println("Hello received connetion relationship");
 			DebugGraph.addEdge(msg, this.username);
 			forwardMessage(msg, conn);
 		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_NODE_DEPTH_UPDATE)
-		{
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_NODE_DEPTH_UPDATE) {
 			Integer newNodeDepth = Integer.parseInt(msg.getMsgText())+1;
 			setNodeDepth(newNodeDepth);
 			ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + newNodeDepth);
 			msg.setMsgText(newNodeDepth.toString());
 			forwardMessage(msg, conn);
 		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_UPDATE)
-		{
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_UPDATE) {
 			// 1) process FOF
 			// 2) send ACK
 			System.out.println("DEBUG: Received FOF Update.. processing...");
 			refreshFriends(msg.getMsgText());
 			conn.sendMessage(new Message("ACK:FoF", username, Message.MESSAGE_CODE_FOF_ACK));
 		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_ACK)
-		{
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_ACK) {
 			System.out.println("FoF Ack Received");
 			
 			// TODO: Update some variable, so the program knows we don't need to resend FoF Update
+		}
+		else if(msg.getMessageCode() == Message.MESSAGE_CODE_PORT_INFO){
+			// We received the verified port info for thie peer, update our connections list and send out updated FoF list
+			conn.updatePort(msg.getMsgText());
+			//System.out.println("I'm going to send this: \n" + generateFriendsString());
+			
+			sendMessage(new Message(generateFriendsString(), username, Message.MESSAGE_CODE_FOF_UPDATE));
 		}
 		else
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
@@ -168,16 +171,16 @@ public class ClientInterface{
 	 * generates a Friend object for each one before adding to the Friend list.
 	 */
 	private void refreshFriends(String flist) {
-		String [] nodes;  String [] hn; String host;  int port;  int priority;
+		String [] nodes;  String [] hn; String host;  String port;  int priority;
+		System.out.println("Parsing Friend String: " + flist);
 		
 		// Parse own host IP and Port   (given in format "0.0.0.0/0.0.0.0:5000")
 		host = (ChatController.getInstance().server.providerSocket.getLocalSocketAddress()).toString();
 		hn = host.split("[:/]");
 		String myHost = hn[0];
-		int myPort = Integer.parseInt(hn[2]);
+		String myPort = hn[2];
 		
 		System.out.println("My hostname: " + myHost + "  |   My port: " + myPort);
-		
 		
 		friends.clear();
 		// split the FoF string by lines for separate friend nodes	
@@ -187,17 +190,19 @@ public class ClientInterface{
 		// Check if the FoF is self, if not.. add to Friends
 		for(int i=0; i<nodes.length; i++){
 			String [] tmp;
-			tmp = nodes[0].split("/");
+			tmp = nodes[i].split("/");
 			if( tmp.length == 3){
 				host = tmp[0];
-				port = Integer.parseInt(tmp[1]);
+				port = tmp[1];
 				priority = Integer.parseInt(tmp[2]);
-				if( (host == myHost) && (port == myPort) ){
-					System.out.println("Ignoring self..  ");
+				if( port.trim().compareTo(myPort) == 0 ) {
+					if( (host.compareTo("127.0.0.1") == 0) || ( host.compareTo(myHost) == 0) ) {
+						System.out.println("Ignoring self..  ");
+						continue;
+					}
 				}
-				else{
-					friends.add(new Friend(host, port, priority));
-				}
+				System.out.println("Added a new friend");
+				friends.add(new Friend(host, Integer.parseInt(port), priority));
 			}
 			else{
 				System.out.println("Unexpected Friend Info Format detected, ignoring");

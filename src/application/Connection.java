@@ -2,17 +2,20 @@ package application;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class Connection implements Runnable {
 	public Socket socket = null;
 	public ObjectOutputStream out = null;
 	public ObjectInputStream in = null;
+	private String connPort = "";
 	Message inBuffer = null;
 	
 	public Connection(Socket socket) throws IOException{
 		this.socket = socket;
 		out = new ObjectOutputStream(socket.getOutputStream());
 		in = new ObjectInputStream(socket.getInputStream());
+		this.connPort = Integer.toString(socket.getPort());
 	}
 	
 	public void run(){
@@ -23,7 +26,11 @@ public class Connection implements Runnable {
 				receiveMessage(inBuffer);
 			}
 		}
+		catch (SocketException e) {
+			System.out.println("blahblahblah");
+		}
 		catch(IOException e){
+			System.out.println("Oh noes I got disconnected, what to do??!");
 			e.printStackTrace();
 		}
 		catch(ClassNotFoundException e){
@@ -69,8 +76,16 @@ public class Connection implements Runnable {
 	 */
 	public String toFriendString() {
 		String ip = socket.getInetAddress().getHostAddress();
-		String port = Integer.toString(socket.getPort());
+		String port = this.connPort;
 		String priority = "1";
 		return (ip+"/"+port+"/"+priority);		
+	}
+	
+	/*
+	 * Update the locally saved port number for this connection
+	 * (Port number for this socket is not necessarily same as node's listening port depending on point of initiation)
+	 */
+	public void updatePort(String port) {
+		this.connPort = port;
 	}
 }
