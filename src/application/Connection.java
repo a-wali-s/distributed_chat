@@ -26,12 +26,11 @@ public class Connection implements Runnable {
 				receiveMessage(inBuffer);
 			}
 		}
-		catch (SocketException e) {
-			System.out.println("blahblahblah");
-		}
 		catch(IOException e){
 			System.out.println("Oh noes I got disconnected, what to do??!");
-			e.printStackTrace();
+			
+			//TODO -- HANDLE DISCONNECT BY ATTEMPTING TO CONNECT TO SOMEONE IN FOF LIST
+			//e.printStackTrace();
 		}
 		catch(ClassNotFoundException e){
 			e.printStackTrace();
@@ -75,6 +74,9 @@ public class Connection implements Runnable {
 	 * Returns connection info in a Friend format ("[ip]/[port]/[priority]")
 	 */
 	public String toFriendString() {
+		
+		//TODO -- UPDATE PRIORITY, SOMEHOW..
+		
 		String ip = socket.getInetAddress().getHostAddress();
 		String port = this.connPort;
 		String priority = "1";
