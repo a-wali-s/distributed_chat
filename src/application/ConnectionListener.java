@@ -32,7 +32,7 @@ public class ConnectionListener implements Runnable{
 						+ ":" + connection.getPort(), Message.MESSAGE_CODE_CONNECTION_ACK);
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
-				ClientInterface.getInstance().addConnection(connWrapper);
+				ClientInterface.getInstance().acceptConnection(connWrapper);
 			}
 		}
 		catch(IOException ioException){
