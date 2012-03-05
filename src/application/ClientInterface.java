@@ -2,19 +2,21 @@ package application;
 
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 public class ClientInterface{
+	private static final String USERNAMES_SEPERATOR = ",";
 	private static ClientInterface instance;
  	List<Connection> connections;
  	List<Friend> friends;
  	String message;	
  	String username = "";
 	private Integer nodeDepth = 1;
+	private List<String> knownUsers;
 
 	public static ClientInterface getInstance(){
 		if(instance == null){
@@ -26,6 +28,7 @@ public class ClientInterface{
 	private ClientInterface(){
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
+		knownUsers = new ArrayList<String>();
 	}
 	
 	/*
@@ -49,6 +52,11 @@ public class ClientInterface{
 		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
+
+		//send the complete username list plus its own username to the newly accepted node
+		conn.sendMessage(new Message(username + USERNAMES_SEPERATOR + generateUserListString(), username, Message.MESSAGE_CODE_USERNAME_LIST_UPDATE));
+		System.out.println("I'm going to send this: \n" + generateFriendsString());
+		// TODO: SEND FoF UPDATE
 	}
 
 	
@@ -103,9 +111,6 @@ public class ClientInterface{
 	
 	public void setUsername(String username) {
 		this.username = username;
-		if(DistributedChat.DEBUG){
-			DebugGraph.createFile(username);
-		}
 	}
 
 	
@@ -115,55 +120,114 @@ public class ClientInterface{
 	 */
 	void receiveMessage(Message msg, Connection conn)
 	{
-		if( msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE ) {
-			ChatController.getInstance().receiveMsg(msg);
-			forwardMessage(msg, conn);
-		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_ACK) {
-			System.out.println("Received connection ACK");
-			ChatController.getInstance().receiveMsg(msg);
-			if(DistributedChat.DEBUG){
-				sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + ":" + msg.getUsername() + " -- " + 
-						conn.socket.getLocalAddress() + ":" + username
-						,username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
-			}
-			// Send the peer our listening port number so they can update their Connection list
-			conn.sendMessage(new Message(Integer.toString(ChatController.getInstance().server.port), username, Message.MESSAGE_CODE_PORT_INFO));
-		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP) {
-			ChatController.getInstance().receiveDebugMessage(msg.getUsername() + " has joined the Chat.");
-			DebugGraph.addEdge(msg, this.username);
-			forwardMessage(msg, conn);
-		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_NODE_DEPTH_UPDATE) {
-			Integer newNodeDepth = Integer.parseInt(msg.getMsgText())+1;
-			setNodeDepth(newNodeDepth);
-			ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + newNodeDepth);
-			msg.setMsgText(newNodeDepth.toString());
-			forwardMessage(msg, conn);
-		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_UPDATE) {
-			// 1) process FOF
-			// 2) send ACK
-			System.out.println("DEBUG: Received FOF Update.. processing...");
-			refreshFriends(msg.getMsgText());
-			conn.sendMessage(new Message("ACK:FoF", username, Message.MESSAGE_CODE_FOF_ACK));
-		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_FOF_ACK) {
+		switch(msg.getMessageCode()){
+		case Message.MESSAGE_CODE_REGULAR_MESSAGE:
+			processRegularMessage(msg, conn);
+			break;
+		case Message.MESSAGE_CODE_CONNECTION_ACK:
+			processConnectionAck(msg, conn);
+			break;
+		case Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP:
+			processConnectionRelationshipUpdate(msg, conn);
+			break;
+		case Message.MESSAGE_CODE_NODE_DEPTH_UPDATE:
+			processNodeDepthUpdate(msg, conn);
+			break;
+		case Message.MESSAGE_CODE_USERNAME_LIST_UPDATE:
+			processUserListUpdate(msg, conn);
+			break;
+		case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE:
+			processUserUpdate(msg, conn);
+			break;
+		case Message.MESSAGE_CODE_FOF_UPDATE:
+			processFOFUpdate(msg, conn);
+			break;
+		case Message.MESSAGE_CODE_FOF_ACK:
 			System.out.println("FoF Ack Received");
 			
 			// TODO: Update some variable, so the program knows we don't need to resend FoF Update
-		}
-		else if(msg.getMessageCode() == Message.MESSAGE_CODE_PORT_INFO){
-			// We received the verified port info for thie peer, update our connections list and send out updated FoF list
-			conn.updatePort(msg.getMsgText());
-			//System.out.println("I'm going to send this: \n" + generateFriendsString());
-			
-			sendMessage(new Message(generateFriendsString(), username, Message.MESSAGE_CODE_FOF_UPDATE));
-		}
-		else
+			break;
+		case Message.MESSAGE_CODE_PORT_INFO:
+			processPortInfo(msg, conn);
+			break;
+		default:
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
+		}
 			
+	}
+	
+	//////////////////////////////////////////////////////////////////
+	/////////// process message
+
+	private void processRegularMessage(Message msg, Connection conn) {
+		ChatController.getInstance().receiveMsg(msg);
+		forwardMessage(msg, conn);
+	}
+	private void processConnectionAck(Message msg, Connection conn) {
+		ChatController.getInstance().receiveMsg(msg);
+		if(DistributedChat.DEBUG){
+			sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + ":" + msg.getUsername() + " -- " + 
+					conn.socket.getLocalAddress() + ":" + username
+					,username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
+		}
+		conn.sendMessage(new Message(username, username, Message.MESSAGE_CODE_NEW_USERNAME_UPDATE));
+		// Send the peer our listening port number so they can update their Connection list
+		conn.sendMessage(new Message(Integer.toString(ChatController.getInstance().server.port), username, Message.MESSAGE_CODE_PORT_INFO));
+	}
+	private void processConnectionRelationshipUpdate(Message msg,
+			Connection conn) {
+		DebugGraph.addEdge(msg, this.username);
+		forwardMessage(msg, conn);
+	}
+	private void processNodeDepthUpdate(Message msg, Connection conn) {
+		Integer newNodeDepth = Integer.parseInt(msg.getMsgText())+1;
+		setNodeDepth(newNodeDepth);
+		ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + newNodeDepth);
+		msg.setMsgText(newNodeDepth.toString());
+		forwardMessage(msg, conn);
+	}
+	private void processUserListUpdate(Message msg, Connection conn){
+		knownUsers = processUserListString(msg.getMsgText());
+		
+		ChatController.getInstance().receiveMsg(msg);
+
+	}
+	private void processUserUpdate(Message msg, Connection conn){
+		knownUsers.add(msg.getMsgText());
+		ChatController.getInstance().receiveMsg(msg);
+		forwardMessage(msg,conn);
+	}
+
+	private void processFOFUpdate(Message msg, Connection conn) {
+		// 1) process FOF
+		// 2) send ACK
+		System.out.println("DEBUG: Received FOF Update.. processing...");
+		refreshFriends(msg.getMsgText());
+		conn.sendMessage(new Message("ACK:FoF", username, Message.MESSAGE_CODE_FOF_ACK));
+	}
+	private void processPortInfo(Message msg, Connection conn) {
+		// We received the verified port info for thie peer, update our connections list and send out updated FoF list
+		conn.updatePort(msg.getMsgText());
+		 			
+		sendMessage(new Message(generateFriendsString(), username, Message.MESSAGE_CODE_FOF_UPDATE));
+	}
+
+	///////////////////////////////////////////////////////////
+	////////// user list transformation
+	
+	private String generateUserListString(){
+		String result = "";
+		for(String user : knownUsers){
+			result += user + USERNAMES_SEPERATOR;
+		}
+		if(result.endsWith(USERNAMES_SEPERATOR)){
+			result = result.substring(0, result.length()-1);
+		}
+		return result;
+	}
+	private static List<String> processUserListString(String userlist){
+		String[] users = userlist.split(USERNAMES_SEPERATOR);
+		return new ArrayList<String>(Arrays.asList(users));
 	}
 	
 	/*
@@ -171,7 +235,9 @@ public class ClientInterface{
 	 * generates a Friend object for each one before adding to the Friend list.
 	 */
 	private void refreshFriends(String flist) {
-		String [] nodes;  String [] hn; String host;  String port;  int priority;
+		String [] nodes, hn;
+		String host, port;
+		int priority;
 		System.out.println("Parsing Friend String: " + flist);
 		
 		// Parse own host IP and Port   (given in format "0.0.0.0/0.0.0.0:5000")
@@ -209,6 +275,7 @@ public class ClientInterface{
 			}
 		}
 	}
+	
 	
 	private String generateFriendsString() {
 		String rv = "";

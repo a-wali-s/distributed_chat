@@ -2,7 +2,6 @@ package application;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketException;
 
 public class Connection implements Runnable {
 	public Socket socket = null;

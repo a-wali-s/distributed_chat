@@ -1,13 +1,10 @@
 package ui;
 
 import java.util.Observable;
-import java.util.Scanner;
 
 import application.Message;
 
 public class ConsoleInterface implements GenericUI {
-	private String address;
-	private String port;
 	private static GenericUI instance;
 	private ConsoleInterface(){
 	}
@@ -19,13 +16,13 @@ public class ConsoleInterface implements GenericUI {
 	}
 	@Override
 	public void init() {
-		Scanner s = null;
-		s = new Scanner(
-				System.in);
-		System.out.println("Enter ip address:");
-		address = s.nextLine();
-		System.out.println("Enter port:");
-		port = s.nextLine();
+//		Scanner s = null;
+//		s = new Scanner(
+//				System.in);
+//		System.out.println("Enter ip address:");
+//		address = s.nextLine();
+//		System.out.println("Enter port:");
+//		port = s.nextLine();
 	}
 	public void msgReceived(Message msg){
 		System.out.println(msg);

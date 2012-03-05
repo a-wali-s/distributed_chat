@@ -14,6 +14,7 @@ public class Message implements Serializable {
 	 * 				 102 - connection ACK
 	 * 				 103 - Friends of Friend information Message
 	 * 				 104 - Friends of Friend information ACK
+	 * 			     2xx - network debug code
 	 * 				 201 - connection relationship
 	 */
 	public static final int MESSAGE_CODE_REGULAR_MESSAGE = 100;
@@ -21,7 +22,9 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_CONNECTION_ACK = 102;
 	public static final int MESSAGE_CODE_FOF_UPDATE = 103;
 	public static final int MESSAGE_CODE_FOF_ACK = 104;
-	public static final int MESSAGE_CODE_PORT_INFO = 105;
+	public static final int MESSAGE_CODE_NEW_USERNAME_UPDATE = 105;
+	public static final int MESSAGE_CODE_USERNAME_LIST_UPDATE = 106;
+	public static final int MESSAGE_CODE_PORT_INFO = 107;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
 	
 	/**

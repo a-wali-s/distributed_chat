@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Observable;
 
 import javax.swing.JButton;
@@ -18,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import application.DistributedChat;
 import application.Message;
 import application.ChatController;
 
@@ -27,12 +31,14 @@ public class ChatWindow implements GenericUI {
 	private static final int TEXTAREA_COLUMNS = 20;
 	private static ChatController messageAPI = ChatController.getInstance();
 	private JComponent connectionButton;
+	// for implementaion of jlist that show a list of knownusers.
+	private List<String> knownUsers;
 	
 	/**
 	 * Constructor
 	 */
 	public ChatWindow(){
-		
+		knownUsers = new ArrayList<String>();
 	}
 	
 	/**
@@ -172,6 +178,19 @@ public class ChatWindow implements GenericUI {
 				message.getMsgText() + "\n");
 	}
 	
+	private static List<String> processUserListString(String userlist){
+		String[] users = userlist.split(",");
+		return new ArrayList<String>(Arrays.asList(users));
+	}
+	private static String toUsersString(List<String> users){
+		String result = "";
+		for(String name: users){
+			result += name + ", ";
+		}
+		result = "Current user list: "+ result + "\n";
+		return result;
+	}
+	
 	/**
 	 * Observer function
 	 */
@@ -190,11 +209,28 @@ public class ChatWindow implements GenericUI {
 				case Message.MESSAGE_CODE_CONNECTION_ACK:
 					connectionButton.setEnabled(false);
 					break;
-				case 0:
+				case Message.MESSAGE_CODE_USERNAME_LIST_UPDATE:
+					if (DistributedChat.DEBUG) {
+						knownUsers = processUserListString(message.getMsgText());
+						textArea.append(toUsersString(knownUsers));
+					}
+					break;
+				case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE:
+					knownUsers.add(message.getMsgText());
+					if(DistributedChat.DEBUG){
+						textArea.append("System Message: "+ message.getUsername() +" has joined the chat.\n");
+						textArea.append(toUsersString(knownUsers));
+					}
+
+					break;
+					
+				default:
 					// Prints message to the message field in the format of time stamp, user name, and received message
 					textArea.append(getFormattedMessage(message));
 					// Force the text area to scroll to the bottom.
 					textArea.setCaretPosition(textArea.getDocument().getLength());
+					break;
+
 				}
 				
 			}
