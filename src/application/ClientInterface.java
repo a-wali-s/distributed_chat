@@ -55,8 +55,6 @@ public class ClientInterface{
 
 		//send the complete username list plus its own username to the newly accepted node
 		conn.sendMessage(new Message(username + USERNAMES_SEPERATOR + generateUserListString(), username, Message.MESSAGE_CODE_USERNAME_LIST_UPDATE));
-		System.out.println("I'm going to send this: \n" + generateFriendsString());
-		// TODO: SEND FoF UPDATE
 	}
 
 	
@@ -212,9 +210,10 @@ public class ClientInterface{
 		conn.sendMessage(new Message("ACK:FoF", username, Message.MESSAGE_CODE_FOF_ACK));
 	}
 	private void processPortInfo(Message msg, Connection conn) {
-		// We received the verified port info for thie peer, update our connections list and send out updated FoF list
-		conn.updatePort(msg.getMsgText());
-		 			
+		// We received the verified port info for this peer, update our connections list and send out updated FoF list
+		conn.updatePort(msg.getMsgText());		
+		System.out.println("I'm going to send this: \n" + generateFriendsString());
+		// TODO: SEND FoF UPDATE
 		sendMessage(new Message(generateFriendsString(), username, Message.MESSAGE_CODE_FOF_UPDATE));
 	}
 	private void processTimeRequest() {
@@ -257,12 +256,18 @@ public class ClientInterface{
 		hn = host.split("[:/]");
 		String myHost = hn[0];
 		String myPort = hn[2];
+		//System.out.println("My hostname: " + myHost + "  |   My port: " + myPort);
 		
-		System.out.println("My hostname: " + myHost + "  |   My port: " + myPort);
-		
-		friends.clear();
-		// split the FoF string by lines for separate friend nodes	
+		// split the FoF string by lines for separate friend nodes
+		// If this new FoF update has a smaller sample than an existing FoF list, then just ignore it
 		nodes = flist.split("\n");
+		System.out.println("Nodes size: "+ nodes.length + " |  Current friends sizes: " + friends.size());
+		if( nodes.length < friends.size() ) {
+			System.out.println("Existing Friend sample size is bigger than new FoF list, ignoring");
+			return;
+		}
+		else
+			friends.clear();
 		
 		// Parse each FoF line for the (host, port, priority)
 		// Check if the FoF is self, if not.. add to Friends
@@ -286,6 +291,7 @@ public class ClientInterface{
 				System.out.println("Unexpected Friend Info Format detected, ignoring");
 			}
 		}
+		System.out.println("Current size of my friends list: " + friends.size());
 	}
 	
 	
@@ -295,6 +301,7 @@ public class ClientInterface{
 		while (connList.hasNext()) {
 			Object tmpConn = connList.next();
 			rv = rv + ((Connection) tmpConn).toFriendString() + "\n";
+			System.out.println(tmpConn.toString());
 		}
 		return rv;
 	}
