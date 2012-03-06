@@ -202,7 +202,6 @@ public class ClientInterface{
 		setNodeDepth(newNodeDepth);
 		ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + newNodeDepth);
 		msg.setMsgText(newNodeDepth.toString());
-		forwardMessage(msg, conn);
 	}
 	private void processUserListUpdate(Message msg, Connection conn){
 		knownUsers = processUserListString(msg.getMsgText());

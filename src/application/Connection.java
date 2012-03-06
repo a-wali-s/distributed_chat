@@ -27,7 +27,7 @@ public class Connection implements Runnable {
 		}
 		catch(IOException e){
 			System.out.println("Oh noes I got disconnected, what to do??!");
-			
+			ChatController.getInstance().error("disconnect from "+ this.socket.getRemoteSocketAddress());
 			//TODO -- HANDLE DISCONNECT BY ATTEMPTING TO CONNECT TO SOMEONE IN FOF LIST
 			//e.printStackTrace();
 		}
