@@ -40,12 +40,20 @@ public class ChatController extends Observable {
 		notifyObservers(msg);
 	}
 	public void receiveDebugMessage(String sMessage){
-		receiveDebugMessage(sMessage, 0);
+		receiveDebugMessage(sMessage, Message.MESSAGE_CODE_INTERNAL_DEBUG_MESSAGE);
 	}
 	public void receiveDebugMessage(String sMessage, int msgCode){
 		if(DistributedChat.DEBUG){
 			receiveMsg(new Message(sMessage, "SystemMsg", msgCode));
 		}
+	}
+	public void disconnect(){
+		server.stop();
+		client.disconnect();
+		server = null;
+	}
+	public void error(String errorMessage){
+		receiveMsg(new Message(errorMessage, "ErrorMsg" , Message.MESSAGE_CODE_INTERNAL_ERROR_MESSAGE));
 	}
 	
 	public void setUsername(String username) {

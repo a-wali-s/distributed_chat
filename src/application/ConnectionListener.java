@@ -2,14 +2,17 @@ package application;
 
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 public class ConnectionListener implements Runnable{
 	
 	ServerSocket providerSocket;
 	Socket connection = null;
 	String message;
 	int port;
+	int nextChildNumber = 0;
 	boolean run = true;
 	public ConnectionListener(int port){
 		this.port = port;
@@ -17,6 +20,12 @@ public class ConnectionListener implements Runnable{
 	
 	public void stop(){
 		run = false;
+		try {
+			providerSocket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void run()
@@ -32,20 +41,24 @@ public class ConnectionListener implements Runnable{
 						+ ":" + connection.getPort(), Message.MESSAGE_CODE_CONNECTION_ACK);
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
+				connWrapper.isParent = true;
+				connWrapper.childNumber = nextChildNumber;
+				nextChildNumber++;
 				ClientInterface.getInstance().acceptConnection(connWrapper);
 			}
 		}
-		catch(IOException ioException){
-			ioException.printStackTrace();
+		catch(BindException bindException){
+			ChatController.getInstance().error(bindException.getMessage());
+		}catch(SocketException socketException){
+			ChatController.getInstance().error("Socket Closed");
+			
+		}catch(IOException ioException){
+			ChatController.getInstance().error(ioException.getMessage());
 		}
 		finally{
 			//4: Closing connection
-			try{
-				providerSocket.close();
-			}
-			catch(IOException ioException){
-				ioException.printStackTrace();
-			}
+				System.out.println("Socket closed");
+
 		}
 	}
 }

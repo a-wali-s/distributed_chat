@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -16,11 +17,15 @@ public class Message implements Serializable {
 	 * 				 102 - connection ACK
 	 * 				 103 - Friends of Friend information Message
 	 * 				 104 - Friends of Friend information ACK
+	 * 				 105 - Username update
+	 * 				 106 - Username list update
 	 * 				 110 - Time sync request
 	 * 				 111 - Time sync ACK
 	 * 			     2xx - network debug code
 	 * 				 201 - connection relationship
-	 * 				 202 - user has disconnected (either on purpose or through socket break)
+	 * 				 4xx - internal use code
+	 * 				 400 - internal debug plain message
+	 * 				 401 - internal error message
 	 */
 	public static final int MESSAGE_CODE_REGULAR_MESSAGE = 100;
 	public static final int MESSAGE_CODE_NODE_DEPTH_UPDATE = 101;
@@ -32,9 +37,12 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_PORT_INFO = 107;
 	public static final int MESSAGE_CODE_TIME_REQUEST = 110;
 	public static final int MESSAGE_CODE_TIME_ACK = 111;
+	public static final int MESSAGE_CODE_SEND_MESSAGE_NUMBER = 112;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
 	public static final int MESSAGE_CODE_USER_DISCONNECT = 202;
 	
+	public static final int MESSAGE_CODE_INTERNAL_DEBUG_MESSAGE = 400;
+	public static final int MESSAGE_CODE_INTERNAL_ERROR_MESSAGE = 401;
 	/**
 	 * @serial
 	 */
@@ -58,6 +66,14 @@ public class Message implements Serializable {
 	/**
 	 * @serial
 	 */
+	public int messageNumber;
+	/**
+	 * @serial
+	 */
+	public ArrayList<Integer> childNumbers = new ArrayList<Integer>();
+	/**
+	 * @serial
+	 */
 	private static final long serialVersionUID = 1L;
 	
 	/*
@@ -71,6 +87,7 @@ public class Message implements Serializable {
 		this.setMessageCode(messageCode);
 		this.msgText = msgText;
 		this.username = username;
+		this.messageNumber = ClientInterface.messageNumber;
 		timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 		id = msgText.hashCode() + timestamp.hashCode();
 		if (username != null) id += username.hashCode();

@@ -7,6 +7,8 @@ public class Connection implements Runnable {
 	public Socket socket = null;
 	public ObjectOutputStream out = null;
 	public ObjectInputStream in = null;
+	public int childNumber;
+	public boolean isParent = false;
 	private String connPort = "";
 	private String username = "";
 	Message inBuffer = null;
@@ -27,6 +29,8 @@ public class Connection implements Runnable {
 			}
 		}
 		catch(IOException e){
+			System.out.println("Oh noes I got disconnected, what to do??!");
+			ChatController.getInstance().error("disconnect from "+ this.socket.getRemoteSocketAddress());
 			//System.out.println("My Listening port: " + ChatController.getInstance().getListenerPort() + "  |  This connection port: " + this.socket.getLocalPort());
 			ClientInterface.getInstance().sendMessage(new Message("",this.username, Message.MESSAGE_CODE_USER_DISCONNECT));
 			// Only a client should bother trying to reconnect.  A node acting on server-side of a disconnect does not need to do anything
