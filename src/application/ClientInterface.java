@@ -16,7 +16,7 @@ public class ClientInterface{
  	String message;	
  	String username = "";
 	private Integer nodeDepth = 1;
-	public static Integer messageNumber = 1;
+	private Integer messageNumber = 1;
 	private List<String> knownUsers;
 
 	public static ClientInterface getInstance(){
@@ -55,6 +55,9 @@ public class ClientInterface{
 		connThread.start();
 		connections.add(conn);
 		
+	}
+	public int getMessageClock(){
+		return messageNumber;
 	}
 	
 	/*
@@ -144,8 +147,8 @@ public class ClientInterface{
 	 */
 	void receiveMessage(Message msg, Connection conn)
 	{
-		if(msg.messageNumber > ClientInterface.messageNumber)
-			ClientInterface.messageNumber = msg.messageNumber+1;
+		if(msg.messageNumber > this.messageNumber)
+			this.messageNumber = msg.messageNumber+1;
 		if(conn.isParent)
 			msg.childNumbers.add(conn.childNumber);
 		
@@ -188,7 +191,7 @@ public class ClientInterface{
 			break;
 		case Message.MESSAGE_CODE_SEND_MESSAGE_NUMBER:
 			Integer incomingMessageNumber = Integer.parseInt(msg.getMsgText());
-			ClientInterface.messageNumber = incomingMessageNumber;
+			this.messageNumber = incomingMessageNumber;
 			break;
 		default:
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");

@@ -85,7 +85,7 @@ public class Message implements Serializable {
 		this.setMessageCode(messageCode);
 		this.msgText = msgText;
 		this.username = username;
-		this.messageNumber = ClientInterface.messageNumber;
+		this.messageNumber = ClientInterface.getInstance().getMessageClock();
 		timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 		id = msgText.hashCode() + timestamp.hashCode();
 		if (username != null) id += username.hashCode();
