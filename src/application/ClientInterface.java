@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 public class ClientInterface{
-	private static final String USERNAMES_SEPERATOR = ",";
+	private static final String LIST_STRING_SEPERATOR = ",";
 	private static ClientInterface instance;
  	List<Connection> connections;
  	List<Friend> friends;
@@ -17,6 +17,9 @@ public class ClientInterface{
  	String username = "";
 	private Integer nodeDepth = 1;
 	private Integer messageNumber = 1;
+	private int parentClockID = 0;
+	private List<Integer> parentVectorClock;
+	private List<Integer> childVectorClock;
 	private List<String> knownUsers;
 
 	public static ClientInterface getInstance(){
@@ -30,6 +33,9 @@ public class ClientInterface{
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
 		knownUsers = new ArrayList<String>();
+		childVectorClock = new ArrayList<Integer>();
+		childVectorClock.add(0);
+		parentVectorClock = new ArrayList<Integer>();
 	}
 	
 	// disconnect from all connections and reinitialize the singleton instance
@@ -72,8 +78,13 @@ public class ClientInterface{
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
 
+		// vector clock update
+		childVectorClock.add(0);
+		conn.sendMessage(new Message("", username, childVectorClock, Message.MESSAGE_CODE_VECTOR_CLOCK_UPDATE));
+		Message newClockMsg = new Message("", username, childVectorClock, Message.MESSAGE_CODE_NEW_VECTOR_CLOCK );
+		this.forwardMessageToChildren(newClockMsg, conn);
 		//send the complete username list plus its own username to the newly accepted node
-		conn.sendMessage(new Message(username + USERNAMES_SEPERATOR + generateUserListString(), username, Message.MESSAGE_CODE_USERNAME_LIST_UPDATE));
+		conn.sendMessage(new Message(username + LIST_STRING_SEPERATOR + generateUserListString(), username, Message.MESSAGE_CODE_USERNAME_LIST_UPDATE));
 	}
 
 	boolean tryRecovery(){
@@ -136,6 +147,23 @@ public class ClientInterface{
 		}
 		//receiveMessage(msg);
 	}
+	
+	/*
+	 * Propagates the message to all connected peers except one, which is the one that sent it
+	 * and skip the parent
+	 */
+	void forwardMessageToChildren(Message msg, Connection conn)
+	{
+
+		for(int x=0;x<connections.size();x++){
+			Connection thisConn = connections.get(x);
+			if(thisConn != conn && !thisConn.isParent) // if it isn't from the connection that sent the message
+			{
+				thisConn.sendMessage(msg);
+			}
+		}
+		//receiveMessage(msg);
+	}
 
 	/*
 	 * Broadcasts message to all peers that are directly connected to this host
@@ -153,12 +181,39 @@ public class ClientInterface{
 		messageNumber++;
 	}
 	
+	void sendMessageToChildren(Message msg)
+	{
+		for(Connection thisConn : connections){
+			if(thisConn.isParent)
+				msg.childNumbers.add(thisConn.childNumber);
+			if(!thisConn.isParent){
+				thisConn.sendMessage(msg);
+			}
+		}
+		ChatController.getInstance().receiveMsg(msg);
+		messageNumber++;
+	}
+	void sendMessageToParent(Message msg)
+	{
+		for(Connection thisConn : connections){
+			if(thisConn.isParent){
+				thisConn.sendMessage(msg);
+			}
+
+		}
+		ChatController.getInstance().receiveMsg(msg);
+		messageNumber++;
+	}
+	
 	/*
 	 * API for sendMessage(Message msg)
 	 * This is called by the UI layer to broadcast a newly generated user message
 	 */
-	public void sendMessage(String msg){
-		sendMessage(new Message(msg, username, Message.MESSAGE_CODE_REGULAR_MESSAGE));
+	public void sendRegularMessage(String msg){
+		this.childVectorClock.set(0, childVectorClock.get(0) + 1);
+		this.parentVectorClock.set(parentClockID, parentVectorClock.get(parentClockID) + 1);
+		sendMessageToChildren(new Message(msg, username, childVectorClock, Message.MESSAGE_CODE_REGULAR_MESSAGE));
+		sendMessageToParent(new Message(msg, username, parentVectorClock, Message.MESSAGE_CODE_REGULAR_MESSAGE));
 	}
 	
 	public void setUsername(String username) {
@@ -176,6 +231,15 @@ public class ClientInterface{
 			this.messageNumber = msg.messageNumber+1;
 		if(conn.isParent)
 			msg.childNumbers.add(conn.childNumber);
+		if(conn.isParent){
+			if(this.isVectorClocksConflicted(msg.getVectorClock(), this.parentVectorClock)){
+				// need some conflict resolution
+				ChatController.getInstance().receiveDebugMessage("Conflicted! " + parentVectorClock.toString() +" and "+ msg.getVectorClock().toString());
+			}else{
+				this.parentVectorClock = msg.getVectorClock();
+				ChatController.getInstance().receiveDebugMessage("Safe! " + parentVectorClock.toString());
+			}
+		}
 		
 		
 		switch(msg.getMessageCode()){
@@ -220,6 +284,27 @@ public class ClientInterface{
 			break;
 			
 			// TODO : Handle disconnect messages 
+		case Message.MESSAGE_CODE_VECTOR_CLOCK_UPDATE:
+			parentVectorClock = msg.getVectorClock();
+			parentClockID = parentVectorClock.size()-1;
+			break;
+		case Message.MESSAGE_CODE_NEW_VECTOR_CLOCK:
+			// update the new vector clock
+			if(!conn.isParent){
+				int clockSize = msg.getVectorClock().size() - childVectorClock.size();
+				int lastUnmatchIndex = msg.getVectorClock().size() - clockSize - 1;
+				for(int i = lastUnmatchIndex; i < childVectorClock.size(); i++){
+					childVectorClock.add(msg.getVectorClock().get(i));
+				}
+			}else{
+				int clockSize = msg.getVectorClock().size() - parentVectorClock.size();
+				int lastUnmatchIndex = msg.getVectorClock().size() - clockSize - 1;
+				for(int i = lastUnmatchIndex; i < parentVectorClock.size(); i++){
+					parentVectorClock.add(msg.getVectorClock().get(i));
+				}
+			}
+				
+			break;
 		default:
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
 		}
@@ -290,21 +375,46 @@ public class ClientInterface{
 		
 	}
 
+	
+	///////////////////////////////////////////////////////////
+	////////// vector clock operation
+	
+	// clocks are conflicted if the size are not equal and if the difference in all elements are larger than one.
+	private boolean isVectorClocksConflicted(List<Integer> incomingClock, List<Integer> localClock){
+		if(incomingClock.size() != localClock.size()){
+			return true;
+		}
+		int differenceCount = 0;
+		for(int i = 0; i < incomingClock.size(); i++){
+			if(incomingClock.get(i) != localClock.get(i)){
+				differenceCount = Math.abs(incomingClock.get(i) - localClock.get(i));
+				if(incomingClock.get(i) < localClock.get(i)){
+					return true;
+				}
+			}
+			if(differenceCount > 1){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 	///////////////////////////////////////////////////////////
 	////////// user list transformation
 	
 	private String generateUserListString(){
 		String result = "";
 		for(String user : knownUsers){
-			result += user + USERNAMES_SEPERATOR;
+			result += user + LIST_STRING_SEPERATOR;
 		}
-		if(result.endsWith(USERNAMES_SEPERATOR)){
+		if(result.endsWith(LIST_STRING_SEPERATOR)){
 			result = result.substring(0, result.length()-1);
 		}
 		return result;
 	}
 	private static List<String> processUserListString(String userlist){
-		String[] users = userlist.split(USERNAMES_SEPERATOR);
+		String[] users = userlist.split(LIST_STRING_SEPERATOR);
 		return new ArrayList<String>(Arrays.asList(users));
 	}
 	

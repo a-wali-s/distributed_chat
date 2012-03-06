@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 public class Message implements Serializable {
@@ -38,6 +39,8 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_TIME_REQUEST = 110;
 	public static final int MESSAGE_CODE_TIME_ACK = 111;
 	public static final int MESSAGE_CODE_SEND_MESSAGE_NUMBER = 112;
+	public static final int MESSAGE_CODE_VECTOR_CLOCK_UPDATE = 113;
+	public static final int MESSAGE_CODE_NEW_VECTOR_CLOCK = 114;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
 	public static final int MESSAGE_CODE_USER_DISCONNECT = 202;
 	
@@ -70,6 +73,10 @@ public class Message implements Serializable {
 	/**
 	 * @serial
 	 */
+	public List<Integer> vectorClock = new ArrayList<Integer>();
+	/**
+	 * @serial
+	 */
 	public ArrayList<Integer> childNumbers = new ArrayList<Integer>();
 	/**
 	 * @serial
@@ -84,6 +91,9 @@ public class Message implements Serializable {
 	}
 	
 	public Message(String msgText, String username, Integer messageCode) {
+		this(msgText, username, new ArrayList<Integer>(), messageCode);
+	}
+	public Message(String msgText, String username, List<Integer> vectorClock, Integer messageCode) {
 		this.setMessageCode(messageCode);
 		this.msgText = msgText;
 		this.username = username;
@@ -91,8 +101,12 @@ public class Message implements Serializable {
 		timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 		id = msgText.hashCode() + timestamp.hashCode();
 		if (username != null) id += username.hashCode();
+		this.vectorClock = vectorClock;
 	}
 	
+	public List<Integer> getVectorClock(){
+		return this.vectorClock;
+	}
 	/* 
 	 * Generate Message object to be sent through the chat network.
 	 * 		- 'null' username indicates a System Message

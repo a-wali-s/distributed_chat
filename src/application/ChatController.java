@@ -32,7 +32,7 @@ public class ChatController extends Observable {
 	}
 	
 	public void sendMsg(String msg){
-		client.sendMessage(msg);
+		client.sendRegularMessage(msg);
 	}
 	
 	public void receiveMsg(Message msg){
