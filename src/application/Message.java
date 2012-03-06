@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -36,10 +37,10 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_PORT_INFO = 107;
 	public static final int MESSAGE_CODE_TIME_REQUEST = 110;
 	public static final int MESSAGE_CODE_TIME_ACK = 111;
+	public static final int MESSAGE_CODE_SEND_MESSAGE_NUMBER = 112;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
 	public static final int MESSAGE_CODE_INTERNAL_DEBUG_MESSAGE = 400;
 	public static final int MESSAGE_CODE_INTERNAL_ERROR_MESSAGE = 401;
-	
 	/**
 	 * @serial
 	 */
@@ -63,6 +64,14 @@ public class Message implements Serializable {
 	/**
 	 * @serial
 	 */
+	public int messageNumber;
+	/**
+	 * @serial
+	 */
+	public ArrayList<Integer> childNumbers = new ArrayList<Integer>();
+	/**
+	 * @serial
+	 */
 	private static final long serialVersionUID = 1L;
 	
 	/*
@@ -76,6 +85,7 @@ public class Message implements Serializable {
 		this.setMessageCode(messageCode);
 		this.msgText = msgText;
 		this.username = username;
+		this.messageNumber = ClientInterface.messageNumber;
 		timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 		id = msgText.hashCode() + timestamp.hashCode();
 		if (username != null) id += username.hashCode();

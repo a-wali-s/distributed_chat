@@ -16,6 +16,7 @@ public class ClientInterface{
  	String message;	
  	String username = "";
 	private Integer nodeDepth = 1;
+	public static Integer messageNumber = 1;
 	private List<String> knownUsers;
 
 	public static ClientInterface getInstance(){
@@ -64,6 +65,7 @@ public class ClientInterface{
 	void acceptConnection(Connection conn){
 		addConnection(conn);
 		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
+		conn.sendMessage(new Message(this.messageNumber.toString(), username, Message.MESSAGE_CODE_SEND_MESSAGE_NUMBER));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
 
@@ -94,9 +96,15 @@ public class ClientInterface{
 	 */
 	void forwardMessage(Message msg, Connection conn)
 	{
+
 		for(int x=0;x<connections.size();x++){
-			if(connections.get(x) != conn) // if it isn't from the connection that sent the message
-				connections.get(x).sendMessage(msg);
+			Connection thisConn = connections.get(x);
+			if(thisConn != conn) // if it isn't from the connection that sent the message
+			{
+				if(thisConn.isParent)
+					msg.childNumbers.add(thisConn.childNumber);
+				thisConn.sendMessage(msg);
+			}
 		}
 		//receiveMessage(msg);
 	}
@@ -108,9 +116,13 @@ public class ClientInterface{
 	void sendMessage(Message msg)
 	{
 		for(int x=0;x<connections.size();x++){
-			connections.get(x).sendMessage(msg);
+			Connection thisConn = connections.get(x);
+			if(thisConn.isParent)
+				msg.childNumbers.add(thisConn.childNumber);
+			thisConn.sendMessage(msg);
 		}
 		ChatController.getInstance().receiveMsg(msg);
+		messageNumber++;
 	}
 	
 	/*
@@ -132,6 +144,12 @@ public class ClientInterface{
 	 */
 	void receiveMessage(Message msg, Connection conn)
 	{
+		if(msg.messageNumber > ClientInterface.messageNumber)
+			ClientInterface.messageNumber = msg.messageNumber+1;
+		if(conn.isParent)
+			msg.childNumbers.add(conn.childNumber);
+		
+		
 		switch(msg.getMessageCode()){
 		case Message.MESSAGE_CODE_REGULAR_MESSAGE:
 			processRegularMessage(msg, conn);
@@ -167,6 +185,10 @@ public class ClientInterface{
 			break;
 		case Message.MESSAGE_CODE_TIME_ACK:
 			processTimeACK();
+			break;
+		case Message.MESSAGE_CODE_SEND_MESSAGE_NUMBER:
+			Integer incomingMessageNumber = Integer.parseInt(msg.getMsgText());
+			ClientInterface.messageNumber = incomingMessageNumber;
 			break;
 		default:
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");

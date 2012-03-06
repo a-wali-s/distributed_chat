@@ -7,6 +7,8 @@ public class Connection implements Runnable {
 	public Socket socket = null;
 	public ObjectOutputStream out = null;
 	public ObjectInputStream in = null;
+	public int childNumber;
+	public boolean isParent = false;
 	private String connPort = "";
 	Message inBuffer = null;
 	
@@ -42,6 +44,7 @@ public class Connection implements Runnable {
 	 */
 	public int sendSystemMessage(Message msg, Integer messageCode) {
 		try {
+
 			out.writeObject(msg);
 			return 0;
 		}

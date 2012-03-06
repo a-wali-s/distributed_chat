@@ -12,6 +12,7 @@ public class ConnectionListener implements Runnable{
 	Socket connection = null;
 	String message;
 	int port;
+	int nextChildNumber = 0;
 	boolean run = true;
 	public ConnectionListener(int port){
 		this.port = port;
@@ -40,6 +41,9 @@ public class ConnectionListener implements Runnable{
 						+ ":" + connection.getPort(), Message.MESSAGE_CODE_CONNECTION_ACK);
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
+				connWrapper.isParent = true;
+				connWrapper.childNumber = nextChildNumber;
+				nextChildNumber++;
 				ClientInterface.getInstance().acceptConnection(connWrapper);
 			}
 		}
