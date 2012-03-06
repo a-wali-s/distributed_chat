@@ -20,6 +20,7 @@ public class Message implements Serializable {
 	 * 				 111 - Time sync ACK
 	 * 			     2xx - network debug code
 	 * 				 201 - connection relationship
+	 * 				 202 - user has disconnected (either on purpose or through socket break)
 	 */
 	public static final int MESSAGE_CODE_REGULAR_MESSAGE = 100;
 	public static final int MESSAGE_CODE_NODE_DEPTH_UPDATE = 101;
@@ -32,6 +33,7 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_TIME_REQUEST = 110;
 	public static final int MESSAGE_CODE_TIME_ACK = 111;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
+	public static final int MESSAGE_CODE_USER_DISCONNECT = 202;
 	
 	/**
 	 * @serial
