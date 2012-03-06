@@ -30,7 +30,7 @@ import application.Message;
 public class ChatWindow implements GenericUI {
 	JTextArea textArea;
 	private static final int TEXTAREA_ROWS = 40;
-	private static final int TEXTAREA_COLUMNS = 60;
+	private static final int TEXTAREA_COLUMNS = 50;
 	private static ChatController messageAPI = ChatController.getInstance();
 	private JButton connectionButton;
 	JFrame frame;
