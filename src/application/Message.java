@@ -39,6 +39,8 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_TIME_ACK = 111;
 	public static final int MESSAGE_CODE_SEND_MESSAGE_NUMBER = 112;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
+	public static final int MESSAGE_CODE_USER_DISCONNECT = 202;
+	
 	public static final int MESSAGE_CODE_INTERNAL_DEBUG_MESSAGE = 400;
 	public static final int MESSAGE_CODE_INTERNAL_ERROR_MESSAGE = 401;
 	/**

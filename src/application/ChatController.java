@@ -63,4 +63,8 @@ public class ChatController extends Observable {
 	public void createConnection(String host, int port){
 		client.createConnection(host, port);
 	}
+	
+	public int getListenerPort(){
+		return server.port;
+	}
 }

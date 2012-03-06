@@ -76,22 +76,47 @@ public class ClientInterface{
 		conn.sendMessage(new Message(username + USERNAMES_SEPERATOR + generateUserListString(), username, Message.MESSAGE_CODE_USERNAME_LIST_UPDATE));
 	}
 
+	boolean tryRecovery(){
+		for( int i = 0; i < friends.size(); i++ ){
+			Friend tmp = friends.get(i);
+			if( createConnection( tmp.getHost(), tmp.getPort(), true ) )
+				return true;
+		}
+		return false;
+	}
 	
-	void createConnection(String hostname, int port){
+	boolean createConnection(String hostname, int port){
+		return createConnection(hostname, port, false);
+	}
+	
+	/*
+	 * Attempt to create connection with given hostname and port
+	 * 	- If "reconnect" is true, then this is called by a socket disconnect.  We will try to reconnect to a friend.
+	 * 	- If "reconnect" is false, and we detect that connections is not empty, we failed connection sometime ago.  
+	 * 		Purge connections and try again.
+	 * 
+	 * 	Returns True if connection was successful. False if failed.
+	 */
+	boolean createConnection(String hostname, int port, boolean reconnect){
 		try {
-			if(connections.isEmpty()){
-				Socket newSock = new Socket(hostname, port);
-				addConnection(new Connection(newSock));
+			if( (!reconnect) && !(connections.isEmpty()) ){
+					connections.clear();
 			}
-			
-
+			Socket newSock = new Socket(hostname, port);
+			addConnection(new Connection(newSock));
 		}
 		catch(UnknownHostException unknownHost) {
 			System.err.println("You are trying to connect to an unknown host!");
+			return false;
 		}
 		catch(IOException ioException) {
 			ioException.printStackTrace();
+			return false;
 		}
+		if( reconnect )
+			System.out.println("I successfully reconnected to " + hostname + ":" + Integer.toString(port));
+		
+		return true;
 	}
 	
 	/*
@@ -193,6 +218,8 @@ public class ClientInterface{
 			Integer incomingMessageNumber = Integer.parseInt(msg.getMsgText());
 			this.messageNumber = incomingMessageNumber;
 			break;
+			
+			// TODO : Handle disconnect messages 
 		default:
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
 		}
@@ -236,6 +263,7 @@ public class ClientInterface{
 	}
 	private void processUserUpdate(Message msg, Connection conn){
 		knownUsers.add(msg.getMsgText());
+		conn.updateUsername(msg.getUsername());
 		ChatController.getInstance().receiveMsg(msg);
 		forwardMessage(msg,conn);
 	}
@@ -249,7 +277,8 @@ public class ClientInterface{
 	}
 	private void processPortInfo(Message msg, Connection conn) {
 		// We received the verified port info for this peer, update our connections list and send out updated FoF list
-		conn.updatePort(msg.getMsgText());		
+		conn.updatePort(msg.getMsgText());
+		conn.updateUsername(msg.getUsername());
 		System.out.println("I'm going to send this: \n" + generateFriendsString());
 		// TODO: SEND FoF UPDATE
 		sendMessage(new Message(generateFriendsString(), username, Message.MESSAGE_CODE_FOF_UPDATE));
