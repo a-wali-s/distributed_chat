@@ -2,8 +2,10 @@ package application;
 
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 public class ConnectionListener implements Runnable{
 	
 	ServerSocket providerSocket;
@@ -17,6 +19,12 @@ public class ConnectionListener implements Runnable{
 	
 	public void stop(){
 		run = false;
+		try {
+			providerSocket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void run()
@@ -35,17 +43,18 @@ public class ConnectionListener implements Runnable{
 				ClientInterface.getInstance().acceptConnection(connWrapper);
 			}
 		}
-		catch(IOException ioException){
-			ioException.printStackTrace();
+		catch(BindException bindException){
+			ChatController.getInstance().error(bindException.getMessage());
+		}catch(SocketException socketException){
+			ChatController.getInstance().error("Socket Closed");
+			
+		}catch(IOException ioException){
+			ChatController.getInstance().error(ioException.getMessage());
 		}
 		finally{
 			//4: Closing connection
-			try{
-				providerSocket.close();
-			}
-			catch(IOException ioException){
-				ioException.printStackTrace();
-			}
+				System.out.println("Socket closed");
+
 		}
 	}
 }

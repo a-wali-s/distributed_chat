@@ -31,6 +31,20 @@ public class ClientInterface{
 		knownUsers = new ArrayList<String>();
 	}
 	
+	// disconnect from all connections and reinitialize the singleton instance
+	public void disconnect(){
+		for(Connection connect : connections){
+			try {
+				connect.socket.close();
+			} catch (IOException e) {
+				ChatController.getInstance().error(e.getMessage());
+			}
+		}
+		connections = new ArrayList<Connection>();
+		friends = new ArrayList<Friend>();
+		knownUsers = new ArrayList<String>();
+	}
+	
 	/*
 	 * Adds a new connection and corresponding thread for both accepting and creating connections.
 	 * This function should generally not be touched unless current functionality drastically changes.

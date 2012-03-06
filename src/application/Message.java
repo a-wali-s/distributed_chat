@@ -16,10 +16,15 @@ public class Message implements Serializable {
 	 * 				 102 - connection ACK
 	 * 				 103 - Friends of Friend information Message
 	 * 				 104 - Friends of Friend information ACK
+	 * 				 105 - Username update
+	 * 				 106 - Username list update
 	 * 				 110 - Time sync request
 	 * 				 111 - Time sync ACK
 	 * 			     2xx - network debug code
 	 * 				 201 - connection relationship
+	 * 				 4xx - internal use code
+	 * 				 400 - internal debug plain message
+	 * 				 401 - internal error message
 	 */
 	public static final int MESSAGE_CODE_REGULAR_MESSAGE = 100;
 	public static final int MESSAGE_CODE_NODE_DEPTH_UPDATE = 101;
@@ -32,6 +37,8 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_TIME_REQUEST = 110;
 	public static final int MESSAGE_CODE_TIME_ACK = 111;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
+	public static final int MESSAGE_CODE_INTERNAL_DEBUG_MESSAGE = 400;
+	public static final int MESSAGE_CODE_INTERNAL_ERROR_MESSAGE = 401;
 	
 	/**
 	 * @serial
