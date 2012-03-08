@@ -18,7 +18,8 @@ public class Message implements Serializable {
 	 * 				 103 - Friends of Friend information Message
 	 * 				 104 - Friends of Friend information ACK
 	 * 				 105 - Username update
-	 * 				 106 - Username list update
+	 * 				 106 - Initial Username update (ONLY FOR INITIAL SENDING, gets forwarded as 105 -- this is to update peer node for FoF purposes)
+	 * 				 107 - Username list update
 	 * 				 110 - Time sync request
 	 * 				 111 - Time sync ACK
 	 * 			     2xx - network debug code
@@ -33,8 +34,9 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_FOF_UPDATE = 103;
 	public static final int MESSAGE_CODE_FOF_ACK = 104;
 	public static final int MESSAGE_CODE_NEW_USERNAME_UPDATE = 105;
-	public static final int MESSAGE_CODE_USERNAME_LIST_UPDATE = 106;
-	public static final int MESSAGE_CODE_PORT_INFO = 107;
+	public static final int MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT = 106;
+	public static final int MESSAGE_CODE_USERNAME_LIST_UPDATE = 107;
+	public static final int MESSAGE_CODE_PORT_INFO = 108;
 	public static final int MESSAGE_CODE_TIME_REQUEST = 110;
 	public static final int MESSAGE_CODE_TIME_ACK = 111;
 	public static final int MESSAGE_CODE_SEND_MESSAGE_NUMBER = 112;

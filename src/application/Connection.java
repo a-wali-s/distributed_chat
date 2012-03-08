@@ -29,8 +29,8 @@ public class Connection implements Runnable {
 			}
 		}
 		catch(IOException e){
-			System.out.println("Oh noes I got disconnected, what to do??!");
-			ChatController.getInstance().error("disconnect from "+ this.socket.getRemoteSocketAddress());
+			//ChatController.getInstance().error("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
+			System.out.println("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
 			//System.out.println("My Listening port: " + ChatController.getInstance().getListenerPort() + "  |  This connection port: " + this.socket.getLocalPort());
 			ClientInterface.getInstance().sendMessage(new Message("",this.username, Message.MESSAGE_CODE_USER_DISCONNECT));
 			// Only a client should bother trying to reconnect.  A node acting on server-side of a disconnect does not need to do anything
@@ -41,7 +41,6 @@ public class Connection implements Runnable {
 				System.out.println("Removing self from connections");
 				ClientInterface.getInstance().connections.remove(this);
 			}
-			//TODO -- HANDLE DISCONNECT BY ATTEMPTING TO CONNECT TO SOMEONE IN FOF LIST
 			//e.printStackTrace();
 		}
 		catch(ClassNotFoundException e){
@@ -50,8 +49,6 @@ public class Connection implements Runnable {
 	}
 	
 	private void attemptRecovery() {
-		// TODO Auto-generated method stub
-		System.out.println("I will attempt recovery some day");
 		ClientInterface ci = ClientInterface.getInstance();
 		if( ci.tryRecovery() ) {
 			System.out.println("Recovery successful!, breaking old connection");

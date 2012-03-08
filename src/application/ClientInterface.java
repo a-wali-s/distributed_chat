@@ -194,6 +194,9 @@ public class ClientInterface{
 		case Message.MESSAGE_CODE_USERNAME_LIST_UPDATE:
 			processUserListUpdate(msg, conn);
 			break;
+		case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT:
+			processUserListUpdate(msg, conn);
+			break;
 		case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE:
 			processUserUpdate(msg, conn);
 			break;
@@ -240,7 +243,7 @@ public class ClientInterface{
 					conn.socket.getLocalAddress() + ":" + username
 					,username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
 		}
-		conn.sendMessage(new Message(username, username, Message.MESSAGE_CODE_NEW_USERNAME_UPDATE));
+		conn.sendMessage(new Message(username, username, Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT));
 		// Send the peer our listening port number so they can update their Connection list
 		conn.sendMessage(new Message(Integer.toString(ChatController.getInstance().server.port), username, Message.MESSAGE_CODE_PORT_INFO));
 	}
@@ -263,9 +266,13 @@ public class ClientInterface{
 	}
 	private void processUserUpdate(Message msg, Connection conn){
 		knownUsers.add(msg.getMsgText());
-		conn.updateUsername(msg.getUsername());
 		ChatController.getInstance().receiveMsg(msg);
-		forwardMessage(msg,conn);
+		if( msg.getMessageCode() == Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT ){
+			conn.updateUsername(msg.getMsgText());
+			forwardMessage(new Message(msg.getMsgText(), msg.getUsername(), Message.MESSAGE_CODE_NEW_USERNAME_UPDATE),conn);
+		}
+		else
+			forwardMessage(msg,conn);
 	}
 
 	private void processFOFUpdate(Message msg, Connection conn) {
