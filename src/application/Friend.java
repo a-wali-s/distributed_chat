@@ -80,7 +80,7 @@ public class Friend {
 	 */
 	public String toString(){
 		String tmp;
-		tmp = hostname + "/" + priority;
+		tmp = hostname + "/" + port + "/" + priority;
 		return tmp;
 	}
 }

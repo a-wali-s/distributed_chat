@@ -232,10 +232,17 @@ public class ClientInterface{
 	//////////////////////////////////////////////////////////////////
 	/////////// process message
 
+	/*
+	 * Standard chat messages
+	 */
 	private void processRegularMessage(Message msg, Connection conn) {
 		ChatController.getInstance().receiveMsg(msg);
 		forwardMessage(msg, conn);
 	}
+	
+	/*
+	 * Initial connection acknowledgments. This is responded with information about local username, listener port, and graph information if in Debug mode
+	 */
 	private void processConnectionAck(Message msg, Connection conn) {
 		ChatController.getInstance().receiveMsg(msg);
 		if(DistributedChat.DEBUG){
@@ -247,23 +254,39 @@ public class ClientInterface{
 		// Send the peer our listening port number so they can update their Connection list
 		conn.sendMessage(new Message(Integer.toString(ChatController.getInstance().server.port), username, Message.MESSAGE_CODE_PORT_INFO));
 	}
+	
+	/*
+	 * Graph messages for adding edges.
+	 */
 	private void processConnectionRelationshipUpdate(Message msg,
 			Connection conn) {
 		DebugGraph.addEdge(msg, this.username);
 		forwardMessage(msg, conn);
 	}
+	
+	/*
+	 * Node depth update messages
+	 */
 	private void processNodeDepthUpdate(Message msg, Connection conn) {
 		Integer newNodeDepth = Integer.parseInt(msg.getMsgText())+1;
 		setNodeDepth(newNodeDepth);
 		ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + newNodeDepth);
 		msg.setMsgText(newNodeDepth.toString());
 	}
+	
+	/*
+	 * User list update messages
+	 */
 	private void processUserListUpdate(Message msg, Connection conn){
 		knownUsers = processUserListString(msg.getMsgText());
 		
 		ChatController.getInstance().receiveMsg(msg);
 
 	}
+	
+	/*
+	 * New user added to system messages.
+	 */
 	private void processUserUpdate(Message msg, Connection conn){
 		knownUsers.add(msg.getMsgText());
 		ChatController.getInstance().receiveMsg(msg);
@@ -275,6 +298,9 @@ public class ClientInterface{
 			forwardMessage(msg,conn);
 	}
 
+	/*
+	 * Friends of friends update messages
+	 */
 	private void processFOFUpdate(Message msg, Connection conn) {
 		// 1) process FOF
 		// 2) send ACK
@@ -282,6 +308,10 @@ public class ClientInterface{
 		refreshFriends(msg.getMsgText());
 		conn.sendMessage(new Message("ACK:FoF", username, Message.MESSAGE_CODE_FOF_ACK));
 	}
+	
+	/*
+	 * Friends of friends message initialization
+	 */
 	private void processPortInfo(Message msg, Connection conn) {
 		// We received the verified port info for this peer, update our connections list and send out updated FoF list
 		conn.updatePort(msg.getMsgText());
