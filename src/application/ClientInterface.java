@@ -196,6 +196,9 @@ public class ClientInterface{
 		case Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP:
 			processConnectionRelationshipUpdate(msg, conn);
 			break;
+		case Message.MESSAGE_CODE_USER_DISCONNECT:
+			processUserDisconnect(msg, conn);
+			break;
 		case Message.MESSAGE_CODE_NODE_DEPTH_UPDATE:
 			processNodeDepthUpdate(msg, conn);
 			break;
@@ -269,6 +272,14 @@ public class ClientInterface{
 	private void processConnectionRelationshipUpdate(Message msg,
 			Connection conn) {
 		DebugGraph.addEdge(msg, this.username);
+		forwardMessage(msg, conn);
+	}
+	
+	/*
+	 * Disconnect messages
+	 */
+	private void processUserDisconnect(Message msg, Connection conn){
+		DebugGraph.removeVertex(msg, this.username);
 		forwardMessage(msg, conn);
 	}
 	

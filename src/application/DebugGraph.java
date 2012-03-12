@@ -21,7 +21,7 @@ public class DebugGraph {
 	 * @param msg Name of the vertex to be removed
 	 * @param username
 	 */
-	public static void removeEdge(Message msg, String username){
+	public static void removeVertex(Message msg, String username){
 		String vertex = msg.getMsgText().replaceAll("/", "");
 		unwrite(vertex,username);
 	}
