@@ -18,6 +18,7 @@ public class ClientInterface{
 	private Integer nodeDepth = 1;
 	private Integer messageNumber = 1;
 	private List<String> knownUsers;
+	private boolean isHotNode = false;
 
 	public static ClientInterface getInstance(){
 		if(instance == null){
@@ -77,7 +78,13 @@ public class ClientInterface{
 		conn.sendMessage(new Message(username + USERNAMES_SEPERATOR + generateUserListString(), username, Message.MESSAGE_CODE_USERNAME_LIST_UPDATE));
 	}
 
+	/*
+	 * Attempts to recover from a broken server-side connection (ie. connection that this node initiated)
+	 * If this is a HOT node, then we'll ignore trying to reconnect because other people may be attempting to connecting to us.
+	 */
 	boolean tryRecovery(){
+		if( isHotNode )
+			return true;
 		for( int i = 0; i < friends.size(); i++ ){
 			Friend tmp = friends.get(i);
 			if( createConnection( tmp.getHost(), tmp.getPort(), true ) )
@@ -356,6 +363,7 @@ public class ClientInterface{
 		String [] nodes, hn;
 		String host, port;
 		int priority;
+		isHotNode = false;
 		System.out.println("Parsing Friend String: " + flist);
 		
 		// Parse own host IP and Port   (given in format "0.0.0.0/0.0.0.0:5000")
@@ -378,6 +386,7 @@ public class ClientInterface{
 		
 		// Parse each FoF line for the (host, port, priority)
 		// Check if the FoF is self, if not.. add to Friends
+		// --  If self is first node on FoF list, then this node is HOT
 		for(int i=0; i<nodes.length; i++){
 			String [] tmp;
 			tmp = nodes[i].split("/");
@@ -387,6 +396,10 @@ public class ClientInterface{
 				priority = Integer.parseInt(tmp[2]);
 				if( port.trim().compareTo(myPort) == 0 ) {
 					if( (host.compareTo("127.0.0.1") == 0) || ( host.compareTo(myHost) == 0) ) {
+						if( i == 0 ){
+							isHotNode = true;
+							System.out.println("i'm a hot node!");
+						}
 						System.out.println("Ignoring self..  ");
 						continue;
 					}
@@ -408,7 +421,6 @@ public class ClientInterface{
 		while (connList.hasNext()) {
 			Object tmpConn = connList.next();
 			rv = rv + ((Connection) tmpConn).toFriendString() + "\n";
-			System.out.println(tmpConn.toString());
 		}
 		return rv;
 	}
