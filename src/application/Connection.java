@@ -8,6 +8,7 @@ public class Connection implements Runnable {
 	public ObjectOutputStream out = null;
 	public ObjectInputStream in = null;
 	public int childNumber;
+	public int nodeDepth = 1;
 	public boolean isParent = false;
 	private String connPort = "";
 	private String username = "";
@@ -101,8 +102,7 @@ public class Connection implements Runnable {
 		
 		String ip = socket.getInetAddress().getHostAddress();
 		String port = this.connPort;
-		String priority = "1";
-		return (ip+"/"+port+"/"+priority);		
+		return (ip+"/"+port+"/"+nodeDepth);		
 	}
 	
 	/*
@@ -121,4 +121,14 @@ public class Connection implements Runnable {
 		System.out.println("NEW Username: " + usr);
 		this.username = usr;
 	}
+	
+	/*
+	 * Update the locally saved nodeDepth for this connection
+	 */
+	public void updateNodeDepth(int nd) {
+		System.out.println("NEW Depth: " + nd);
+		this.nodeDepth = nd;
+	}
+	
+	
 }

@@ -71,6 +71,7 @@ public class ClientInterface{
 		conn.sendMessage(new Message(this.messageNumber.toString(), username, Message.MESSAGE_CODE_SEND_MESSAGE_NUMBER));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
+		conn.updateNodeDepth(getNodeDepth()+1);
 
 		//send the complete username list plus its own username to the newly accepted node
 		conn.sendMessage(new Message(username + USERNAMES_SEPERATOR + generateUserListString(), username, Message.MESSAGE_CODE_USERNAME_LIST_UPDATE));
@@ -268,7 +269,9 @@ public class ClientInterface{
 	 * Node depth update messages
 	 */
 	private void processNodeDepthUpdate(Message msg, Connection conn) {
-		Integer newNodeDepth = Integer.parseInt(msg.getMsgText())+1;
+		Integer newNodeDepth = Integer.parseInt(msg.getMsgText());
+		conn.updateNodeDepth(newNodeDepth);
+		newNodeDepth++;
 		setNodeDepth(newNodeDepth);
 		ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + newNodeDepth);
 		msg.setMsgText(newNodeDepth.toString());

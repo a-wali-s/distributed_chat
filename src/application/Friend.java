@@ -5,7 +5,7 @@ package application;
  * 
  * Variables
  * 	hostName  	(String)	- IP address or hostname in string format
- * 	Priority	(Int)		- Priority to connect  (1-3 -- 1 being highest priority)
+ * 	depth	(Int)			- Priority to connect based on nodeDepth  (1-3 -- 1 being highest priority)
  * 
  */
 
@@ -13,7 +13,7 @@ public class Friend {
 	
 	private String hostname = "";
 	private int port = 0;
-	private int priority = 0;
+	private int depth = 0;
 	
 	/*
 	 * Default Constructor
@@ -21,7 +21,7 @@ public class Friend {
 	public Friend(){
 		hostname = "";
 		port = 0;
-		priority = 0;
+		depth = 0;
 	}
 	
 	// Commenting this out for now, not sure of it's feasibility..  
@@ -57,7 +57,7 @@ public class Friend {
 	{
 		hostname = host;
 		port = hport;
-		priority = 0;
+		depth = 0;
 	}
 	
 	/*
@@ -80,7 +80,7 @@ public class Friend {
 	 */
 	public String toString(){
 		String tmp;
-		tmp = hostname + "/" + port + "/" + priority;
+		tmp = hostname + "/" + port + "/" + depth;
 		return tmp;
 	}
 }
