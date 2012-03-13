@@ -293,6 +293,18 @@ public class ChatWindow implements GenericUI {
 						textArea.append(toUsersString(knownUsers));
 					}
 					break;
+				case Message.MESSAGE_CODE_USER_DISCONNECT:
+					if (DistributedChat.DEBUG) {
+						knownUsers.remove(message.getUsername());
+						try{
+							String userList = textArea.getText();
+							int usernameStart = userList.indexOf(message.getUsername());
+							int usernameEnd = usernameStart + message.getUsername().length();
+							textArea.replaceRange("", usernameStart, usernameEnd);
+						} catch (NullPointerException e){
+							System.out.printf("Userlist is empty, cannot remove anything");
+						}
+					}
 				case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE:
 					knownUsers.add(message.getMsgText());
 					if(DistributedChat.DEBUG){
