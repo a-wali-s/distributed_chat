@@ -306,7 +306,7 @@ public class ChatWindow implements GenericUI {
 						}
 						
 						if (msgs.size() >= 5000) {
-							permaIndex = msgs.size();
+							permaIndex = permaIndex + msgs.size() + 1;
 							msgs = new LinkedList<Message>();
 						}
 					}
