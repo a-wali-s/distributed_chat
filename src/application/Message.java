@@ -82,7 +82,7 @@ public class Message implements Serializable {
 	 * 
 	 */
 	public Message(){
-		timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+		this.timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 	}
 	
 	public Message(String msgText, String username, Integer messageCode) {
@@ -90,8 +90,8 @@ public class Message implements Serializable {
 		this.msgText = msgText;
 		this.username = username;
 		this.messageNumber = ClientInterface.getInstance().getMessageClock();
-		timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-		id = msgText.hashCode() + timestamp.hashCode();
+		this.timestamp = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+		this.id = msgText.hashCode() + timestamp.hashCode();
 		if (username != null) id += username.hashCode();
 	}
 	
@@ -123,6 +123,10 @@ public class Message implements Serializable {
 	public Date getTimestamp() {
 		timestamp.setTimeZone(TimeZone.getDefault());
 		return timestamp.getTime();
+	}
+	
+	public int getMessageNumber() {
+		return messageNumber;
 	}
 
 	public String getUsername() {

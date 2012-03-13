@@ -11,7 +11,9 @@ import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Observable;
 
 import javax.swing.JButton;
@@ -38,6 +40,8 @@ public class ChatWindow implements GenericUI {
 	private List<String> knownUsers;
 	private JButton startButton;
 	private JButton disconnectionButton;
+	private LinkedList<Message> msgs;
+	ListIterator<Message> msgIterator;
 	
 	/**
 	 * Constructor
@@ -92,6 +96,7 @@ public class ChatWindow implements GenericUI {
 		promptInitialSetup();
 		
 		messageAPI.addObserver(this);
+		msgs = new LinkedList<Message>();
 	}
 
 	private void promptInitialSetup() {
@@ -279,10 +284,29 @@ public class ChatWindow implements GenericUI {
 				Message message = (Message) msg;
 				switch(message.getMessageCode()){
 				case Message.MESSAGE_CODE_REGULAR_MESSAGE:
-					// Prints message to the message field in the format of time stamp, user name, and received message
+					int index = 0;
+					int msgNum = 0;
+					
+					if (msgs.isEmpty() == true) {
+						msgs.addLast(message);
+					}
+					else {
+						msgIterator = msgs.listIterator();
+						while (msgIterator.hasNext()) {
+							msgNum = msgIterator.next().getMessageNumber();
+							if (msgNum >= message.getMessageNumber()) {
+								msgIterator.add(message);
+								index = msgIterator.nextIndex()-1;
+								break;
+							}
+						}
+					}
+					textArea.setCaretPosition(index);
 					textArea.append(getFormattedMessage(message));
+					// Prints message to the message field in the format of time stamp, user name, and received message
+					//textArea.append(getFormattedMessage(message));
 					// Force the text area to scroll to the bottom.
-					textArea.setCaretPosition(textArea.getDocument().getLength());
+					//textArea.setCaretPosition(textArea.getDocument().getLength());
 					break;
 				case Message.MESSAGE_CODE_CONNECTION_ACK:
 					this.toggleConnectionButton(connectionButton.getText());
