@@ -40,8 +40,10 @@ public class ChatWindow implements GenericUI {
 	private List<String> knownUsers;
 	private JButton startButton;
 	private JButton disconnectionButton;
+	
+	private int permaIndex;
 	private LinkedList<Message> msgs;
-	ListIterator<Message> msgIterator;
+	private ListIterator<Message> msgIterator;
 	
 	/**
 	 * Constructor
@@ -96,7 +98,9 @@ public class ChatWindow implements GenericUI {
 		promptInitialSetup();
 		
 		messageAPI.addObserver(this);
+		
 		msgs = new LinkedList<Message>();
+		permaIndex = 0;
 	}
 
 	private void promptInitialSetup() {
@@ -300,8 +304,13 @@ public class ChatWindow implements GenericUI {
 								break;
 							}
 						}
+						
+						if (msgs.size() >= 5000) {
+							permaIndex = msgs.size();
+							msgs = new LinkedList<Message>();
+						}
 					}
-					textArea.setCaretPosition(index);
+					textArea.setCaretPosition(index + permaIndex);
 					textArea.append(getFormattedMessage(message));
 					// Prints message to the message field in the format of time stamp, user name, and received message
 					//textArea.append(getFormattedMessage(message));
