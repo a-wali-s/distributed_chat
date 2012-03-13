@@ -233,7 +233,6 @@ public class ClientInterface{
 			this.messageNumber = incomingMessageNumber;
 			break;
 			
-			// TODO : Handle disconnect messages 
 		default:
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
 		}
@@ -280,6 +279,7 @@ public class ClientInterface{
 	 */
 	private void processUserDisconnect(Message msg, Connection conn){
 		DebugGraph.removeVertex(msg, this.username);
+		ChatController.getInstance().receiveDebugMessage(msg.getUsername() + " has left the chat.");
 		forwardMessage(msg, conn);
 	}
 	
