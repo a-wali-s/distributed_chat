@@ -86,13 +86,22 @@ public class Connection implements Runnable {
 		try {
 			out.writeObject(msg);
 			return 0;
-		}
-		catch (IOException e) {
+		}catch (IOException e) {
 			return -1;
 		}
 	}
 	
 	public void receiveMessage(Message msg) {
+		if (DistributedChat.DEBUG_NETWORK_DELAY
+				&& msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE) {
+			try {
+
+				Thread.sleep(DistributedChat.DEBUG_NETWORK_DELAY_TIME);
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		ClientInterface.getInstance().receiveMessage(msg, this);
 	}
 	
