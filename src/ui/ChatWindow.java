@@ -261,8 +261,12 @@ public class ChatWindow implements GenericUI {
 	 */
 	private static String getFormattedMessage(Message message) {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		return String.format("%s (%s): %s", message.getUsername(), sdf.format(message.getTimestamp()),
+		String result =  String.format("%s (%s): %s", message.getUsername(), sdf.format(message.getTimestamp()),
 				message.getMsgText() + "\n");
+		if(DistributedChat.DEBUG){
+			result = String.valueOf(message.getMessageNumber()) + "-" + result;
+		}
+		return result;
 	}
 	
 	private static List<String> processUserListString(String userlist){
