@@ -22,7 +22,11 @@ public class DebugGraph {
 	 * @param username
 	 */
 	public static void removeVertex(Message msg, String username){
-		String vertex = msg.getMsgText().replaceAll("/", "");
+		String vertex = msg.getMsgText();
+		if (vertex.contains("/")){
+			vertex = vertex.split("/")[1]; //In case a hostname messes up the graph. Only seems to happen on disconnect
+		}
+		System.out.println("vertex to remove: " + vertex);
 		unwrite(vertex,username);
 	}
 	
@@ -57,14 +61,14 @@ public class DebugGraph {
 			String fileContents = "";
 			input =  new BufferedReader(new FileReader(file));
 			while((line = input.readLine()) != null){
-				fileContents += line;
+				fileContents += line + "\n";
 			}
 			input.close();
 			writer = new FileWriter(file);
 			if(fileContents.isEmpty()){
 				writer.write("graph {\n  " + edge + "\n}");
 			}else{
-				fileContents = fileContents.replace("{", "{\n  " + edge + "\n");
+				fileContents = fileContents.replace("{", "{\n  " + edge);
 				writer.write(fileContents);
 			}
 			writer.close();
@@ -108,8 +112,9 @@ public class DebugGraph {
 			input =  new BufferedReader(new FileReader(file));
 			//Ignore any lines that contain the name of the vertex to be removed
 			while((line = input.readLine()) != null && !line.contains(vertex)){
-				fileContents += line;
+				fileContents += line + "\n";
 			}
+			fileContents += "}";
 			input.close();
 			writer = new FileWriter(file);
 			writer.write(fileContents);

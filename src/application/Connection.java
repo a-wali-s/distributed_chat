@@ -35,8 +35,10 @@ public class Connection implements Runnable {
 			//System.out.println("My Listening port: " + ChatController.getInstance().getListenerPort() + "  |  This connection port: " + this.socket.getLocalPort());
 			//Message sent contains data needed to remove vertex from graph
 			String DCMessage = "";
-			if (DistributedChat.DEBUG) DCMessage = this.socket.getRemoteSocketAddress() + ":" + this.username;
-			ClientInterface.getInstance().sendMessage(new Message(DCMessage,this.username, Message.MESSAGE_CODE_USER_DISCONNECT));
+			if (DistributedChat.DEBUG){ 
+				DCMessage = this.socket.getInetAddress() + ":" + this.username;
+			}
+			ClientInterface.getInstance().handleDisconnect(DCMessage,this.username);
 			// Only a client should bother trying to reconnect.  A node acting on server-side of a disconnect does not need to do anything
 			if( this.socket.getLocalPort() != ChatController.getInstance().getListenerPort() ){
 				attemptRecovery();
