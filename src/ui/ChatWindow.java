@@ -42,6 +42,7 @@ public class ChatWindow implements GenericUI {
 	private JButton disconnectionButton;
 	
 	private int permaIndex;
+	private String displayText;
 	private LinkedList<Message> msgs;
 	private ListIterator<Message> msgIterator;
 	
@@ -288,7 +289,6 @@ public class ChatWindow implements GenericUI {
 				Message message = (Message) msg;
 				switch(message.getMessageCode()){
 				case Message.MESSAGE_CODE_REGULAR_MESSAGE:
-					int index = 0;
 					int msgNum = 0;
 					
 					if (msgs.isEmpty() == true) {
@@ -298,24 +298,33 @@ public class ChatWindow implements GenericUI {
 						msgIterator = msgs.listIterator();
 						while (msgIterator.hasNext()) {
 							msgNum = msgIterator.next().getMessageNumber();
-							if (msgNum >= message.getMessageNumber()) {
+							if (msgNum == message.getMessageNumber()) {
 								msgIterator.add(message);
-								index = msgIterator.nextIndex()-1;
+								break;
+							}
+							else if (msgNum > message.getMessageNumber()) {
+								msgs.add(msgIterator.previousIndex(), message);
+								break;
+							}
+							else if (msgNum < message.getMessageNumber() && !msgIterator.hasNext()) {
+								msgs.addLast(message);
 								break;
 							}
 						}
 						
 						if (msgs.size() >= 5000) {
-							permaIndex = msgs.size();
 							msgs = new LinkedList<Message>();
 						}
 					}
-					textArea.setCaretPosition(index + permaIndex);
-					textArea.append(getFormattedMessage(message));
+					displayText = "";
+					msgIterator = msgs.listIterator();
+					while (msgIterator.hasNext()) {
+						displayText += getFormattedMessage(msgIterator.next());
+					}
 					// Prints message to the message field in the format of time stamp, user name, and received message
-					//textArea.append(getFormattedMessage(message));
+					textArea.setText(displayText);
 					// Force the text area to scroll to the bottom.
-					//textArea.setCaretPosition(textArea.getDocument().getLength());
+					textArea.setCaretPosition(textArea.getDocument().getLength());
 					break;
 				case Message.MESSAGE_CODE_CONNECTION_ACK:
 					this.toggleConnectionButton(connectionButton.getText());
