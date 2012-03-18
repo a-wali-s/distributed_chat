@@ -43,7 +43,7 @@ public class ChatWindow implements GenericUI {
 	private JButton disconnectionButton;
 	private JFrame settingWindow;
 	
-	private int permaIndex;
+	private String displayText;
 	private LinkedList<Message> msgs;
 	private ListIterator<Message> msgIterator;
 	
@@ -107,7 +107,6 @@ public class ChatWindow implements GenericUI {
 		messageAPI.addObserver(this);
 		
 		msgs = new LinkedList<Message>();
-		permaIndex = 0;
 	}
 
 	private void promptInitialSetup() {
@@ -306,34 +305,43 @@ public class ChatWindow implements GenericUI {
 				Message message = (Message) msg;
 				switch(message.getMessageCode()){
 				case Message.MESSAGE_CODE_REGULAR_MESSAGE:
-					int index = 0;
-					int msgNum = 0;
+					Message iteratorMsg;
+					boolean inserted = false;
 					
 					if (msgs.isEmpty() == true) {
 						msgs.addLast(message);
 					}
 					else {
 						msgIterator = msgs.listIterator();
-						while (msgIterator.hasNext()) {
-							msgNum = msgIterator.next().getMessageNumber();
-							if (msgNum >= message.getMessageNumber()) {
+						while (msgIterator.hasNext() && !inserted) {
+							iteratorMsg = msgIterator.next();
+							if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && iteratorMsg.getUsername().compareTo(message.getUsername()) < 0) {
 								msgIterator.add(message);
-								index = msgIterator.nextIndex()-1;
-								break;
+								inserted = true;
+							}
+							else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
+								msgIterator.add(message);
+								inserted = true;
+							}
+							else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && !msgIterator.hasNext()) {
+								msgs.addLast(message);
+								inserted = true;
 							}
 						}
 						
 						if (msgs.size() >= 5000) {
-							permaIndex = permaIndex + msgs.size() + 1;
 							msgs = new LinkedList<Message>();
 						}
 					}
-					textArea.setCaretPosition(index + permaIndex);
-					textArea.append(getFormattedMessage(message));
+					displayText = "";
+					msgIterator = msgs.listIterator();
+					while (msgIterator.hasNext()) {
+						displayText += getFormattedMessage(msgIterator.next());
+					}
 					// Prints message to the message field in the format of time stamp, user name, and received message
-					//textArea.append(getFormattedMessage(message));
+					textArea.setText(displayText);
 					// Force the text area to scroll to the bottom.
-					//textArea.setCaretPosition(textArea.getDocument().getLength());
+					textArea.setCaretPosition(textArea.getDocument().getLength());
 					break;
 				case Message.MESSAGE_CODE_CONNECTION_ACK:
 					this.toggleConnectionButton(connectionButton.getText());
