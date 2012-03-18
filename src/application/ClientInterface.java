@@ -173,6 +173,15 @@ public class ClientInterface{
 		this.username = username;
 	}
 
+	/*
+	 * Handle disconnect for the first user to see it happen
+	 */
+	public void handleDisconnect(String msg, String username){
+		Message DCMessage = new Message(msg, username, Message.MESSAGE_CODE_USER_DISCONNECT);
+		DebugGraph.removeVertex(DCMessage, this.username);
+		sendMessage(DCMessage);
+		ChatController.getInstance().receiveDebugMessage(username + " has left the chat.");		
+	}
 	
 	/*
 	 * A new message has been received from one of the connections.
@@ -233,7 +242,6 @@ public class ClientInterface{
 			this.messageNumber = incomingMessageNumber;
 			break;
 			
-			// TODO : Handle disconnect messages 
 		default:
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
 		}
@@ -280,6 +288,7 @@ public class ClientInterface{
 	 */
 	private void processUserDisconnect(Message msg, Connection conn){
 		DebugGraph.removeVertex(msg, this.username);
+		ChatController.getInstance().receiveDebugMessage(msg.getUsername() + " has left the chat.");
 		forwardMessage(msg, conn);
 	}
 	
