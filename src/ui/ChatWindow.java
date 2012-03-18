@@ -291,26 +291,27 @@ public class ChatWindow implements GenericUI {
 				Message message = (Message) msg;
 				switch(message.getMessageCode()){
 				case Message.MESSAGE_CODE_REGULAR_MESSAGE:
-					int msgNum = 0;
+					Message iteratorMsg;
+					boolean inserted = false;
 					
 					if (msgs.isEmpty() == true) {
 						msgs.addLast(message);
 					}
 					else {
 						msgIterator = msgs.listIterator();
-						while (msgIterator.hasNext()) {
-							msgNum = msgIterator.next().getMessageNumber();
-							if (msgNum == message.getMessageNumber()) {
+						while (msgIterator.hasNext() && !inserted) {
+							iteratorMsg = msgIterator.next();
+							if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && iteratorMsg.getUsername().compareTo(message.getUsername()) < 0) {
 								msgIterator.add(message);
-								break;
+								inserted = true;
 							}
-							else if (msgNum > message.getMessageNumber()) {
-								msgs.add(msgIterator.previousIndex(), message);
-								break;
+							else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
+								msgIterator.add(message);
+								inserted = true;
 							}
-							else if (msgNum < message.getMessageNumber() && !msgIterator.hasNext()) {
+							else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && !msgIterator.hasNext()) {
 								msgs.addLast(message);
-								break;
+								inserted = true;
 							}
 						}
 						
