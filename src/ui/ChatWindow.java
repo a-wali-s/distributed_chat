@@ -41,7 +41,6 @@ public class ChatWindow implements GenericUI {
 	private JButton startButton;
 	private JButton disconnectionButton;
 	
-	private int permaIndex;
 	private String displayText;
 	private LinkedList<Message> msgs;
 	private ListIterator<Message> msgIterator;
@@ -101,7 +100,6 @@ public class ChatWindow implements GenericUI {
 		messageAPI.addObserver(this);
 		
 		msgs = new LinkedList<Message>();
-		permaIndex = 0;
 	}
 
 	private void promptInitialSetup() {
