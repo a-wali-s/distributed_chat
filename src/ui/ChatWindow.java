@@ -19,6 +19,7 @@ import java.util.Observable;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,6 +41,7 @@ public class ChatWindow implements GenericUI {
 	private List<String> knownUsers;
 	private JButton startButton;
 	private JButton disconnectionButton;
+	private JFrame settingWindow;
 	
 	private int permaIndex;
 	private LinkedList<Message> msgs;
@@ -71,6 +73,8 @@ public class ChatWindow implements GenericUI {
 		disconnectionButton.setVisible(false);
 		startButton.setVisible(false);
 		
+		settingWindow = new SettingsWindow();
+		
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 10;
@@ -89,13 +93,16 @@ public class ChatWindow implements GenericUI {
 		
 		inputPanel.add(buttonPanel);
 		inputPanel.add(initChangeUsernameButton());
+		
+		JMenuBar menu = new MenuBar();
+		frame.setJMenuBar(menu);
 
 		frame.getContentPane().add(initMsgScreen(), BorderLayout.CENTER);
 		frame.getContentPane().add(inputPanel, BorderLayout.SOUTH);
 		frame.pack();
 		frame.setVisible(true);
 		
-		promptInitialSetup();
+		//promptInitialSetup();
 		
 		messageAPI.addObserver(this);
 		
@@ -154,9 +161,13 @@ public class ChatWindow implements GenericUI {
  
             public void actionPerformed(ActionEvent e)
             {
+            	ChatController handler = ChatController.getInstance();
+            	if( handler.hasServer() == false ){
+            		JOptionPane.showMessageDialog(null, "Please setup listener port first!");
+            		return;
+            	}
 //            	button.setEnabled(false);
                 String addr = JOptionPane.showInputDialog(null, "Address of Peer:");
-                ChatController handler = ChatController.getInstance();
                 if(addr != null){
                 	handler.createConnection(addr, ensureValidPortInput());
 //                	button.setEnabled(false);
@@ -216,18 +227,21 @@ public class ChatWindow implements GenericUI {
 	}
 	
 	private JComponent initChangeUsernameButton() {
-		final JButton button = new JButton("Change Username");
+		final JButton button = new JButton("Settings");
 		button.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				button.setEnabled(false);
-				String username = JOptionPane
+				/*String username = JOptionPane
 						.showInputDialog(null, "Enter an user name: ");
 				ChatController handler = ChatController.getInstance();
 				if (username != null) {
 					handler.setUsername(username);
 				} else {
 					JOptionPane.showMessageDialog(null, "Invalid Input!");
+				}*/
+				if( !settingWindow.isVisible() ) {
+					settingWindow.setVisible(true);
 				}
 				button.setEnabled(true);
 			}

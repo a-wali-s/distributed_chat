@@ -26,6 +26,10 @@ public class ChatController extends Observable {
 		initListener(2004);
 	}
 	public void initListener(int port){
+		if( server != null) {
+			receiveDebugMessage("Cannot change port while connected to Chat");
+			return;
+		}
 		server = new ConnectionListener(port);
 		Thread serverThread = new Thread(server,"T2");
 	    serverThread.start();
@@ -66,5 +70,12 @@ public class ChatController extends Observable {
 	
 	public int getListenerPort(){
 		return server.port;
+	}
+
+	public boolean hasServer() {
+		if( server != null )
+			return true;
+		else
+			return false;
 	}
 }
