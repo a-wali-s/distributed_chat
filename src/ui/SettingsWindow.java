@@ -104,7 +104,7 @@ public class SettingsWindow extends JFrame {
 		tmpPanel.setAlignmentX(RIGHT_ALIGNMENT);
 		
 		JButton acceptButton = new JButton("Accept");
-		acceptButton.setPreferredSize(new Dimension(70,30));
+		acceptButton.setPreferredSize(new Dimension(100,30));
 		acceptButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	userErrorLabel.setVisible(false);
@@ -130,7 +130,7 @@ public class SettingsWindow extends JFrame {
         });
 		
 		JButton cancelButton = new JButton("Cancel");
-		cancelButton.setPreferredSize(new Dimension(70,30));
+		cancelButton.setPreferredSize(new Dimension(100,30));
 		cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	userErrorLabel.setVisible(false);
@@ -140,6 +140,7 @@ public class SettingsWindow extends JFrame {
             	myFrame.setVisible(false);
             }
         });	
+		myFrame.getRootPane().setDefaultButton(acceptButton);
 		tmpPanel.add(Box.createHorizontalStrut(280));
 		tmpPanel.add(acceptButton, BorderLayout.WEST);
 		tmpPanel.add(cancelButton, BorderLayout.EAST);

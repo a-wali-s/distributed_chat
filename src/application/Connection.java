@@ -26,6 +26,7 @@ public class Connection implements Runnable {
 			while(true) {
 				//ChatController.getInstance().receiveDebugMessage("Wait for object");
 				inBuffer = (Message)in.readObject();
+				System.out.println("INCOMING MSG." + inBuffer.getMsgText() );
 				receiveMessage(inBuffer);
 			}
 		}
@@ -85,6 +86,7 @@ public class Connection implements Runnable {
 	 * This should only be called if the connection is alive.
 	 */
 	public int sendMessage(Message msg) {
+		System.out.println("SENDING MESSAGE -- connection class");
 		try {
 			out.writeObject(msg);
 			return 0;
