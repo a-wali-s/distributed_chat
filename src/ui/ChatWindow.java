@@ -1,6 +1,8 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -16,9 +18,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,13 +37,12 @@ import application.Message;
 
 public class ChatWindow implements GenericUI {
 	JTextArea textArea;
-	private static final int TEXTAREA_ROWS = 40;
-	private static final int TEXTAREA_COLUMNS = 50;
 	private static ChatController messageAPI = ChatController.getInstance();
 	private JButton connectionButton;
 	JFrame frame;
 	// for implementaion of jlist that show a list of knownusers.
 	private List<String> knownUsers;
+	//private DefaultListModel knownUsers;
 	private JButton startButton;
 	private JButton disconnectionButton;
 	private JFrame settingWindow;
@@ -52,6 +56,7 @@ public class ChatWindow implements GenericUI {
 	 */
 	public ChatWindow(){
 		knownUsers = new ArrayList<String>();
+		//knownUsers = new DefaultListModel();
 	}
 	
 	/**
@@ -62,43 +67,26 @@ public class ChatWindow implements GenericUI {
 		frame = new JFrame("Chat Window");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		GridLayout inputPanelLayout = new GridLayout(3, 1);
-		JPanel inputPanel = new JPanel();
-		inputPanel.setLayout(inputPanelLayout);
-
-		inputPanel.add(initTextInput());
+//		JPanel inputPanel = new JPanel();
+//		inputPanel.setLayout(inputPanelLayout);
+//
+//		inputPanel.add(initTextInput());
 		connectionButton = initConnectionButton();
 		disconnectionButton = initDisconnectionButton();
 		startButton = initStartButton();
 		disconnectionButton.setVisible(false);
 		startButton.setVisible(false);
-		
 		settingWindow = new SettingsWindow();
-		
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 10;
-		c.anchor = GridBagConstraints.CENTER;
-		c.gridwidth = 3;
-		c.gridx = 0;
-		c.gridy = 1;
-		
-		
-		JPanel buttonPanel = new JPanel();
-		frame.getLayeredPane();
-		buttonPanel.setLayout(new GridBagLayout());
-		buttonPanel.add(connectionButton, c);
-		buttonPanel.add(disconnectionButton, c);
-		buttonPanel.add(startButton, c);
-		
-		inputPanel.add(buttonPanel);
-		inputPanel.add(initChangeUsernameButton());
 		
 		JMenuBar menu = new MenuBar();
 		frame.setJMenuBar(menu);
-
+		
+		frame.getLayeredPane();
 		frame.getContentPane().add(initMsgScreen(), BorderLayout.CENTER);
-		frame.getContentPane().add(inputPanel, BorderLayout.SOUTH);
+		frame.getContentPane().add(initTextInput(), BorderLayout.SOUTH);
+		frame.getContentPane().add(initUserPane(), BorderLayout.EAST);
+		frame.setPreferredSize(new Dimension(700,450));
+		frame.setMinimumSize(new Dimension(500,300));
 		frame.pack();
 		frame.setVisible(true);
 		
@@ -107,6 +95,38 @@ public class ChatWindow implements GenericUI {
 		messageAPI.addObserver(this);
 		
 		msgs = new LinkedList<Message>();
+	}
+
+	private Component initUserPane() {			
+		JPanel userPanel = new JPanel();
+		userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
+		
+//		knownUsers = new DefaultListModel();
+//		knownUsers.addElement("nub1");
+//		knownUsers.addElement("nub2");
+//		knownUsers.addElement("nub3");
+//		knownUsers.addElement("nub4");
+//		knownUsers.addElement("nub5");
+//		knownUsers.addElement("nub6");
+//		knownUsers.addElement("nub7");
+//		knownUsers.addElement("nub8");
+
+		JList userList = new JList(knownUsers.toArray());
+		userList.setPrototypeCellValue("1234567890");
+		userList.setMinimumSize(new Dimension(80,300));
+		JScrollPane userScrollPane = new JScrollPane(userList);
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+		buttonPanel.add(connectionButton);
+		buttonPanel.add(disconnectionButton);
+		buttonPanel.add(startButton);
+		
+		userPanel.add(userScrollPane);
+		userPanel.add(buttonPanel);
+		userPanel.add(initChangeUsernameButton());
+		
+		return userPanel;
 	}
 
 	private void promptInitialSetup() {
@@ -249,14 +269,19 @@ public class ChatWindow implements GenericUI {
 	}
 	
 	private JComponent initMsgScreen(){
-		textArea = new JTextArea(TEXTAREA_ROWS, TEXTAREA_COLUMNS);
+		//textArea = new JTextArea(TEXTAREA_ROWS, TEXTAREA_COLUMNS);
+		textArea = new JTextArea();
 		textArea.setEditable(false);
+		textArea.setLineWrap(true);
 		JComponent scrollPane = new JScrollPane(textArea);
 		((JScrollPane) scrollPane).setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setMinimumSize(new Dimension(600,400));
+		scrollPane.setPreferredSize(new Dimension(600,400));
 		return scrollPane;
 	}
 	private JComponent initTextInput(){
 		JComponent result = new JTextField();
+		result.setSize(1000,20);
 		result.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
 			JTextField textField = (JTextField) e.getSource();
