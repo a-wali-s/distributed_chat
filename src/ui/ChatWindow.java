@@ -340,7 +340,7 @@ public class ChatWindow implements GenericUI {
 						msgIterator = msgs.listIterator();
 						while (msgIterator.hasNext() && !inserted) {
 							iteratorMsg = msgIterator.next();
-							if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && iteratorMsg.getUsername().compareTo(message.getUsername()) < 0) {
+							if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
 								msgIterator.add(message);
 								inserted = true;
 							}
