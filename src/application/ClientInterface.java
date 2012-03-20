@@ -151,7 +151,6 @@ public class ClientInterface{
 	 */
 	void sendMessage(Message msg)
 	{
-		System.out.println("HELLOOOOOOOO----- I AM SENDING MESSAGE (client-interface)");
 		for(int x=0;x<connections.size();x++){
 			Connection thisConn = connections.get(x);
 			if(thisConn.isParent)

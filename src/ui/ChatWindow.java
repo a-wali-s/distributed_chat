@@ -370,7 +370,6 @@ public class ChatWindow implements GenericUI {
 	 */
 	@Override
 	public void update(Observable messageAPI, Object msg) {
-		System.out.println("in the uI");
 		if (messageAPI instanceof ChatController) {
 			if(msg instanceof Message){
 				Message message = (Message) msg;
@@ -387,24 +386,18 @@ public class ChatWindow implements GenericUI {
 						while (msgIterator.hasNext() && !inserted) {
 							iteratorMsg = msgIterator.next();
 							if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
-								System.out.println("Case 1");
 								msgs.add(msgIterator.previousIndex(), message);
-								//msgIterator.add(message);
 								inserted = true;
 							}
 							else if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && !msgIterator.hasNext()) {
-								System.out.println("Case 2");
 								msgs.addLast(message);
 								inserted = true;
 							}
 							else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
-								System.out.println("Case 3");
 								msgs.add(msgIterator.previousIndex(), message);
-								//msgIterator.add(message);
 								inserted = true;
 							}
 							else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && !msgIterator.hasNext()) {
-								System.out.println("Case 4");
 								msgs.addLast(message);
 								inserted = true;
 							}
