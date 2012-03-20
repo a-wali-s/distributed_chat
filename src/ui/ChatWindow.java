@@ -320,6 +320,51 @@ public class ChatWindow implements GenericUI {
 		return result;
 	}
 	
+	public void addMessage(Message message)
+	{
+		Message iteratorMsg;
+		boolean inserted = false;
+		
+		if (msgs.isEmpty() == true) {
+			msgs.addLast(message);
+		}
+		else {
+			msgIterator = msgs.listIterator();
+			while (msgIterator.hasNext() && !inserted) {
+				iteratorMsg = msgIterator.next();
+				if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
+					msgIterator.add(message);
+					inserted = true;
+				}
+				else if(iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) == 0) {
+					msgIterator.add(message);
+					inserted = true;
+				}
+				else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
+					msgIterator.add(message);
+					inserted = true;
+				}
+				else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && !msgIterator.hasNext()) {
+					msgs.addLast(message);
+					inserted = true;
+				}
+			}
+			
+			if (msgs.size() >= 5000) {
+				msgs = new LinkedList<Message>();
+			}
+		}
+		displayText = "";
+		msgIterator = msgs.listIterator();
+		while (msgIterator.hasNext()) {
+			displayText += getFormattedMessage(msgIterator.next());
+		}
+		// Prints message to the message field in the format of time stamp, user name, and received message
+		textArea.setText(displayText);
+		// Force the text area to scroll to the bottom.
+		textArea.setCaretPosition(textArea.getDocument().getLength());		
+	}
+	
 	/**
 	 * Observer function
 	 */
@@ -408,7 +453,7 @@ public class ChatWindow implements GenericUI {
 					break;
 				case Message.MESSAGE_CODE_INTERNAL_DEBUG_MESSAGE:
 					// Prints message to the message field in the format of time stamp, user name, and received message
-					textArea.append(getFormattedMessage(message));
+					addMessage(message);
 					// Force the text area to scroll to the bottom.
 					textArea.setCaretPosition(textArea.getDocument().getLength());
 					break;
@@ -419,7 +464,7 @@ public class ChatWindow implements GenericUI {
 					
 				default:
 					// Prints message to the message field in the format of time stamp, user name, and received message
-					textArea.append(getFormattedMessage(message));
+					addMessage(message);
 					// Force the text area to scroll to the bottom.
 					textArea.setCaretPosition(textArea.getDocument().getLength());
 					break;
