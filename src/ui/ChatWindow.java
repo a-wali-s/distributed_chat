@@ -239,7 +239,8 @@ public class ChatWindow implements GenericUI {
 			connectionButton.setVisible(true);
 		}else{
 			disconnectionButton.setVisible(false);
-			startButton.setVisible(true);
+			connectionButton.setVisible(true);
+			//startButton.setVisible(true);
 		}
 		connectionButton.repaint();
 		frame.repaint();
@@ -333,15 +334,15 @@ public class ChatWindow implements GenericUI {
 			while (msgIterator.hasNext() && !inserted) {
 				iteratorMsg = msgIterator.next();
 				if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
-					msgIterator.add(message);
+					msgs.add(msgIterator.previousIndex(), message);
 					inserted = true;
 				}
-				else if(iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) == 0) {
-					msgIterator.add(message);
+				else if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && !msgIterator.hasNext()) {
+					msgs.addLast(message);
 					inserted = true;
 				}
 				else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
-					msgIterator.add(message);
+					msgs.add(msgIterator.previousIndex(), message);
 					inserted = true;
 				}
 				else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && !msgIterator.hasNext()) {
@@ -360,9 +361,7 @@ public class ChatWindow implements GenericUI {
 			displayText += getFormattedMessage(msgIterator.next());
 		}
 		// Prints message to the message field in the format of time stamp, user name, and received message
-		textArea.setText(displayText);
-		// Force the text area to scroll to the bottom.
-		textArea.setCaretPosition(textArea.getDocument().getLength());		
+		textArea.setText(displayText);	
 	}
 	
 	/**
@@ -375,45 +374,7 @@ public class ChatWindow implements GenericUI {
 				Message message = (Message) msg;
 				switch(message.getMessageCode()){
 				case Message.MESSAGE_CODE_REGULAR_MESSAGE:
-					Message iteratorMsg;
-					boolean inserted = false;
-					
-					if (msgs.isEmpty() == true) {
-						msgs.addLast(message);
-					}
-					else {
-						msgIterator = msgs.listIterator();
-						while (msgIterator.hasNext() && !inserted) {
-							iteratorMsg = msgIterator.next();
-							if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
-								msgs.add(msgIterator.previousIndex(), message);
-								inserted = true;
-							}
-							else if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && !msgIterator.hasNext()) {
-								msgs.addLast(message);
-								inserted = true;
-							}
-							else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
-								msgs.add(msgIterator.previousIndex(), message);
-								inserted = true;
-							}
-							else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && !msgIterator.hasNext()) {
-								msgs.addLast(message);
-								inserted = true;
-							}
-						}
-						
-						if (msgs.size() >= 5000) {
-							msgs = new LinkedList<Message>();
-						}
-					}
-					displayText = "";
-					msgIterator = msgs.listIterator();
-					while (msgIterator.hasNext()) {
-						displayText += getFormattedMessage(msgIterator.next());
-					}
-					// Prints message to the message field in the format of time stamp, user name, and received message
-					textArea.setText(displayText);
+					addMessage(message);
 					// Force the text area to scroll to the bottom.
 					textArea.setCaretPosition(textArea.getDocument().getLength());
 					break;
