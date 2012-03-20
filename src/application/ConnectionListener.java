@@ -41,6 +41,11 @@ public class ConnectionListener implements Runnable{
 						+ ":" + connection.getPort(), Message.MESSAGE_CODE_CONNECTION_ACK);
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
+				Integer numberOfConnections = ClientInterface.getInstance().numberOfChildConnections();
+				if(numberOfConnections >= 5)
+				{
+					ClientInterface.getInstance().redirectConnection(connWrapper);
+				}
 				connWrapper.isParent = true;
 				connWrapper.childNumber = nextChildNumber;
 				nextChildNumber++;

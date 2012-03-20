@@ -22,6 +22,7 @@ public class Message implements Serializable {
 	 * 				 107 - Username list update
 	 * 				 110 - Time sync request
 	 * 				 111 - Time sync ACK
+	 *               113 - Connect redirect code
 	 * 			     2xx - network debug code
 	 * 				 201 - connection relationship
 	 * 				 4xx - internal use code
@@ -40,6 +41,7 @@ public class Message implements Serializable {
 	public static final int MESSAGE_CODE_TIME_REQUEST = 110;
 	public static final int MESSAGE_CODE_TIME_ACK = 111;
 	public static final int MESSAGE_CODE_SEND_MESSAGE_NUMBER = 112;
+	public static final int MESSAGE_CODE_CONNECT_REDIRECT = 113;
 	public static final int MESSAGE_CODE_CONNECTION_RELATIONSHIP = 201;
 	public static final int MESSAGE_CODE_USER_DISCONNECT = 202;
 	

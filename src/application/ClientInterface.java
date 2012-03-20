@@ -190,7 +190,7 @@ public class ClientInterface{
 	 */
 	void receiveMessage(Message msg, Connection conn)
 	{
-		if(msg.messageNumber > this.messageNumber)
+		if(msg.messageNumber >= this.messageNumber)
 			this.messageNumber = msg.messageNumber+1;
 		if(conn.isParent)
 			msg.childNumbers.add(conn.childNumber);
@@ -242,11 +242,38 @@ public class ClientInterface{
 			Integer incomingMessageNumber = Integer.parseInt(msg.getMsgText());
 			this.messageNumber = incomingMessageNumber;
 			break;
+		case Message.MESSAGE_CODE_CONNECT_REDIRECT:
+			String[] addrAndPort = msg.getMsgText().split("/");
+			this.disconnect();
+			System.out.println("creating a new connection!!!! to " + addrAndPort[1]);
+			this.createConnection(addrAndPort[0], Integer.parseInt(addrAndPort[1]), false);
+			break;
 			
 		default:
 			ChatController.getInstance().receiveDebugMessage("Unknown system message received.");
 		}
 			
+	}
+	
+	public int numberOfChildConnections() {
+		int childCount = 0;
+		for(Connection conn : connections)
+		{
+			if(conn.isParent)
+			{
+				childCount++;
+			}
+		}
+		return childCount;
+	}
+	
+	public void redirectConnection(Connection conn) {
+		String firstChild = connections.get(0).toFriendString();
+		System.out.println("sdfsfsdffsfsdsfsfsfssljhfskjsfhsdjksfsd" + firstChild);
+		Message message = new Message(connections.get(0).toFriendString(), null, Message.MESSAGE_CODE_CONNECT_REDIRECT);
+		conn.sendSystemMessage(message, Message.MESSAGE_CODE_CONNECT_REDIRECT);
+		
+		
 	}
 	
 	//////////////////////////////////////////////////////////////////
