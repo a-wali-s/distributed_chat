@@ -388,7 +388,8 @@ public class ChatWindow implements GenericUI {
 							iteratorMsg = msgIterator.next();
 							if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
 								System.out.println("Case 1");
-								msgIterator.add(message);
+								msgs.add(msgIterator.previousIndex(), message);
+								//msgIterator.add(message);
 								inserted = true;
 							}
 							else if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && !msgIterator.hasNext()) {
@@ -398,7 +399,8 @@ public class ChatWindow implements GenericUI {
 							}
 							else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
 								System.out.println("Case 3");
-								msgIterator.add(message);
+								msgs.add(msgIterator.previousIndex(), message);
+								//msgIterator.add(message);
 								inserted = true;
 							}
 							else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && !msgIterator.hasNext()) {
