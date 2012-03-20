@@ -41,6 +41,7 @@ public class ChatController extends Observable {
 	
 	public void receiveMsg(Message msg){
 		setChanged();
+		System.out.println("NOtifying UI");
 		notifyObservers(msg);
 	}
 	public void receiveDebugMessage(String sMessage){
