@@ -26,7 +26,7 @@ public class Connection implements Runnable {
 			while(true) {
 				//ChatController.getInstance().receiveDebugMessage("Wait for object");
 				inBuffer = (Message)in.readObject();
-				System.out.println("INCOMING MSG." + inBuffer.getMsgText() );
+				System.out.println("incoming msg: " + inBuffer.getMsgText());
 				receiveMessage(inBuffer);
 			}
 		}
