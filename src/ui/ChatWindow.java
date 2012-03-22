@@ -287,7 +287,9 @@ public class ChatWindow implements GenericUI {
 			public void keyReleased(KeyEvent e) {
 			JTextField textField = (JTextField) e.getSource();
 			if(e.getKeyCode() == KeyEvent.VK_ENTER){
-				sentMsg(((JTextField) e.getSource()).getText());
+				if (!textField.getText().trim().equals("")){
+					sentMsg(textField.getText());
+				}
 				textField.setText("");
 			}
 			}
