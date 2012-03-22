@@ -63,12 +63,12 @@ public class ClientInterface{
 	
 	/*
 	 * Adds new connection to list of peers (that are directly connected to this host)
-	 * Sends a connection acknowledgment message to the newly connected peer.
+	 * Sends a connection acknowledgment message to the newly connected peer, telling it its external IP.
 	 * Also sends it's nodeDepth to the newly connected peer, which should increment it and set it's own node depth
 	 */
 	void acceptConnection(Connection conn){
 		addConnection(conn);
-		conn.sendMessage(new Message("ACK:connection", username, Message.MESSAGE_CODE_CONNECTION_ACK));
+		conn.sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + "", username, Message.MESSAGE_CODE_CONNECTION_ACK));
 		conn.sendMessage(new Message(this.messageNumber.toString(), username, Message.MESSAGE_CODE_SEND_MESSAGE_NUMBER));
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
@@ -292,9 +292,11 @@ public class ClientInterface{
 	private void processConnectionAck(Message msg, Connection conn) {
 		ChatController.getInstance().receiveMsg(msg);
 		if(DistributedChat.DEBUG){
-			sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + ":" + msg.getUsername() + " -- " + 
-					conn.socket.getLocalAddress() + ":" + username
-					,username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP));
+			Message graphMsg = new Message(conn.socket.getInetAddress().getHostAddress() + ":" + msg.getUsername() + " -- " + 
+					msg.getMsgText() + ":" + username //Creates a DOT language edge containing the acknowledging machine's external IP & username and this machine's external IP and username
+					,username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP);
+			sendMessage(graphMsg);
+			DebugGraph.addEdge(graphMsg, this.username);
 		}
 		conn.sendMessage(new Message(username, username, Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT));
 		// Send the peer our listening port number so they can update their Connection list

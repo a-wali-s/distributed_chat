@@ -60,7 +60,7 @@ public class SettingsWindow extends JFrame {
 		JPanel tmpPanel = new JPanel();
 		tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
 		
-		userErrorLabel = new JLabel("Username must be 1-12 Characters Long.");
+		userErrorLabel = new JLabel("Username must be 1-20 Characters Long.");
 		userErrorLabel.setForeground(Color.RED);
 		userErrorLabel.setVisible(false);
 		portErrorLabel = new JLabel("Please choose port number between 1024 and 65535.");
@@ -112,7 +112,7 @@ public class SettingsWindow extends JFrame {
             	String usernameTxt = usernameInput.getText();
             	String portTxt = portInput.getText();
             	System.out.println("Accept button clicked!");
-            	if( usernameTxt.length() < 2 || usernameTxt.length() > 12 ){
+            	if( usernameTxt.length() < 2 || usernameTxt.length() > 20 ){
             		userErrorLabel.setVisible(true);
             	}
             	else if( !isValidPort(portTxt) ){
