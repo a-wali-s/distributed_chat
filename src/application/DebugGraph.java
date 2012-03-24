@@ -24,14 +24,11 @@ public class DebugGraph {
 	/**
 	 * Removes a vertex from a graph
 	 * 
-	 * @param msg Name of the vertex to be removed
+	 * @param msg unique ID of the vertex getting removed
 	 * @param username
 	 */
 	public static void removeVertex(Message msg, String username){
 		String vertex = msg.getMsgText();
-		if (vertex.contains("/")){
-			vertex = vertex.split("/")[1]; //In case a hostname messes up the graph. Only seems to happen on disconnect
-		}
 		System.out.println("vertex to remove: " + vertex);
 		listRemoveVertex(vertex);
 		write(username);
@@ -85,27 +82,16 @@ public class DebugGraph {
 	 * @param username
 	 */
 	private static void write(String username){
-//		BufferedReader input = null;
 		FileWriter writer = null;
 		File file = new File(username + "-graph.gv");
 		try{
 			String line = "";
 			String fileContents = "";
-//			input =  new BufferedReader(new FileReader(file));
-//			while((line = input.readLine()) != null){
-//				fileContents += line + "\n";
-//			}
-//			input.close();
 			writer = new FileWriter(file);
-//			if(fileContents.isEmpty()){
-//				writer.write("graph {\n  " + edge + "\n}");
-//			}else{
-//				fileContents = fileContents.replace("{", "{\n  " + edge);
 			for (ListIterator<String> it = edges.listIterator(); ; line = it.next()){
 				fileContents += line + "\n";
 				if (!it.hasNext()) break;
 			}
-//			}
 			writer.write("graph {" + fileContents + "}");
 			writer.close();
 		}
@@ -115,52 +101,5 @@ public class DebugGraph {
 		catch (IOException e) {
 			System.out.printf("N34-Df+G33r");
 		}
-//		if (input == null) {
-//			try {
-//				writer = new FileWriter(file);
-//			}
-//			catch (IOException e) {
-//				System.out.printf("Could not write graph");
-//			}
-//			try {
-//				writer.write("graph {\n  " + edge + "\n}");
-//				writer.close();
-//			}
-//			catch (IOException e) {
-//				System.out.printf("C\\s\\d 4tt wrd6h gr5ph");
-//			}
-//		}
 	}
-	
-//	/**
-//	 * Remove a vertex from a file
-//	 * 
-//	 * @param vertex Vertex to be removed
-//	 * @param username
-//	 */
-//	private static void unwrite(String vertex, String username){
-//		BufferedReader input = null;
-//		FileWriter writer = null;
-//		File file = new File(username + "-graph.gv");
-//		try{
-//			String line;
-//			String fileContents = "";
-//			input =  new BufferedReader(new FileReader(file));
-//			//Ignore any lines that contain the name of the vertex to be removed
-//			while((line = input.readLine()) != null && !line.contains(vertex)){
-//				fileContents += line + "\n";
-//			}
-//			fileContents += "}";
-//			input.close();
-//			writer = new FileWriter(file);
-//			writer.write(fileContents);
-//			writer.close();
-//		}
-//		catch (FileNotFoundException e){
-//			System.out.printf("No Graph Found.");
-//		}
-//		catch (IOException e) {
-//			System.out.printf("IOException");
-//		}
-//	}
 }

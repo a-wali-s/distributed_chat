@@ -36,7 +36,7 @@ public class Connection implements Runnable {
 			//Message sent contains data needed to remove vertex from graph
 			String DCMessage = "";
 			if (DistributedChat.DEBUG){ 
-				DCMessage = this.socket.getInetAddress() + ":" + this.username;
+				DCMessage = this.username;
 			}
 			ClientInterface.getInstance().handleDisconnect(DCMessage,this.username);
 			// Only a client should bother trying to reconnect.  A node acting on server-side of a disconnect does not need to do anything
