@@ -35,6 +35,31 @@ public class DebugGraph {
 	}
 	
 	/**
+	 * Reads in a graph from another user
+	 * 
+	 * @param msg Message containing edges of the current graph
+	 * @param username
+	 */
+	public static void readGraph(Message msg, String username){
+		if (msg.getMsgText().length() > 2){
+			System.out.println("new graph" + msg.getMsgText());
+			String graph[] = msg.getMsgText().replace("[","").replace("]","").split(",");
+			edges.clear();
+			for (int x = 0; x < graph.length; x++)
+				edges.add(x,graph[x].trim());
+		}
+	}
+	
+	/**
+	 * Writes out the graph to be interpreted by another user
+	 *
+	 * @returns String graph in string form. Edges delimited by ','
+	 */
+	public static String writeGraph(){
+		return edges.toString();
+	}
+	
+	/**
 	 * Create a graph file for a user
 	 * 
 	 * @param username
@@ -67,12 +92,14 @@ public class DebugGraph {
 	 */
 	private static void listRemoveVertex(String vertex){
 		String currentEdge = "";
-		for (ListIterator<String> it = edges.listIterator(); ; currentEdge = it.next()){
-			if (currentEdge.contains(vertex)) {
-				edges.remove(currentEdge);
+		try{
+			for (ListIterator<String> it = edges.listIterator(); ; currentEdge = it.next()){
+				System.out.println("Current edge to check for removal:" + currentEdge);
+				if (currentEdge.contains(vertex)) {
+					edges.remove(currentEdge);
+				}
 			}
-			if (!it.hasNext()) break;
-		}
+		} catch (Exception e) {} //We are done at this point
 		System.out.printf("Current edges: %s", edges.toString());
 	}
 	
@@ -88,10 +115,11 @@ public class DebugGraph {
 			String line = "";
 			String fileContents = "";
 			writer = new FileWriter(file);
-			for (ListIterator<String> it = edges.listIterator(); ; line = it.next()){
-				fileContents += line + "\n";
-				if (!it.hasNext()) break;
-			}
+			try {
+				for (ListIterator<String> it = edges.listIterator(); ; line = it.next()){
+					fileContents += line + "\n";
+				}
+			} catch (Exception e) {} //We are done at this point
 			writer.write("graph {" + fileContents + "}");
 			writer.close();
 		}

@@ -68,14 +68,24 @@ public class ClientInterface{
 	 */
 	void acceptConnection(Connection conn){
 		addConnection(conn);
+		//Give new user the latest debug graph
+		if(DistributedChat.DEBUG) conn.sendMessage(new Message(DebugGraph.writeGraph(),username,Message.MESSAGE_CODE_GRAPH_UPDATE));
+		
+		//Send ACK message to new user
 		conn.sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + "", username, Message.MESSAGE_CODE_CONNECTION_ACK));
+		
+		//Update Lamport time of new user
 		conn.sendMessage(new Message(this.messageNumber.toString(), username, Message.MESSAGE_CODE_SEND_MESSAGE_NUMBER));
+		
+		//Update node depth for new user
 		ChatController.getInstance().receiveDebugMessage("NodeDepth " + getNodeDepth().toString());
 		conn.sendMessage(new Message(getNodeDepth().toString(),username, Message.MESSAGE_CODE_NODE_DEPTH_UPDATE));
 		conn.updateNodeDepth(getNodeDepth()+1);
 
 		//send the complete username list plus its own username to the newly accepted node
 		conn.sendMessage(new Message(username + USERNAMES_SEPERATOR + generateUserListString(), username, Message.MESSAGE_CODE_USERNAME_LIST_UPDATE));
+		//send this username for the connection username on the new peer
+		conn.sendMessage(new Message("", username, Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT));
 	}
 
 	/*
@@ -208,6 +218,9 @@ public class ClientInterface{
 		case Message.MESSAGE_CODE_USER_DISCONNECT:
 			processUserDisconnect(msg, conn);
 			break;
+		case Message.MESSAGE_CODE_GRAPH_UPDATE:
+			processGraphUpdate(msg, conn);
+			break;
 		case Message.MESSAGE_CODE_NODE_DEPTH_UPDATE:
 			processNodeDepthUpdate(msg, conn);
 			break;
@@ -322,6 +335,13 @@ public class ClientInterface{
 	}
 	
 	/*
+	 * New graph messages. Only intended for users as they come in. Do not forward.
+	 */
+	private void processGraphUpdate(Message msg, Connection conn){
+		DebugGraph.readGraph(msg, this.username);
+	}
+	
+	/*
 	 * Node depth update messages
 	 */
 	private void processNodeDepthUpdate(Message msg, Connection conn) {
@@ -350,7 +370,7 @@ public class ClientInterface{
 		knownUsers.add(msg.getMsgText());
 		ChatController.getInstance().receiveMsg(msg);
 		if( msg.getMessageCode() == Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT ){
-			conn.updateUsername(msg.getMsgText());
+			conn.updateUsername(msg.getUsername());
 			forwardMessage(new Message(msg.getMsgText(), msg.getUsername(), Message.MESSAGE_CODE_NEW_USERNAME_UPDATE),conn);
 		}
 		else
