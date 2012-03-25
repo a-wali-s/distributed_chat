@@ -33,7 +33,7 @@ public class SettingsWindow extends JFrame {
 		this.setResizable(false);
 		this.setVisible(false);
 		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
-		Dimension winSize = new Dimension(500,250);
+		Dimension winSize = new Dimension(500,180);
 		this.setSize(winSize);
 		this.addComponentListener(new ComponentListener() {
 			public void componentShown(ComponentEvent e) {
@@ -104,7 +104,7 @@ public class SettingsWindow extends JFrame {
 		tmpPanel.setAlignmentX(RIGHT_ALIGNMENT);
 		
 		JButton acceptButton = new JButton("Accept");
-		acceptButton.setPreferredSize(new Dimension(100,30));
+		acceptButton.setPreferredSize(new Dimension(75,30));
 		acceptButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	userErrorLabel.setVisible(false);
@@ -130,7 +130,7 @@ public class SettingsWindow extends JFrame {
         });
 		
 		JButton cancelButton = new JButton("Cancel");
-		cancelButton.setPreferredSize(new Dimension(100,30));
+		cancelButton.setPreferredSize(new Dimension(75,30));
 		cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	userErrorLabel.setVisible(false);
