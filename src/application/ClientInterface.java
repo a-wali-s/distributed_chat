@@ -2,6 +2,7 @@ package application;
 
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class ClientInterface{
 	private static ClientInterface instance;
  	List<Connection> connections;
  	List<Friend> friends;
+ 	List<String> localAddresses;
  	String message;	
  	String username = "";
 	private Integer nodeDepth = 1;
@@ -31,6 +33,7 @@ public class ClientInterface{
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
 		knownUsers = new ArrayList<String>();
+		localAddresses = new ArrayList<String>();
 	}
 	
 	// disconnect from all connections and reinitialize the singleton instance
@@ -45,6 +48,7 @@ public class ClientInterface{
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
 		knownUsers = new ArrayList<String>();
+		localAddresses = new ArrayList<String>();
 	}
 	
 	/*
@@ -464,7 +468,7 @@ public class ClientInterface{
 				port = tmp[1];
 				priority = Integer.parseInt(tmp[2]);
 				if( port.trim().compareTo(myPort) == 0 ) {
-					if( (host.compareTo("127.0.0.1") == 0) || ( host.compareTo(myHost) == 0) ) {
+					if( (host.compareTo("127.0.0.1") == 0) || !(localAddresses.contains(host)) ) {
 						if( i == 0 ){
 							isHotNode = true;
 							System.out.println("i'm a hot node!");
@@ -500,5 +504,23 @@ public class ClientInterface{
 
 	private void setNodeDepth(Integer nodeDepth) {
 		this.nodeDepth = nodeDepth;
+	}
+	
+	public void refreshLocalAddresses() {
+		if( !localAddresses.isEmpty() )
+			localAddresses.clear();
+		
+		InetAddress in;  String [] tmp;
+		try {
+			in = InetAddress.getLocalHost();
+			InetAddress[] all = InetAddress.getAllByName(in.getHostName());
+			for (int i=0; i<all.length; i++) {
+				tmp = all[i].toString().split("/");
+				System.out.println(" address = " + tmp[1]);
+				localAddresses.add(tmp[1]);
+			}
+		} catch (UnknownHostException e) {
+			System.out.println("Failed to load local addresses");
+		}
 	}
 }

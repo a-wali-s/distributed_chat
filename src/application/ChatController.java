@@ -1,5 +1,6 @@
 package application;
 
+import java.util.List;
 import java.util.Observable;
 
 
@@ -33,6 +34,7 @@ public class ChatController extends Observable {
 		server = new ConnectionListener(port);
 		Thread serverThread = new Thread(server,"T2");
 	    serverThread.start();
+	    client.refreshLocalAddresses();
 	}
 	
 	public void sendMsg(String msg){
