@@ -468,7 +468,7 @@ public class ClientInterface{
 				port = tmp[1];
 				priority = Integer.parseInt(tmp[2]);
 				if( port.trim().compareTo(myPort) == 0 ) {
-					if( (host.compareTo("127.0.0.1") == 0) || !(localAddresses.contains(host)) ) {
+					if( (host.compareTo("127.0.0.1") == 0) || localAddresses.contains(host) ) {
 						if( i == 0 ){
 							isHotNode = true;
 							System.out.println("i'm a hot node!");
@@ -516,11 +516,14 @@ public class ClientInterface{
 			InetAddress[] all = InetAddress.getAllByName(in.getHostName());
 			for (int i=0; i<all.length; i++) {
 				tmp = all[i].toString().split("/");
-				System.out.println(" address = " + tmp[1]);
 				localAddresses.add(tmp[1]);
 			}
+			/*System.out.println("My local addresses:");
+			for( int i=0; i<localAddresses.size(); i++ ){
+				System.out.println(localAddresses.get(i));
+			}*/
 		} catch (UnknownHostException e) {
-			System.out.println("Failed to load local addresses");
+			System.out.println("WARNING: failed to load local addresses");
 		}
 	}
 }
