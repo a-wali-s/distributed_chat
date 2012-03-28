@@ -18,7 +18,6 @@ public class DebugGraph {
 		String edge = "\"" + addresses[0] + "\" " + addresses[1] + " \"" + addresses[2] + "\"";
 		System.out.println("edge to add: " + edge);
 		listAddEdge(edge);
-		write(username);
 	}
 	
 	/**
@@ -31,7 +30,6 @@ public class DebugGraph {
 		String vertex = msg.getMsgText();
 		System.out.println("vertex to remove: " + vertex);
 		listRemoveVertex(vertex);
-		write(username);
 	}
 	
 	/**
@@ -55,24 +53,17 @@ public class DebugGraph {
 	 *
 	 * @returns String graph in string form. Edges delimited by ','
 	 */
-	public static String writeGraph(){
+	public static String serializeGraph(){
 		return edges.toString();
 	}
 	
 	/**
-	 * Create a graph file for a user
+	 * Write out the graph to a file
 	 * 
 	 * @param username
 	 */
-	public static void createFile(String username){
-		File file = new File(username + "-graph.gv");
-		try {
-			FileWriter writer = new FileWriter(file);
-			writer.write("");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+	public static void writeToFile(String username){
+		write(username);
 	}
 	
 	/**
@@ -82,7 +73,7 @@ public class DebugGraph {
 	 */
 	private static void listAddEdge(String edge){
 		edges.add(edge);
-		System.out.printf("Current edges: %s", edges.toString());
+		System.out.printf("Current edges: %s\n", edges.toString());
 	}
 	
 	/**

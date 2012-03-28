@@ -73,7 +73,7 @@ public class ClientInterface{
 	void acceptConnection(Connection conn){
 		addConnection(conn);
 		//Give new user the latest debug graph
-		if(DistributedChat.DEBUG) conn.sendMessage(new Message(DebugGraph.writeGraph(),username,Message.MESSAGE_CODE_GRAPH_UPDATE));
+		if(DistributedChat.DEBUG) conn.sendMessage(new Message(DebugGraph.serializeGraph(),username,Message.MESSAGE_CODE_GRAPH_UPDATE));
 		
 		//Send ACK message to new user
 		conn.sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + "", username, Message.MESSAGE_CODE_CONNECTION_ACK));
