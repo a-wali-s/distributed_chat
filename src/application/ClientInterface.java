@@ -325,6 +325,7 @@ public class ClientInterface{
 	private void processUserDisconnect(Message msg, Connection conn){
 		DebugGraph.getInstance().removeVertex(msg, this.username);
 		ChatController.getInstance().receiveDebugMessage(msg.getUsername() + " has left the chat.");
+		knownUsers.remove(msg.getMsgText());
 		forwardMessage(msg, conn);
 	}
 	
