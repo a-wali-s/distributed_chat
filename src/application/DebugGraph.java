@@ -1,11 +1,23 @@
 package application;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class DebugGraph {
-	private static ArrayList<String> edges = new ArrayList<String>();
+	private static LinkedList<String> edges = new LinkedList<String>();
+	private static DebugGraph instance;
+
+	public static DebugGraph getInstance(){
+		if(instance == null){
+			instance = new DebugGraph();
+		}
+		return instance;
+	}
+	
+	public DebugGraph() {
+		edges = new LinkedList<String>();
+	}
 	
 	/**
 	 * Adds an edge to a graph corresponding to a connection. 
@@ -13,11 +25,12 @@ public class DebugGraph {
 	 * @param msg Edge to be added to the graph (needs to be in DOT format)
 	 * @param username 
 	 */
-	public static void addEdge(Message msg, String username){
+	public void addEdge(Message msg, String username){
 		String[] addresses = msg.getMsgText().replaceAll("/", "").split(" ");
 		String edge = "\"" + addresses[0] + "\" " + addresses[1] + " \"" + addresses[2] + "\"";
 		System.out.println("edge to add: " + edge);
 		listAddEdge(edge);
+		write(username);
 	}
 	
 	/**
@@ -26,10 +39,11 @@ public class DebugGraph {
 	 * @param msg unique ID of the vertex getting removed
 	 * @param username
 	 */
-	public static void removeVertex(Message msg, String username){
+	public void removeVertex(Message msg, String username){
 		String vertex = msg.getMsgText();
 		System.out.println("vertex to remove: " + vertex);
 		listRemoveVertex(vertex);
+		write(username);
 	}
 	
 	/**
@@ -38,7 +52,7 @@ public class DebugGraph {
 	 * @param msg Message containing edges of the current graph
 	 * @param username
 	 */
-	public static void readGraph(Message msg, String username){
+	public void readGraph(Message msg, String username){
 		if (msg.getMsgText().length() > 2){
 			System.out.println("new graph" + msg.getMsgText());
 			String graph[] = msg.getMsgText().replace("[","").replace("]","").split(",");
@@ -53,7 +67,7 @@ public class DebugGraph {
 	 *
 	 * @returns String graph in string form. Edges delimited by ','
 	 */
-	public static String serializeGraph(){
+	public String serializeGraph(){
 		return edges.toString();
 	}
 	
@@ -62,7 +76,7 @@ public class DebugGraph {
 	 * 
 	 * @param username
 	 */
-	public static void writeToFile(String username){
+	public void writeToFile(String username){
 		write(username);
 	}
 	
@@ -71,7 +85,7 @@ public class DebugGraph {
 	 * 
 	 * @param edge Edge to be added
 	 */
-	private static void listAddEdge(String edge){
+	private void listAddEdge(String edge){
 		edges.add(edge);
 		System.out.printf("Current edges: %s\n", edges.toString());
 	}
@@ -81,16 +95,17 @@ public class DebugGraph {
 	 * 
 	 * @param vertex Vertex to be removed
 	 */
-	private static void listRemoveVertex(String vertex){
+	private void listRemoveVertex(String vertex){
 		String currentEdge = "";
-		try{
-			for (ListIterator<String> it = edges.listIterator(); ; currentEdge = it.next()){
+		try { 
+			for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
+				currentEdge = it.next();
 				System.out.println("Current edge to check for removal:" + currentEdge);
 				if (currentEdge.contains(vertex)) {
-					edges.remove(currentEdge);
+					it.remove();
 				}
-			}
-		} catch (Exception e) {} //We are done at this point
+			} 
+		} catch (Exception e) {}
 		System.out.printf("Current edges: %s", edges.toString());
 	}
 	
@@ -99,7 +114,7 @@ public class DebugGraph {
 	 * 
 	 * @param username
 	 */
-	private static void write(String username){
+	private void write(String username){
 		FileWriter writer = null;
 		File file = new File(username + "-graph.gv");
 		try{

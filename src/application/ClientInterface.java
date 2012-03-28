@@ -73,7 +73,7 @@ public class ClientInterface{
 	void acceptConnection(Connection conn){
 		addConnection(conn);
 		//Give new user the latest debug graph
-		if(DistributedChat.DEBUG) conn.sendMessage(new Message(DebugGraph.serializeGraph(),username,Message.MESSAGE_CODE_GRAPH_UPDATE));
+		if(DistributedChat.DEBUG) conn.sendMessage(new Message(DebugGraph.getInstance().serializeGraph(),username,Message.MESSAGE_CODE_GRAPH_UPDATE));
 		
 		//Send ACK message to new user
 		conn.sendMessage(new Message(conn.socket.getInetAddress().getHostAddress() + "", username, Message.MESSAGE_CODE_CONNECTION_ACK));
@@ -186,16 +186,6 @@ public class ClientInterface{
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-	/*
-	 * Handle disconnect for the first user to see it happen
-	 */
-	public void handleDisconnect(String msg, String username){
-		Message DCMessage = new Message(msg, username, Message.MESSAGE_CODE_USER_DISCONNECT);
-		DebugGraph.removeVertex(DCMessage, this.username);
-		sendMessage(DCMessage);
-		ChatController.getInstance().receiveDebugMessage(username + " has left the chat.");		
-	}
 	
 	/*
 	 * A new message has been received from one of the connections.
@@ -232,7 +222,7 @@ public class ClientInterface{
 			processUserListUpdate(msg, conn);
 			break;
 		case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT:
-			processUserListUpdate(msg, conn);
+			processUserUpdate(msg, conn);
 			break;
 		case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE:
 			processUserUpdate(msg, conn);
@@ -313,7 +303,7 @@ public class ClientInterface{
 					msg.getMsgText() + ":" + username //Creates a DOT language edge containing the acknowledging machine's external IP & username and this machine's external IP and username
 					,username, Message.MESSAGE_CODE_CONNECTION_RELATIONSHIP);
 			sendMessage(graphMsg);
-			DebugGraph.addEdge(graphMsg, this.username);
+			DebugGraph.getInstance().addEdge(graphMsg, this.username);
 		}
 		conn.sendMessage(new Message(username, username, Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT));
 		// Send the peer our listening port number so they can update their Connection list
@@ -325,7 +315,7 @@ public class ClientInterface{
 	 */
 	private void processConnectionRelationshipUpdate(Message msg,
 			Connection conn) {
-		DebugGraph.addEdge(msg, this.username);
+		DebugGraph.getInstance().addEdge(msg, this.username);
 		forwardMessage(msg, conn);
 	}
 	
@@ -333,7 +323,7 @@ public class ClientInterface{
 	 * Disconnect messages
 	 */
 	private void processUserDisconnect(Message msg, Connection conn){
-		DebugGraph.removeVertex(msg, this.username);
+		DebugGraph.getInstance().removeVertex(msg, this.username);
 		ChatController.getInstance().receiveDebugMessage(msg.getUsername() + " has left the chat.");
 		forwardMessage(msg, conn);
 	}
@@ -342,7 +332,7 @@ public class ClientInterface{
 	 * New graph messages. Only intended for users as they come in. Do not forward.
 	 */
 	private void processGraphUpdate(Message msg, Connection conn){
-		DebugGraph.readGraph(msg, this.username);
+		DebugGraph.getInstance().readGraph(msg, this.username);
 	}
 	
 	/*
