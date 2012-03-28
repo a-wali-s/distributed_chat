@@ -30,6 +30,9 @@ public class DistributedChat {
 						args[2], Integer.parseInt(args[3]), args[4],
 						Integer.parseInt(args[5]));
 				break;
+			default:
+				System.out.printf("Usage: distributed_chat <username> <port to listen on> [[<test message> <time per message (ms)>] <host to connect to> <port to connect to>]");
+				System.exit(-1);
 			}
 		} else {
 			gui = new ChatWindow();
