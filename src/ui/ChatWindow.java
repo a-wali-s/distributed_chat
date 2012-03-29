@@ -389,19 +389,23 @@ public class ChatWindow implements GenericUI {
 				case Message.MESSAGE_CODE_CONNECTION_ACK:
 					this.toggleConnectionButton(connectionButton.getText());
 					break;
-				case Message.MESSAGE_CODE_USERNAME_LIST_UPDATE:
-					if (DistributedChat.DEBUG) {
-						updateUserList();
-					}
-					break;
-				case Message.MESSAGE_CODE_USER_DISCONNECT:
-					if (DistributedChat.DEBUG) {
-						updateUserList();
-					}
-				case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE:
+				case Message.MESSAGE_CODE_USERLIST_UI_UPDATE:
 					updateUserList();
-					
 					break;
+//				case Message.MESSAGE_CODE_USERNAME_LIST_UPDATE:
+//					if (DistributedChat.DEBUG) {
+//						updateUserList();
+//					}
+//					break;
+//				case Message.MESSAGE_CODE_USER_DISCONNECT:
+//					updateUserList();
+//					break;
+//				case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT:
+//					updateUserList();
+//					break;
+//				case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE:
+//					updateUserList();
+//					break;
 				case Message.MESSAGE_CODE_INTERNAL_DEBUG_MESSAGE:
 					// Prints message to the message field in the format of time stamp, user name, and received message
 					addMessage(message);

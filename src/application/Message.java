@@ -48,6 +48,8 @@ public class Message implements Serializable {
 	
 	public static final int MESSAGE_CODE_INTERNAL_DEBUG_MESSAGE = 400;
 	public static final int MESSAGE_CODE_INTERNAL_ERROR_MESSAGE = 401;
+	
+	public static final int MESSAGE_CODE_USERLIST_UI_UPDATE = 500;
 	/**
 	 * @serial
 	 */

@@ -329,7 +329,8 @@ public class ClientInterface{
 	private void processUserDisconnect(Message msg, Connection conn){
 		DebugGraph.getInstance().removeVertex(msg, this.username);
 		ChatController.getInstance().receiveDebugMessage(msg.getUsername() + " has left the chat.");
-		knownUsers.remove(msg.getMsgText());
+		knownUsers.remove(msg.getUsername());
+		ChatController.getInstance().receiveMsg(new Message("","",Message.MESSAGE_CODE_USERLIST_UI_UPDATE));
 		forwardMessage(msg, conn);
 	}
 	
@@ -356,9 +357,9 @@ public class ClientInterface{
 	 * User list update messages
 	 */
 	private void processUserListUpdate(Message msg, Connection conn){
-		knownUsers = processUserListString(msg.getMsgText());
-		
-		ChatController.getInstance().receiveMsg(msg);
+		knownUsers.clear();
+		knownUsers = processUserListString(msg.getMsgText());		
+		ChatController.getInstance().receiveMsg(new Message("","",Message.MESSAGE_CODE_USERLIST_UI_UPDATE));
 
 	}
 	
@@ -366,8 +367,9 @@ public class ClientInterface{
 	 * New user added to system messages.
 	 */
 	private void processUserUpdate(Message msg, Connection conn){
-		knownUsers.add(msg.getMsgText());
-		ChatController.getInstance().receiveMsg(msg);
+		knownUsers.add(msg.getUsername());
+		ChatController.getInstance().receiveDebugMessage(msg.getUsername() + " has joined the chat.");
+		ChatController.getInstance().receiveMsg(new Message("","",Message.MESSAGE_CODE_USERLIST_UI_UPDATE));
 		if( msg.getMessageCode() == Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT ){
 			conn.updateUsername(msg.getUsername());
 			forwardMessage(new Message(msg.getMsgText(), msg.getUsername(), Message.MESSAGE_CODE_NEW_USERNAME_UPDATE),conn);
