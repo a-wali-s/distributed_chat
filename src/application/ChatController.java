@@ -1,6 +1,8 @@
 package application;
 
+import java.util.List;
 import java.util.Observable;
+import java.util.SortedSet;
 
 
 public class ChatController extends Observable {
@@ -78,5 +80,9 @@ public class ChatController extends Observable {
 			return true;
 		else
 			return false;
+	}
+
+	public SortedSet<String> getKnownUsers() {
+		return client.knownUsers;
 	}
 }

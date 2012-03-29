@@ -19,11 +19,11 @@ public class ClientInterface{
  	List<Connection> connections;
  	List<Friend> friends;
  	List<String> localAddresses;
+	SortedSet<String> knownUsers;
  	String message;	
  	String username = "";
 	private Integer nodeDepth = 1;
 	private Integer messageNumber = 1;
-	private SortedSet<String> knownUsers;
 	private boolean isHotNode = false;
 
 	public static ClientInterface getInstance(){

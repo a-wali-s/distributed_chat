@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
+import java.util.SortedSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -30,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.html.HTMLDocument.Iterator;
 
 import application.ChatController;
 import application.DistributedChat;
@@ -41,7 +43,7 @@ public class ChatWindow implements GenericUI {
 	private JButton connectionButton;
 	JFrame frame;
 	// for implementaion of jlist that show a list of knownusers.
-	private List<String> knownUsers;
+	private DefaultListModel knownUsers;
 	//private DefaultListModel knownUsers;
 	private JButton startButton;
 	private JButton disconnectionButton;
@@ -55,7 +57,7 @@ public class ChatWindow implements GenericUI {
 	 * Constructor
 	 */
 	public ChatWindow(){
-		knownUsers = new ArrayList<String>();
+		knownUsers = new DefaultListModel();
 		//knownUsers = new DefaultListModel();
 	}
 	
@@ -100,18 +102,8 @@ public class ChatWindow implements GenericUI {
 	private Component initUserPane() {			
 		JPanel userPanel = new JPanel();
 		userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
-		
-//		knownUsers = new DefaultListModel();
-//		knownUsers.addElement("nub1");
-//		knownUsers.addElement("nub2");
-//		knownUsers.addElement("nub3");
-//		knownUsers.addElement("nub4");
-//		knownUsers.addElement("nub5");
-//		knownUsers.addElement("nub6");
-//		knownUsers.addElement("nub7");
-//		knownUsers.addElement("nub8");
 
-		JList userList = new JList(knownUsers.toArray());
+		JList userList = new JList(knownUsers);
 		userList.setPrototypeCellValue("1234567890");
 		userList.setMinimumSize(new Dimension(80,300));
 		JScrollPane userScrollPane = new JScrollPane(userList);
@@ -323,6 +315,20 @@ public class ChatWindow implements GenericUI {
 		return result;
 	}
 	
+	/*
+	 * ChatController notified about change in userlist, obtain the new update.  
+	 */
+	private void updateUserList(){
+		ChatController handler = ChatController.getInstance();
+		SortedSet<String> newUsers = handler.getKnownUsers();
+		knownUsers.clear();
+		
+		java.util.Iterator<String> userIter = newUsers.iterator();
+		while(userIter.hasNext()){
+			knownUsers.addElement(userIter.next());
+		}
+	}
+	
 	public void addMessage(Message message)
 	{
 		Message iteratorMsg;
@@ -385,29 +391,16 @@ public class ChatWindow implements GenericUI {
 					break;
 				case Message.MESSAGE_CODE_USERNAME_LIST_UPDATE:
 					if (DistributedChat.DEBUG) {
-						knownUsers = processUserListString(message.getMsgText());
-						textArea.append(toUsersString(knownUsers));
+						updateUserList();
 					}
 					break;
 				case Message.MESSAGE_CODE_USER_DISCONNECT:
 					if (DistributedChat.DEBUG) {
-						knownUsers.remove(message.getUsername());
-						try{
-							String userList = textArea.getText();
-							int usernameStart = userList.indexOf(message.getUsername());
-							int usernameEnd = usernameStart + message.getUsername().length();
-							textArea.replaceRange("", usernameStart, usernameEnd);
-						} catch (NullPointerException e){
-							System.out.printf("Userlist is empty, cannot remove anything");
-						}
+						updateUserList();
 					}
 				case Message.MESSAGE_CODE_NEW_USERNAME_UPDATE:
-					knownUsers.add(message.getMsgText());
-					if(DistributedChat.DEBUG){
-						textArea.append("System Message: "+ message.getUsername() +" has joined the chat.\n");
-						textArea.append(toUsersString(knownUsers));
-					}
-
+					updateUserList();
+					
 					break;
 				case Message.MESSAGE_CODE_INTERNAL_DEBUG_MESSAGE:
 					// Prints message to the message field in the format of time stamp, user name, and received message
