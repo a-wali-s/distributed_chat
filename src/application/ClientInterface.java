@@ -7,8 +7,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 public class ClientInterface{
 	private static final String USERNAMES_SEPERATOR = ",";
 	private static ClientInterface instance;
@@ -19,7 +23,7 @@ public class ClientInterface{
  	String username = "";
 	private Integer nodeDepth = 1;
 	private Integer messageNumber = 1;
-	private List<String> knownUsers;
+	private SortedSet<String> knownUsers;
 	private boolean isHotNode = false;
 
 	public static ClientInterface getInstance(){
@@ -32,7 +36,7 @@ public class ClientInterface{
 	private ClientInterface(){
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
-		knownUsers = new ArrayList<String>();
+		knownUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
 		localAddresses = new ArrayList<String>();
 	}
 	
@@ -47,7 +51,7 @@ public class ClientInterface{
 		}
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
-		knownUsers = new ArrayList<String>();
+		knownUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
 		localAddresses = new ArrayList<String>();
 	}
 	
@@ -414,9 +418,9 @@ public class ClientInterface{
 		}
 		return result;
 	}
-	private static List<String> processUserListString(String userlist){
+	private static SortedSet<String> processUserListString(String userlist){
 		String[] users = userlist.split(USERNAMES_SEPERATOR);
-		return new ArrayList<String>(Arrays.asList(users));
+		return Collections.synchronizedSortedSet(new TreeSet<String>(Arrays.asList(users)));
 	}
 	
 	/*
