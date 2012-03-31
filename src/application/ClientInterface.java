@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 public class ClientInterface{
@@ -36,7 +35,7 @@ public class ClientInterface{
 	private ClientInterface(){
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
-		knownUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
+		resetKnownUsers();
 		localAddresses = new ArrayList<String>();
 	}
 	
@@ -51,8 +50,17 @@ public class ClientInterface{
 		}
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
-		knownUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
+		resetKnownUsers();
 		localAddresses = new ArrayList<String>();
+	}
+	
+	private void resetKnownUsers() {
+		if( knownUsers == null )
+			knownUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
+		else
+			knownUsers.clear();
+		
+		knownUsers.add(this.username);
 	}
 	
 	/*
@@ -188,7 +196,10 @@ public class ClientInterface{
 	}
 	
 	public void setUsername(String username) {
+		knownUsers.remove(this.username);
 		this.username = username;
+		knownUsers.add(this.username);
+		ChatController.getInstance().receiveMsg(new Message("","",Message.MESSAGE_CODE_USERLIST_UI_UPDATE));
 	}
 	
 	/*
@@ -349,7 +360,7 @@ public class ClientInterface{
 		conn.updateNodeDepth(newNodeDepth);
 		newNodeDepth++;
 		setNodeDepth(newNodeDepth);
-		ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + newNodeDepth);
+		//ChatController.getInstance().receiveDebugMessage("after connection, set nodeDepth to " + newNodeDepth);
 		msg.setMsgText(newNodeDepth.toString());
 	}
 	
@@ -357,8 +368,9 @@ public class ClientInterface{
 	 * User list update messages
 	 */
 	private void processUserListUpdate(Message msg, Connection conn){
-		knownUsers.clear();
-		knownUsers = processUserListString(msg.getMsgText());		
+		resetKnownUsers();
+		knownUsers = processUserListString(msg.getMsgText());
+		knownUsers.add(username);
 		ChatController.getInstance().receiveMsg(new Message("","",Message.MESSAGE_CODE_USERLIST_UI_UPDATE));
 
 	}

@@ -3,18 +3,13 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.SortedSet;
@@ -31,7 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.text.html.HTMLDocument.Iterator;
 
 import application.ChatController;
 import application.DistributedChat;
@@ -104,6 +98,7 @@ public class ChatWindow implements GenericUI {
 		userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
 
 		JList userList = new JList(knownUsers);
+		userList.setFont( userList.getFont().deriveFont(Font.PLAIN) );
 		userList.setPrototypeCellValue("1234567890");
 		userList.setMinimumSize(new Dimension(80,300));
 		JScrollPane userScrollPane = new JScrollPane(userList);
@@ -302,19 +297,6 @@ public class ChatWindow implements GenericUI {
 		return result;
 	}
 	
-	private static List<String> processUserListString(String userlist){
-		String[] users = userlist.split(",");
-		return new ArrayList<String>(Arrays.asList(users));
-	}
-	private static String toUsersString(List<String> users){
-		String result = "";
-		for(String name: users){
-			result += name + ", ";
-		}
-		result = "Current user list: "+ result + "\n";
-		return result;
-	}
-	
 	/*
 	 * ChatController notified about change in userlist, obtain the new update.  
 	 */
@@ -390,6 +372,7 @@ public class ChatWindow implements GenericUI {
 					this.toggleConnectionButton(connectionButton.getText());
 					break;
 				case Message.MESSAGE_CODE_USERLIST_UI_UPDATE:
+					System.out.println("RECEIVED UI UPDATE PING");
 					updateUserList();
 					break;
 //				case Message.MESSAGE_CODE_USERNAME_LIST_UPDATE:
@@ -419,7 +402,7 @@ public class ChatWindow implements GenericUI {
 					
 				default:
 					// Prints message to the message field in the format of time stamp, user name, and received message
-					addMessage(message);
+					//addMessage(message);
 					// Force the text area to scroll to the bottom.
 					textArea.setCaretPosition(textArea.getDocument().getLength());
 					break;

@@ -1,6 +1,5 @@
 package application;
 
-import java.util.List;
 import java.util.Observable;
 import java.util.SortedSet;
 
