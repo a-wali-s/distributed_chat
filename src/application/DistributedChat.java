@@ -15,8 +15,8 @@ public class DistributedChat {
 	public static void main(String args[]) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		if (args.length > 0) {
-			// Testing interface takes 2, 4, 6, or 7 arguments.
-			// The order for 7 arguments: username ListeningPort maxConnections
+			// Testing interface takes 2 to 8 arguments.
+			// The order for 8 arguments: username ListeningPort maxConnections
 			// connectingHost connectingPort testMessage msPerMsg numMessages 
 			switch (args.length) {
 			case 2:
