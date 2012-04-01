@@ -16,9 +16,19 @@ public class TestingInterface implements GenericUI, Runnable {
 	private Hashtable<String, TestUserProperty> usersMsgCount = new Hashtable<String, TestUserProperty>();
 	private String testMessage = "";
 	private int msPerMsg = -1;
+	private int numMessages = -1;
 	private String username;
 	private File testfile;
 
+	public TestingInterface(String username, int ListeningPort,
+			String connectingHost, int connectingPort, String testMessage,
+			int msPerMsg, int numMessages) {
+		this(username, ListeningPort, connectingHost, connectingPort);
+		this.testMessage = testMessage;
+		this.msPerMsg = msPerMsg;
+		this.numMessages = numMessages;
+	}
+	
 	public TestingInterface(String username, int ListeningPort,
 			String connectingHost, int connectingPort, String testMessage,
 			int msPerMsg) {
@@ -114,7 +124,7 @@ public class TestingInterface implements GenericUI, Runnable {
 	public void run() {
 		int runningSecond = 0;
 		try {
-			while (msPerMsg != -1) {
+			while (msPerMsg != -1 && numMessages != runningSecond ) {
 
 				Thread.sleep(msPerMsg);
 				sentMsg(testMessage);

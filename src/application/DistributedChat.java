@@ -11,9 +11,9 @@ public class DistributedChat {
 
 	public static void main(String args[]) {
 		if (args.length > 0) {
-			// Testing interface takes 2, 4, or 6 argument.
-			// The order for 6 arguments: username ListeningPort testMessage
-			// msPerMsg connectingHost connectingPort
+			// Testing interface takes 2, 4, 6, or 7 arguments.
+			// The order for 7 arguments: username ListeningPort
+			// connectingHost connectingPort testMessage msPerMsg numMessages 
 			switch (args.length) {
 			case 2:
 				gui = new TestingInterface(args[0], Integer.parseInt(args[1]));
@@ -30,8 +30,12 @@ public class DistributedChat {
 						args[2], Integer.parseInt(args[3]), args[4],
 						Integer.parseInt(args[5]));
 				break;
+			case 7:
+				gui = new TestingInterface(args[0], Integer.parseInt(args[1]),
+						args[2], Integer.parseInt(args[3]), args[4], Integer.parseInt(args[5]),
+						Integer.parseInt(args[6]));
 			default:
-				System.out.printf("Usage: distributed_chat <username> <port to listen on> [[<test message> <time per message (ms)>] <host to connect to> <port to connect to>]");
+				System.out.printf("Usage: distributed_chat <username> <port to listen on> [<host to connect to> <port to connect to> [<test message> <time per message (ms)> [<number of messages>]]]");
 				System.exit(-1);
 			}
 		} else {

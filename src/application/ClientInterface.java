@@ -49,6 +49,10 @@ public class ClientInterface{
 		totalMessages++;
 	}
 	
+	public int getKnownUsersCount(){
+		return knownUsers.size();
+	}
+	
 	// disconnect from all connections and reinitialize the singleton instance
 	public void disconnect(){
 		for(Connection connect : connections){
