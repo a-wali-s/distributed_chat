@@ -31,7 +31,7 @@ public class MenuBar extends JMenuBar {
 		JMenuItem quitAction = new JMenuItem("Quit");
 		quitAction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.printf("%s\n", ClientInterface.getInstance().getTotalMessages());
+				System.out.printf("Total Messages: %s\n, Known Users: %s\n", ClientInterface.getInstance().getTotalMessages(), ClientInterface.getInstance().getKnownUsersCount());
 				System.exit(-1);		
 			}
 		});
