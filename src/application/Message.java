@@ -137,19 +137,23 @@ public class Message implements Serializable {
 	public String getUsername() {
 		return username;
 	}
-	   /**
-	   * Always treat de-serialization as a full-blown constructor, by
-	   * validating the final state of the de-serialized object.
-	   */
-	   private void readObject(
-	     ObjectInputStream aInputStream
-	   ) throws ClassNotFoundException, IOException {
-	     //always perform the default de-serialization first
-	     aInputStream.defaultReadObject();
-
-	     //ensure that object state has not been corrupted or tampered with maliciously
-	     validateState();
-	  }
+	
+	//The following 3 functions were copied from http://www.javapractices.com/topic/TopicAction.do?Id=45, 
+	//by the license terms from http://www.javapractices.com/LICENSE.txt
+	
+	/**
+	 * Always treat de-serialization as a full-blown constructor, by
+	 * validating the final state of the de-serialized object.
+	 */
+	private void readObject(
+		ObjectInputStream aInputStream
+	) throws ClassNotFoundException, IOException {
+		//always perform the default de-serialization first
+		aInputStream.defaultReadObject();
+	
+		//ensure that object state has not been corrupted or tampered with maliciously
+		validateState();
+	}
 
 	/**
 	 * Stub method for later validation
