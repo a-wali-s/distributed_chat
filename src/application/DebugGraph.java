@@ -2,6 +2,7 @@ package application;
 
 import java.io.*;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 public class DebugGraph {
@@ -60,6 +61,30 @@ public class DebugGraph {
 			for (int x = 0; x < graph.length; x++)
 				edges.add(x,graph[x].trim());
 		}
+	}
+	
+	/**
+	 * Finds a peer in the graph that is available to be connected to, starting with the current node's children
+	 * 
+	 */
+	public Connection getFreePeer(List<Connection> connections){
+		int lowestCount = ConnectionListener.MAX_CONNECTIONS+1;
+		Connection lowestCountConnection = null;
+		for(Connection conn : connections) {
+			int count = 0;
+			for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
+				String currentEdge = it.next();
+				if(currentEdge.contains(conn.socket.getInetAddress().getHostAddress())) {
+					count++;
+				}
+			}
+			if(count < lowestCount)
+			{
+				lowestCount = count;
+				lowestCountConnection = conn;
+			}
+		}
+		return lowestCountConnection;
 	}
 	
 	/**

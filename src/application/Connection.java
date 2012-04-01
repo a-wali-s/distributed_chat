@@ -94,6 +94,7 @@ public class Connection implements Runnable {
 	public int sendMessage(Message msg) {
 		try {
 			out.writeObject(msg);
+			ClientInterface.getInstance().incrementTotalMessages();
 			return 0;
 		}catch (IOException e) {
 			return -1;

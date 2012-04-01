@@ -28,6 +28,7 @@ public class ClientInterface{
 	private Integer nodeDepth = 1;
 	private Integer messageNumber = 1;
 	private boolean isHotNode = false;
+	private int totalMessages = 0; //Message count for metrics purposes
 	public boolean netSplitStatus = false;
 	private Timer disarmTimer = null;
 
@@ -44,6 +45,19 @@ public class ClientInterface{
 		resetKnownUsers();
 		localAddresses = new ArrayList<String>();
 		netSplitMessageQueue = new ArrayList<Message>();
+	}
+	
+	//Handlers for the total messages metric
+	public int getTotalMessages(){
+		return totalMessages;
+	}
+	
+	public void incrementTotalMessages(){
+		totalMessages++;
+	}
+	
+	public int getKnownUsersCount(){
+		return knownUsers.size();
 	}
 	
 	// disconnect from all connections and reinitialize the singleton instance
@@ -271,7 +285,7 @@ public class ClientInterface{
 		if(conn.isParent)
 			msg.childNumbers.add(conn.childNumber);
 		
-		
+		this.totalMessages++;
 		switch(msg.getMessageCode()){
 		case Message.MESSAGE_CODE_REGULAR_MESSAGE:
 			processRegularMessage(msg, conn);
@@ -347,9 +361,9 @@ public class ClientInterface{
 	}
 	
 	public void redirectConnection(Connection conn) {
-		String firstChild = connections.get(0).toFriendString();
-		System.out.println("sdfsfsdffsfsdsfsfsfssljhfskjsfhsdjksfsd" + firstChild);
-		Message message = new Message(connections.get(0).toFriendString(), null, Message.MESSAGE_CODE_CONNECT_REDIRECT);
+		String freePeer = DebugGraph.getInstance().getFreePeer(connections).toFriendString();
+		System.out.println("sdfsfsdffsfsdsfsfsfssljhfskjsfhsdjksfsd" + freePeer);
+		Message message = new Message(freePeer, null, Message.MESSAGE_CODE_CONNECT_REDIRECT);
 		conn.sendSystemMessage(message, Message.MESSAGE_CODE_CONNECT_REDIRECT);
 		
 		
