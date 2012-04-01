@@ -33,7 +33,7 @@ public class SettingsWindow extends JFrame {
 		this.setResizable(false);
 		this.setVisible(false);
 		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
-		Dimension winSize = new Dimension(500,180);
+		Dimension winSize = new Dimension(500,250);
 		this.setSize(winSize);
 		this.addComponentListener(new ComponentListener() {
 			public void componentShown(ComponentEvent e) {
