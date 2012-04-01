@@ -289,9 +289,9 @@ public class ClientInterface{
 	}
 	
 	public void redirectConnection(Connection conn) {
-		String firstChild = connections.get(0).toFriendString();
-		System.out.println("sdfsfsdffsfsdsfsfsfssljhfskjsfhsdjksfsd" + firstChild);
-		Message message = new Message(connections.get(0).toFriendString(), null, Message.MESSAGE_CODE_CONNECT_REDIRECT);
+		String freePeer = DebugGraph.getInstance().getFreePeer(connections).toFriendString();
+		System.out.println("sdfsfsdffsfsdsfsfsfssljhfskjsfhsdjksfsd" + freePeer);
+		Message message = new Message(freePeer, null, Message.MESSAGE_CODE_CONNECT_REDIRECT);
 		conn.sendSystemMessage(message, Message.MESSAGE_CODE_CONNECT_REDIRECT);
 		
 		
