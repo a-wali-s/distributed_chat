@@ -70,9 +70,9 @@ public class TestingInterface implements GenericUI, Runnable {
 	private void addMessage(Message message) {
 		String username = message.getUsername();
 		if (usersMsgCount.get(username) == null) {
-			usersMsgCount.put(username, new TestUserProperty(username));
+			usersMsgCount.put(username, new TestUserProperty(username, message.getTimestamp()));
 		} else {
-			usersMsgCount.get(username).update();
+			usersMsgCount.get(username).update(message.getTimestamp());
 		}
 	}
 
