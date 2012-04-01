@@ -27,11 +27,18 @@ public class ChatController extends Observable {
 		initListener(2004);
 	}
 	public void initListener(int port){
+		initListener(port, 0);
+	}
+	public void initListener(int port, int maxConnections){
 		if( server != null) {
 			receiveDebugMessage("Cannot change port while connected to Chat");
 			return;
 		}
-		server = new ConnectionListener(port);
+		if (maxConnections > 0){
+			server = new ConnectionListener(port, maxConnections);
+		} else {
+			server = new ConnectionListener(port);
+		}
 		Thread serverThread = new Thread(server,"T2");
 	    serverThread.start();
 	    client.refreshLocalAddresses();

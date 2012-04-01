@@ -17,37 +17,39 @@ public class TestingInterface implements GenericUI, Runnable {
 	private String testMessage = "";
 	private int msPerMsg = -1;
 	private int numMessages = -1;
+	private int maxConnections = 0;
 	private String username;
 	private File testfile;
 
-	public TestingInterface(String username, int ListeningPort,
+	public TestingInterface(String username, int ListeningPort, int maxConnections,
 			String connectingHost, int connectingPort, String testMessage,
 			int msPerMsg, int numMessages) {
-		this(username, ListeningPort, connectingHost, connectingPort);
+		this(username, ListeningPort, maxConnections, connectingHost, connectingPort);
 		this.testMessage = testMessage;
 		this.msPerMsg = msPerMsg;
 		this.numMessages = numMessages;
 	}
 	
-	public TestingInterface(String username, int ListeningPort,
+	public TestingInterface(String username, int ListeningPort, int maxConnections,
 			String connectingHost, int connectingPort, String testMessage,
 			int msPerMsg) {
-		this(username, ListeningPort, connectingHost, connectingPort);
+		this(username, ListeningPort, maxConnections, connectingHost, connectingPort);
 		this.testMessage = testMessage;
 		this.msPerMsg = msPerMsg;
 	}
 
-	public TestingInterface(String username, int ListeningPort,
+	public TestingInterface(String username, int ListeningPort, int maxConnections,
 			String connectingHost, int connectingPort) {
-		this(username, ListeningPort);
+		this(username, ListeningPort, maxConnections);
 		chatController.createConnection(connectingHost, connectingPort);
 	}
 
-	public TestingInterface(String username, int ListeningPort) {
+	public TestingInterface(String username, int ListeningPort, int maxConnections) {
 		this.username = username;
 		chatController.addObserver(this);
 		chatController.setUsername(username);
 		chatController.initListener(ListeningPort);
+		this.maxConnections = maxConnections;
 	}
 
 	@Override
@@ -117,7 +119,7 @@ public class TestingInterface implements GenericUI, Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(content);
+//		System.out.println(content);
 	}
 
 	@Override
