@@ -30,6 +30,7 @@ public class Connection implements Runnable {
 			}
 		}
 		catch(IOException e){
+			ClientInterface.getInstance().netSplitStatus = true;
 			//ChatController.getInstance().error("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
 			System.out.println("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
 			//System.out.println("My Listening port: " + ChatController.getInstance().getListenerPort() + "  |  This connection port: " + this.socket.getLocalPort());
@@ -41,6 +42,12 @@ public class Connection implements Runnable {
 			receiveMessage(DCMessage);
 			// Only a client should bother trying to reconnect.  A node acting on server-side of a disconnect does not need to do anything
 			if( this.socket.getLocalPort() != ChatController.getInstance().getListenerPort() ){
+//				try {
+//					Thread.currentThread().sleep(5000);
+//				} catch (InterruptedException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
 				attemptRecovery();
 			}
 			else{
