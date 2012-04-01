@@ -47,14 +47,14 @@ public class ConnectionListener implements Runnable{
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
 				Integer numberOfConnections = ClientInterface.getInstance().numberOfChildConnections();
-				if(numberOfConnections >= MAX_CONNECTIONS)
-				{
+				if(numberOfConnections >= MAX_CONNECTIONS) {
 					ClientInterface.getInstance().redirectConnection(connWrapper);
 				}
-				connWrapper.isParent = true;
-				connWrapper.childNumber = nextChildNumber;
-				nextChildNumber++;
-				ClientInterface.getInstance().acceptConnection(connWrapper);
+					connWrapper.isParent = true;
+					connWrapper.childNumber = nextChildNumber;
+					nextChildNumber++;
+					ClientInterface.getInstance().acceptConnection(connWrapper);
+				
 			}
 		}
 		catch(BindException bindException){

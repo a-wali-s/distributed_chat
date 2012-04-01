@@ -1,5 +1,8 @@
 package application;
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import ui.*;
 
 public class DistributedChat {
@@ -9,7 +12,8 @@ public class DistributedChat {
 	public static final boolean DEBUG_NETWORK_DELAY = false && DEBUG;
 	public static final int DEBUG_NETWORK_DELAY_TIME = 1000; // in ms
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		if (args.length > 0) {
 			// Testing interface takes 2, 4, 6, or 7 arguments.
 			// The order for 7 arguments: username ListeningPort maxConnections
