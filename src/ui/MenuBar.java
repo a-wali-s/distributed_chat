@@ -7,6 +7,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import application.ClientInterface;
+
 public class MenuBar extends JMenuBar {
 
 	/* Construct menu bar for program */
@@ -29,6 +31,7 @@ public class MenuBar extends JMenuBar {
 		JMenuItem quitAction = new JMenuItem("Quit");
 		quitAction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				System.out.printf("%s\n", ClientInterface.getInstance().getTotalMessages());
 				System.exit(-1);		
 			}
 		});

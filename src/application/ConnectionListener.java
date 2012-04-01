@@ -14,6 +14,7 @@ public class ConnectionListener implements Runnable{
 	int port;
 	int nextChildNumber = 0;
 	boolean run = true;
+	private final int MAX_CONNECTIONS = 5;
 	public ConnectionListener(int port){
 		this.port = port;
 	}
@@ -42,7 +43,7 @@ public class ConnectionListener implements Runnable{
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
 				Integer numberOfConnections = ClientInterface.getInstance().numberOfChildConnections();
-				if(numberOfConnections >= 5)
+				if(numberOfConnections >= MAX_CONNECTIONS)
 				{
 					ClientInterface.getInstance().redirectConnection(connWrapper);
 				}
