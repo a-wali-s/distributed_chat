@@ -24,6 +24,7 @@ public class ClientInterface{
 	private Integer nodeDepth = 1;
 	private Integer messageNumber = 1;
 	private boolean isHotNode = false;
+	private int totalMessages = 0; //Message count for metrics purposes
 
 	public static ClientInterface getInstance(){
 		if(instance == null){
@@ -37,6 +38,15 @@ public class ClientInterface{
 		friends = new ArrayList<Friend>();
 		resetKnownUsers();
 		localAddresses = new ArrayList<String>();
+	}
+	
+	//Handlers for the total messages metric
+	public int getTotalMessages(){
+		return totalMessages;
+	}
+	
+	public void incrementTotalMessages(){
+		totalMessages++;
 	}
 	
 	// disconnect from all connections and reinitialize the singleton instance
@@ -213,7 +223,7 @@ public class ClientInterface{
 		if(conn.isParent)
 			msg.childNumbers.add(conn.childNumber);
 		
-		
+		this.totalMessages++;
 		switch(msg.getMessageCode()){
 		case Message.MESSAGE_CODE_REGULAR_MESSAGE:
 			processRegularMessage(msg, conn);
