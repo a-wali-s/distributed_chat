@@ -52,10 +52,12 @@ public class DistributedChat {
 						args[2], Integer.parseInt(args[3]), args[4], Integer.parseInt(args[5]),
 						Integer.parseInt(args[6]));
 				}
+				break;
 			case 8:
 				gui = new TestingInterface(args[0], Integer.parseInt(args[1]),
 					Integer.parseInt(args[2]), args[3], Integer.parseInt(args[4]), args[5], 
 					Integer.parseInt(args[6]), Integer.parseInt(args[7]));
+				break;
 			default:
 				System.out.printf("Usage: distributed_chat <username> <port to listen on> [<maximum connections>] [<host to connect to> <port to connect to> [<test message> <time per message (ms)> [<number of messages>]]]");
 				System.exit(-1);
