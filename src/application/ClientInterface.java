@@ -11,10 +11,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeSet;
 public class ClientInterface{
 	private static final String USERNAMES_SEPERATOR = ",";
+	private static final int DISARM_NET_SPLIT_TIMER = 5;
 	private static ClientInterface instance;
+	private List<Message> netSplitMessageQueue;
  	List<Connection> connections;
  	List<Friend> friends;
  	List<String> localAddresses;
@@ -24,6 +28,8 @@ public class ClientInterface{
 	private Integer nodeDepth = 1;
 	private Integer messageNumber = 1;
 	private boolean isHotNode = false;
+	public boolean netSplitStatus = false;
+	private Timer disarmTimer = null;
 
 	public static ClientInterface getInstance(){
 		if(instance == null){
@@ -37,6 +43,7 @@ public class ClientInterface{
 		friends = new ArrayList<Friend>();
 		resetKnownUsers();
 		localAddresses = new ArrayList<String>();
+		netSplitMessageQueue = new ArrayList<Message>();
 	}
 	
 	// disconnect from all connections and reinitialize the singleton instance
@@ -52,6 +59,7 @@ public class ClientInterface{
 		friends = new ArrayList<Friend>();
 		resetKnownUsers();
 		localAddresses = new ArrayList<String>();
+		netSplitMessageQueue = new ArrayList<Message>();
 	}
 	
 	private void resetKnownUsers() {
@@ -102,6 +110,32 @@ public class ClientInterface{
 		conn.sendMessage(new Message(username + USERNAMES_SEPERATOR + generateUserListString(), username, Message.MESSAGE_CODE_USERNAME_LIST_UPDATE));
 		//send this username for the connection username on the new peer
 		conn.sendMessage(new Message("", username, Message.MESSAGE_CODE_NEW_USERNAME_UPDATE_INIT));
+		
+		// If we are expecting reconnects, forward the messages in the queue to this newly connected user.
+		// There might be more than one person trying to reconnect to us due to the net split, so we will start a 
+		// timer before setting the netSplitStatus back to "false".
+		if( netSplitStatus ){
+			System.out.println("this is a reconnect.");
+			flushNetSplitQueue(conn);
+			if( disarmTimer == null ){
+				disarmTimer = new Timer();
+				disarmTimer.schedule(new disableNetSplitTask(), DISARM_NET_SPLIT_TIMER*1000);
+			}
+		}
+	}
+
+	/*
+	 * TIMER TASK
+	 * 	- Turns off netSplitStatus after timer expires.  This is to allow a time limit for processes
+	 * 		to reconnect to this Node once a disconnect occurs in the system.  
+	 */
+    class disableNetSplitTask extends TimerTask {
+        public void run() {
+        	netSplitStatus = false;
+            System.out.format("Time's up!%n");
+            disarmTimer.cancel(); //Terminate the timer thread
+            disarmTimer = null;
+        }
 	}
 
 	/*
@@ -113,8 +147,11 @@ public class ClientInterface{
 			return true;
 		for( int i = 0; i < friends.size(); i++ ){
 			Friend tmp = friends.get(i);
-			if( createConnection( tmp.getHost(), tmp.getPort(), true ) )
+			if( createConnection( tmp.getHost(), tmp.getPort(), true ) ) {
+				netSplitStatus = false;
+				netSplitMessageQueue.clear();
 				return true;
+			}
 		}
 		return false;
 	}
@@ -132,12 +169,14 @@ public class ClientInterface{
 	 * 	Returns True if connection was successful. False if failed.
 	 */
 	boolean createConnection(String hostname, int port, boolean reconnect){
+		Connection conn;
 		try {
 			if( (!reconnect) && !(connections.isEmpty()) ){
 					connections.clear();
 			}
 			Socket newSock = new Socket(hostname, port);
-			addConnection(new Connection(newSock));
+			conn = new Connection(newSock);
+			addConnection(conn);
 		}
 		catch(UnknownHostException unknownHost) {
 			System.err.println("You are trying to connect to an unknown host!");
@@ -147,20 +186,39 @@ public class ClientInterface{
 			ioException.printStackTrace();
 			return false;
 		}
-		if( reconnect )
+		if( reconnect ){
 			System.out.println("I successfully reconnected to " + hostname + ":" + Integer.toString(port));
+			flushNetSplitQueue(conn);
+		}
 		
 		return true;
 	}
 	
+	private boolean flushNetSplitQueue(Connection conn) {
+		System.out.println("Attempting to flush messages......., should have " + netSplitMessageQueue.size());
+		if( conn == null ){
+			System.out.println("ERROR, no connection to flush to");
+			return false;
+		}
+		if( netSplitMessageQueue.isEmpty() ){
+			System.out.println("NO Message in Queue!");
+			return true;
+		}
+		for(Message msg : netSplitMessageQueue)
+		{
+			if( conn.isParent )
+				msg.childNumbers.add(conn.childNumber);
+			conn.sendMessage(msg);
+		}
+		return true;
+	}
+
 	/*
 	 * Propagates the message to all connected peers except one, which is the one that sent it
 	 */
 	void forwardMessage(Message msg, Connection conn)
 	{
-
-		for(int x=0;x<connections.size();x++){
-			Connection thisConn = connections.get(x);
+		for(Connection thisConn : connections){
 			if(thisConn != conn) // if it isn't from the connection that sent the message
 			{
 				if(thisConn.isParent)
@@ -168,7 +226,14 @@ public class ClientInterface{
 				thisConn.sendMessage(msg);
 			}
 		}
-		//receiveMessage(msg);
+		if( conn == null){
+			ChatController.getInstance().receiveMsg(msg);
+			messageNumber++;
+		}
+		if( netSplitStatus == true && (msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE) ){
+			netSplitMessageQueue.add(msg);
+			System.out.println("+1 msg in NSQ");
+		}
 	}
 
 	/*
@@ -177,14 +242,7 @@ public class ClientInterface{
 	 */
 	void sendMessage(Message msg)
 	{
-		for(int x=0;x<connections.size();x++){
-			Connection thisConn = connections.get(x);
-			if(thisConn.isParent)
-				msg.childNumbers.add(thisConn.childNumber);
-			thisConn.sendMessage(msg);
-		}
-		ChatController.getInstance().receiveMsg(msg);
-		messageNumber++;
+		forwardMessage(msg, null);
 	}
 	
 	/*
@@ -451,7 +509,7 @@ public class ClientInterface{
 		// Parse own host IP and Port   (given in format "0.0.0.0/0.0.0.0:5000")
 		host = (ChatController.getInstance().server.providerSocket.getLocalSocketAddress()).toString();
 		hn = host.split("[:/]");
-		String myHost = hn[0];
+		//String myHost = hn[0];
 		String myPort = hn[2];
 		//System.out.println("My hostname: " + myHost + "  |   My port: " + myPort);
 		
