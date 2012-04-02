@@ -7,17 +7,17 @@ public class TestUserProperty {
 	private long totalLatency;
 	private int count;
 	private String username;
-	private Date startTime;
-	public TestUserProperty(String username, Date startTime){
+	private long startTime;
+	public TestUserProperty(String username, long startTime){
 		count = 1;
 		this.startTime = startTime;
 		currentTime = new Date(System.currentTimeMillis());
-		totalLatency = currentTime.getTime() - startTime.getTime();
+		totalLatency = currentTime.getTime() - startTime;
 		this.username = username;
 	}
-	public void update(Date msgTime){
+	public void update(long l){
 		currentTime = new Date(System.currentTimeMillis());
-		totalLatency += currentTime.getTime() - msgTime.getTime();
+		totalLatency += currentTime.getTime() - l;
 		count++;
 	}
 	public double getAvgRTT(){

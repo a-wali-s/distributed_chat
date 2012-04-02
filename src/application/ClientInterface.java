@@ -65,9 +65,9 @@ public class ClientInterface{
 		for(Connection connect : connections){
 			try {
 				connect.disconnect();
-				connect.socket.close();
 				connect.in.close();
 				connect.out.close();
+				connect.socket.close();
 			} catch (IOException e) {
 				ChatController.getInstance().error(e.getMessage());
 			}

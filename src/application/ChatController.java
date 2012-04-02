@@ -23,9 +23,6 @@ public class ChatController extends Observable {
 		return instance;
 	}
 	
-	public void initListener(){
-		initListener(2004);
-	}
 	public void initListener(int port){
 		initListener(port, 0);
 	}
@@ -63,8 +60,9 @@ public class ChatController extends Observable {
 	public void disconnect(){
 		server.stop();
 		client.disconnect();
+		int port = server.port;
 		server = null;
-		initListener();
+		initListener(port);
 	}
 	public void error(String errorMessage){
 		receiveMsg(new Message(errorMessage, "ErrorMsg" , Message.MESSAGE_CODE_INTERNAL_ERROR_MESSAGE));
