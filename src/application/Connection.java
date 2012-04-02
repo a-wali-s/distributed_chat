@@ -32,12 +32,12 @@ public class Connection implements Runnable {
 		catch(IOException e){
 			ClientInterface.getInstance().netSplitStatus = true;
 			//ChatController.getInstance().error("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
-			System.out.println("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
+			System.out.println("disconnect from " + this.getUsername() + " -- " + this.socket.getRemoteSocketAddress());
 			//System.out.println("My Listening port: " + ChatController.getInstance().getListenerPort() + "  |  This connection port: " + this.socket.getLocalPort());
 			//Message sent contains data needed to remove vertex from graph
-			Message DCMessage = new Message("", this.username, Message.MESSAGE_CODE_USER_DISCONNECT);
+			Message DCMessage = new Message("", this.getUsername(), Message.MESSAGE_CODE_USER_DISCONNECT);
 			if (DistributedChat.DEBUG){ 
-				DCMessage.setMsgText(this.username);
+				DCMessage.setMsgText(this.getUsername());
 			}
 			receiveMessage(DCMessage);
 			// Only a client should bother trying to reconnect.  A node acting on server-side of a disconnect does not need to do anything
@@ -151,6 +151,8 @@ public class Connection implements Runnable {
 		System.out.println("NEW Depth: " + nd);
 		this.nodeDepth = nd;
 	}
-	
-	
+
+	public String getUsername() {
+		return username;
+	}
 }

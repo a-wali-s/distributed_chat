@@ -74,7 +74,7 @@ public class DebugGraph {
 			int count = 0;
 			for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
 				String currentEdge = it.next();
-				if(currentEdge.contains(conn.socket.getInetAddress().getHostAddress())) {
+				if(currentEdge.contains(conn.getUsername())) {
 					count++;
 				}
 			}
