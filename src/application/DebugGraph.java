@@ -68,7 +68,7 @@ public class DebugGraph {
 	 * 
 	 */
 	public Connection getFreePeer(List<Connection> connections, Connection incomingConnection){
-		int lowestCount = ConnectionListener.getMaxConnections()+1;
+		int lowestCount = Integer.MAX_VALUE;
 		Connection lowestCountConnection = null;
 		for(int i = 0; i < connections.size(); i++) {
 			Connection conn = connections.get(i);
@@ -87,7 +87,6 @@ public class DebugGraph {
 					lowestCountConnection = conn;
 				}
 			}
-		
 		}
 		return lowestCountConnection;
 	}
