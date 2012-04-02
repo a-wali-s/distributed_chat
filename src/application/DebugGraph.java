@@ -122,15 +122,17 @@ public class DebugGraph {
 	 */
 	private void listRemoveVertex(String vertex){
 		String currentEdge = "";
-		try { 
-			for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
-				currentEdge = it.next();
-				System.out.println("Current edge to check for removal:" + currentEdge);
-				if (currentEdge.contains(vertex)) {
-					it.remove();
-				}
-			} 
-		} catch (Exception e) {}
+		if (!vertex.equals("")){
+			try { 
+				for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
+					currentEdge = it.next();
+					System.out.println("Current edge to check for removal:" + currentEdge);
+					if (currentEdge.contains(vertex)) {
+						it.remove();
+					}
+				} 
+			} catch (Exception e) {}
+		}
 		System.out.printf("Current edges: %s", edges.toString());
 	}
 	
