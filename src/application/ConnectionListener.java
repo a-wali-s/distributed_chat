@@ -55,11 +55,12 @@ public class ConnectionListener implements Runnable{
 					ClientInterface.getInstance().addConnection(connWrapper);
 					ClientInterface.getInstance().redirectConnection(connWrapper);
 				}
+				else {
 					connWrapper.isParent = true;
 					connWrapper.childNumber = nextChildNumber;
 					nextChildNumber++;
 					ClientInterface.getInstance().acceptConnection(connWrapper);
-				
+				}
 			}
 		}
 		catch(BindException bindException){
