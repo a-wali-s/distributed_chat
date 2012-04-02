@@ -52,6 +52,7 @@ public class ConnectionListener implements Runnable{
 				Connection connWrapper = new Connection(connection);
 				Integer numberOfConnections = ClientInterface.getInstance().numberOfChildConnections();
 				if(numberOfConnections >= MAX_CONNECTIONS) {
+					ClientInterface.getInstance().addConnection(connWrapper);
 					ClientInterface.getInstance().redirectConnection(connWrapper);
 				}
 					connWrapper.isParent = true;

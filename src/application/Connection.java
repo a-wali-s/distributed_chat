@@ -10,6 +10,7 @@ public class Connection implements Runnable {
 	public int childNumber;
 	public int nodeDepth = 1;
 	public boolean isParent = false;
+	private boolean connected = true;
 	private String connPort = "";
 	private String username = "";
 	Message inBuffer = null;
@@ -23,7 +24,7 @@ public class Connection implements Runnable {
 	
 	public void run(){
 		try {
-			while(true) {
+			while(connected) {
 				//ChatController.getInstance().receiveDebugMessage("Wait for object");
 				inBuffer = (Message)in.readObject();
 				receiveMessage(inBuffer);
@@ -59,6 +60,10 @@ public class Connection implements Runnable {
 		catch(ClassNotFoundException e){
 			e.printStackTrace();
 		}
+	}
+	
+	void disconnect(){
+		connected = false;
 	}
 	
 	private void attemptRecovery() {
