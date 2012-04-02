@@ -71,17 +71,20 @@ public class DebugGraph {
 		int lowestCount = ConnectionListener.getMaxConnections()+1;
 		Connection lowestCountConnection = null;
 		for(Connection conn : connections) {
-			int count = 0;
-			for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
-				String currentEdge = it.next();
-				if(currentEdge.contains(conn.getUsername())) {
-					count++;
-				}
-			}
-			if(count < lowestCount)
+			if(!conn.isParent)
 			{
-				lowestCount = count;
-				lowestCountConnection = conn;
+				int count = 0;
+				for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
+					String currentEdge = it.next();
+					if(currentEdge.contains(conn.getUsername())) {
+						count++;
+					}
+				}
+				if(count < lowestCount)
+				{
+					lowestCount = count;
+					lowestCountConnection = conn;
+				}
 			}
 		}
 		return lowestCountConnection;
@@ -122,7 +125,7 @@ public class DebugGraph {
 	 */
 	private void listRemoveVertex(String vertex){
 		String currentEdge = "";
-		if (!vertex.equals("")){
+		if (!vertex.trim().equals("")){
 			try { 
 				for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
 					currentEdge = it.next();
