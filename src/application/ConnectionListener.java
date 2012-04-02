@@ -14,7 +14,7 @@ public class ConnectionListener implements Runnable{
 	int port;
 	int nextChildNumber = 0;
 	boolean run = true;
-	private static int MAX_CONNECTIONS = 5;
+	private static int MAX_CONNECTIONS = 2;
 	public ConnectionListener(int port){
 		this.port = port;
 	}
