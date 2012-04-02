@@ -321,24 +321,26 @@ public class ChatWindow implements GenericUI {
 			msgs.addLast(message);
 		}
 		else {
-			msgIterator = msgs.listIterator();
-			while (msgIterator.hasNext() && !inserted) {
-				iteratorMsg = msgIterator.next();
-				if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
-					msgs.add(msgIterator.previousIndex(), message);
-					inserted = true;
-				}
-				else if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && !msgIterator.hasNext()) {
-					msgs.addLast(message);
-					inserted = true;
-				}
-				else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
-					msgs.add(msgIterator.previousIndex(), message);
-					inserted = true;
-				}
-				else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && !msgIterator.hasNext()) {
-					msgs.addLast(message);
-					inserted = true;
+			for(int i = 0; i < msgs.size(); i++)
+			{
+				if(!inserted) {
+					iteratorMsg = msgs.get(i);
+					if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
+						msgs.add(i-1, message);
+						inserted = true;
+					}
+					else if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && i == msgs.size()-1) {
+						msgs.addLast(message);
+						inserted = true;
+					}
+					else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
+						msgs.add(i-1, message);
+						inserted = true;
+					}
+					else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && i == msgs.size()-1) {
+						msgs.addLast(message);
+						inserted = true;
+					}
 				}
 			}
 			
@@ -347,9 +349,9 @@ public class ChatWindow implements GenericUI {
 			}
 		}
 		displayText = "";
-		msgIterator = msgs.listIterator();
-		while (msgIterator.hasNext()) {
-			displayText += getFormattedMessage(msgIterator.next());
+		for(int i = 0; i < msgs.size(); i++)
+		{
+			displayText += getFormattedMessage(msgs.get(i));
 		}
 		// Prints message to the message field in the format of time stamp, user name, and received message
 		textArea.setText(displayText);	

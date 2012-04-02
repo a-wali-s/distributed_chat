@@ -8,6 +8,7 @@ import java.util.ListIterator;
 public class DebugGraph {
 	private static LinkedList<String> edges = new LinkedList<String>();
 	private static DebugGraph instance;
+	private static Connection previousChosen = null;
 
 	public static DebugGraph getInstance(){
 		if(instance == null){
@@ -81,13 +82,14 @@ public class DebugGraph {
 						count++;
 					}
 				}
-				if(count < lowestCount)
+				if(count < lowestCount || count == lowestCount && lowestCountConnection == previousChosen)
 				{
 					lowestCount = count;
 					lowestCountConnection = conn;
 				}
 			}
 		}
+		previousChosen = lowestCountConnection;
 		return lowestCountConnection;
 	}
 	
