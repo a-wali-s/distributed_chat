@@ -64,6 +64,7 @@ public class ChatController extends Observable {
 		server.stop();
 		client.disconnect();
 		server = null;
+		initListener();
 	}
 	public void error(String errorMessage){
 		receiveMsg(new Message(errorMessage, "ErrorMsg" , Message.MESSAGE_CODE_INTERNAL_ERROR_MESSAGE));

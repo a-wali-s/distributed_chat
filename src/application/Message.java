@@ -77,10 +77,6 @@ public class Message implements Serializable {
 	/**
 	 * @serial
 	 */
-	public ArrayList<Integer> childNumbers = new ArrayList<Integer>();
-	/**
-	 * @serial
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	/*

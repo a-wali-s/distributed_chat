@@ -223,8 +223,6 @@ public class ClientInterface{
 		}
 		for(Message msg : netSplitMessageQueue)
 		{
-			if( conn.isParent )
-				msg.childNumbers.add(conn.childNumber);
 			conn.sendMessage(msg);
 		}
 		return true;
@@ -240,8 +238,6 @@ public class ClientInterface{
 			thisConn = connections.get(i);
 			if(thisConn != conn) // if it isn't from the connection that sent the message
 			{
-				if(thisConn.isParent)
-					msg.childNumbers.add(thisConn.childNumber);
 				thisConn.sendMessage(msg);
 			}
 		}
