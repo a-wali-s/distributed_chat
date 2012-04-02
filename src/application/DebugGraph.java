@@ -125,7 +125,7 @@ public class DebugGraph {
 	 */
 	private void listRemoveVertex(String vertex){
 		String currentEdge = "";
-		if (!vertex.equals("")){
+		if (!vertex.isEmpty()){
 			try { 
 				for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
 					currentEdge = it.next();
