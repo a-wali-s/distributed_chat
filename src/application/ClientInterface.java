@@ -287,8 +287,6 @@ public class ClientInterface{
 	{
 		if(msg.messageNumber >= this.messageNumber)
 			this.messageNumber = msg.messageNumber+1;
-		if(conn.isParent)
-			msg.childNumbers.add(conn.childNumber);
 		
 		this.totalMessages++;
 		switch(msg.getMessageCode()){
