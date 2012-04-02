@@ -50,7 +50,8 @@ public class ConnectionListener implements Runnable{
 						+ ":" + connection.getPort(), Message.MESSAGE_CODE_CONNECTION_ACK);
 				//3. Wrap in a connection object, spawn a thread, and go back to listening
 				Connection connWrapper = new Connection(connection);
-				Integer numberOfConnections = ClientInterface.getInstance().numberOfChildConnections();
+				Integer numberOfConnections = ClientInterface.getInstance().connections.size();
+				System.out.println(ClientInterface.getInstance().username + ": the number of connections i see is " + numberOfConnections);
 				if(numberOfConnections >= MAX_CONNECTIONS) {
 					ClientInterface.getInstance().addConnection(connWrapper);
 					ClientInterface.getInstance().redirectConnection(connWrapper);

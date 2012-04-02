@@ -235,7 +235,9 @@ public class ClientInterface{
 	 */
 	void forwardMessage(Message msg, Connection conn)
 	{
-		for(Connection thisConn : connections){
+		Connection thisConn = null;
+		for(int i = 0; i < connections.size(); i++) {
+			thisConn = connections.get(i);
 			if(thisConn != conn) // if it isn't from the connection that sent the message
 			{
 				if(thisConn.isParent)
