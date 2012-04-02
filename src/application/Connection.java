@@ -33,7 +33,7 @@ public class Connection implements Runnable {
 		catch(IOException e){
 			ClientInterface.getInstance().netSplitStatus = true;
 			//ChatController.getInstance().error("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
-			System.out.println("disconnect from " + this.getUsername() + " -- " + this.socket.getRemoteSocketAddress());
+			System.out.println(ClientInterface.getInstance().username + ": " + "disconnect from " + this.getUsername() + " -- " + this.socket.getRemoteSocketAddress());
 			//System.out.println("My Listening port: " + ChatController.getInstance().getListenerPort() + "  |  This connection port: " + this.socket.getLocalPort());
 			//Message sent contains data needed to remove vertex from graph
 			Message DCMessage = new Message("", this.getUsername(), Message.MESSAGE_CODE_USER_DISCONNECT);
@@ -52,7 +52,7 @@ public class Connection implements Runnable {
 				attemptRecovery();
 			}
 			else{
-				System.out.println("Removing self from connections");
+				System.out.println(ClientInterface.getInstance().username + ": " + "Removing self from connections");
 				ClientInterface.getInstance().connections.remove(this);
 			}
 			//e.printStackTrace();
@@ -69,7 +69,7 @@ public class Connection implements Runnable {
 	private void attemptRecovery() {
 		ClientInterface ci = ClientInterface.getInstance();
 		if( ci.tryRecovery() ) {
-			System.out.println("Recovery successful!, breaking old connection");
+			System.out.println(ClientInterface.getInstance().username + ": " + "Recovery successful!, breaking old connection");
 			ci.connections.remove(this);
 		}
 		else {
@@ -137,7 +137,7 @@ public class Connection implements Runnable {
 	 * (Port number for this socket is not necessarily same as node's listening port depending on point of initiation)
 	 */
 	public void updatePort(String port) {
-		System.out.println("NEW PORT: " + port);
+		System.out.println(ClientInterface.getInstance().username + ": " + "NEW PORT: " + port);
 		this.connPort = port;
 	}
 	
@@ -145,7 +145,7 @@ public class Connection implements Runnable {
 	 * Update the locally saved Username for this connection
 	 */
 	public void updateUsername(String usr) {
-		System.out.println("NEW Username: " + usr);
+		System.out.println(ClientInterface.getInstance().username + ": " + "NEW Username: " + usr);
 		this.username = usr;
 	}
 	
@@ -153,7 +153,7 @@ public class Connection implements Runnable {
 	 * Update the locally saved nodeDepth for this connection
 	 */
 	public void updateNodeDepth(int nd) {
-		System.out.println("NEW Depth: " + nd);
+		System.out.println(ClientInterface.getInstance().username + ": " + "NEW Depth: " + nd);
 		this.nodeDepth = nd;
 	}
 
