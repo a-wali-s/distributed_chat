@@ -31,7 +31,7 @@ public class DebugGraph {
 		String edge = "\"" + addresses[0] + "\" " + addresses[1] + " \"" + addresses[2] + "\"";
 		System.out.println("edge to add: " + edge);
 		listAddEdge(edge);
-		write(username);
+//		write(username);
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public class DebugGraph {
 		String vertex = msg.getMsgText();
 		System.out.println("vertex to remove: " + vertex);
 		listRemoveVertex(vertex);
-		write(username);
+//		write(username);
 	}
 	
 	/**
