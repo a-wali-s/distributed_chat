@@ -132,7 +132,7 @@ public class ClientInterface{
 		// There might be more than one person trying to reconnect to us due to the net split, so we will start a 
 		// timer before setting the netSplitStatus back to "false".
 		if( netSplitStatus ){
-			System.out.println("this is a reconnect.");
+			System.out.println(username + ": " + "this is a reconnect.");
 			flushNetSplitQueue(conn);
 			if( disarmTimer == null ){
 				disarmTimer = new Timer();
@@ -204,7 +204,7 @@ public class ClientInterface{
 			return false;
 		}
 		if( reconnect ){
-			System.out.println("I successfully reconnected to " + hostname + ":" + Integer.toString(port));
+			System.out.println(username + ": " + "I successfully reconnected to " + hostname + ":" + Integer.toString(port));
 			flushNetSplitQueue(conn);
 		}
 		
@@ -212,13 +212,13 @@ public class ClientInterface{
 	}
 	
 	private boolean flushNetSplitQueue(Connection conn) {
-		System.out.println("Attempting to flush messages......., should have " + netSplitMessageQueue.size());
+		System.out.println(username + ": " + "Attempting to flush messages......., should have " + netSplitMessageQueue.size());
 		if( conn == null ){
-			System.out.println("ERROR, no connection to flush to");
+			System.out.println(username + ": " + "ERROR, no connection to flush to");
 			return false;
 		}
 		if( netSplitMessageQueue.isEmpty() ){
-			System.out.println("NO Message in Queue!");
+			System.out.println(username + ": " + "NO Message in Queue!");
 			return true;
 		}
 		for(Message msg : netSplitMessageQueue)
@@ -341,7 +341,7 @@ public class ClientInterface{
 		case Message.MESSAGE_CODE_CONNECT_REDIRECT:
 			String[] addrAndPort = msg.getMsgText().split("/");
 			this.disconnect();
-			System.out.println("creating a new connection!!!! to " + addrAndPort[1]);
+			System.out.println(username + ": " + "creating a new connection!!!! to " + addrAndPort[1]);
 			this.createConnection(addrAndPort[0], Integer.parseInt(addrAndPort[1]), false);
 			break;
 			
@@ -471,7 +471,7 @@ public class ClientInterface{
 	private void processFOFUpdate(Message msg, Connection conn) {
 		// 1) process FOF
 		// 2) send ACK
-		System.out.println("DEBUG: Received FOF Update.. processing...");
+		System.out.println(username + ": " + "DEBUG: Received FOF Update.. processing...");
 		refreshFriends(msg.getMsgText());
 		conn.sendMessage(new Message("ACK:FoF", username, Message.MESSAGE_CODE_FOF_ACK));
 	}
@@ -483,7 +483,7 @@ public class ClientInterface{
 		// We received the verified port info for this peer, update our connections list and send out updated FoF list
 		conn.updatePort(msg.getMsgText());
 		conn.updateUsername(msg.getUsername());
-		System.out.println("I'm going to send this: \n" + generateFriendsString());
+		System.out.println(username + ": " + "I'm going to send this: \n" + generateFriendsString());
 		// TODO: SEND FoF UPDATE
 		sendMessage(new Message(generateFriendsString(), username, Message.MESSAGE_CODE_FOF_UPDATE));
 	}
@@ -521,7 +521,7 @@ public class ClientInterface{
 		String host, port;
 		int priority;
 		isHotNode = false;
-		System.out.println("Parsing Friend String: " + flist);
+		System.out.println(username + ": " + "Parsing Friend String: " + flist);
 		
 		// Parse own host IP and Port   (given in format "0.0.0.0/0.0.0.0:5000")
 		host = (ChatController.getInstance().server.providerSocket.getLocalSocketAddress()).toString();
@@ -533,9 +533,9 @@ public class ClientInterface{
 		// split the FoF string by lines for separate friend nodes
 		// If this new FoF update has a smaller sample than an existing FoF list, then just ignore it
 		nodes = flist.split("\n");
-		System.out.println("Nodes size: "+ nodes.length + " |  Current friends sizes: " + friends.size());
+		System.out.println(username + ": " + "Nodes size: "+ nodes.length + " |  Current friends sizes: " + friends.size());
 		if( nodes.length < friends.size() ) {
-			System.out.println("Existing Friend sample size is bigger than new FoF list, ignoring");
+			System.out.println(username + ": " + "Existing Friend sample size is bigger than new FoF list, ignoring");
 			return;
 		}
 		else
@@ -555,20 +555,20 @@ public class ClientInterface{
 					if( (host.compareTo("127.0.0.1") == 0) || localAddresses.contains(host) ) {
 						if( i == 0 ){
 							isHotNode = true;
-							System.out.println("i'm a hot node!");
+							System.out.println(username + ": " + "i'm a hot node!");
 						}
-						System.out.println("Ignoring self..  ");
+						System.out.println(username + ": " + "Ignoring self..  ");
 						continue;
 					}
 				}
-				System.out.println("Added a new friend");
+				System.out.println(username + ": " + "Added a new friend");
 				friends.add(new Friend(host, Integer.parseInt(port), priority));
 			}
 			else{
-				System.out.println("Unexpected Friend Info Format detected, ignoring");
+				System.out.println(username + ": " + "Unexpected Friend Info Format detected, ignoring");
 			}
 		}
-		System.out.println("Current size of my friends list: " + friends.size());
+		System.out.println(username + ": " + "Current size of my friends list: " + friends.size());
 	}
 	
 	
@@ -607,7 +607,7 @@ public class ClientInterface{
 				System.out.println(localAddresses.get(i));
 			}*/
 		} catch (UnknownHostException e) {
-			System.out.println("WARNING: failed to load local addresses");
+			System.out.println(username + ": " + "WARNING: failed to load local addresses");
 		}
 	}
 }
