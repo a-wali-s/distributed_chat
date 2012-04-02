@@ -69,6 +69,7 @@ public class ClientInterface{
 				connect.out.close();
 				connect.socket.close();
 			} catch (IOException e) {
+				System.out.println("Could not disconnect");
 				ChatController.getInstance().error(e.getMessage());
 			}
 		}
@@ -360,7 +361,7 @@ public class ClientInterface{
 	}
 	
 	public void redirectConnection(Connection conn) {
-		String freePeer = DebugGraph.getInstance().getFreePeer(connections).toFriendString();
+		String freePeer = DebugGraph.getInstance().getFreePeer(connections, conn).toFriendString();
 		System.out.println("sdfsfsdffsfsdsfsfsfssljhfskjsfhsdjksfsd" + freePeer);
 		Message message = new Message(freePeer, null, Message.MESSAGE_CODE_CONNECT_REDIRECT);
 		conn.sendSystemMessage(message, Message.MESSAGE_CODE_CONNECT_REDIRECT);

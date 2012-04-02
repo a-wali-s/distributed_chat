@@ -67,11 +67,12 @@ public class DebugGraph {
 	 * Finds a peer in the graph that is available to be connected to, starting with the current node's children
 	 * 
 	 */
-	public Connection getFreePeer(List<Connection> connections){
+	public Connection getFreePeer(List<Connection> connections, Connection incomingConnection){
 		int lowestCount = ConnectionListener.getMaxConnections()+1;
 		Connection lowestCountConnection = null;
-		for(Connection conn : connections) {
-			if(conn.isParent)
+		for(int i = 0; i < connections.size(); i++) {
+			Connection conn = connections.get(i);
+			if(conn != incomingConnection && conn.isParent)
 			{
 				int count = 0;
 				for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
@@ -86,6 +87,7 @@ public class DebugGraph {
 					lowestCountConnection = conn;
 				}
 			}
+		
 		}
 		return lowestCountConnection;
 	}
