@@ -31,7 +31,6 @@ public class Connection implements Runnable {
 			}
 		}
 		catch(IOException e){
-			if(connected) {
 				ClientInterface.getInstance().netSplitStatus = true;
 				//ChatController.getInstance().error("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
 				System.out.println(ClientInterface.getInstance().username + ": " + "disconnect from " + this.getUsername() + " -- " + this.socket.getRemoteSocketAddress());
@@ -56,7 +55,6 @@ public class Connection implements Runnable {
 					System.out.println(ClientInterface.getInstance().username + ": " + "Removing self from connections");
 					ClientInterface.getInstance().connections.remove(this);
 				}
-			}
 			//e.printStackTrace();
 		}
 		catch(ClassNotFoundException e){

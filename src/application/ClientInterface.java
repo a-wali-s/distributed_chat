@@ -97,6 +97,7 @@ public class ClientInterface{
 		Thread connThread = new Thread(conn);
 		connThread.start();
 		connections.add(conn);
+		System.out.println("Number of connections: " + connections.size());
 		
 	}
 	public int getMessageClock(){
@@ -365,6 +366,7 @@ public class ClientInterface{
 		System.out.println("sdfsfsdffsfsdsfsfsfssljhfskjsfhsdjksfsd" + freePeer);
 		Message message = new Message(freePeer, null, Message.MESSAGE_CODE_CONNECT_REDIRECT);
 		conn.sendSystemMessage(message, Message.MESSAGE_CODE_CONNECT_REDIRECT);
+		conn.disconnect();
 		
 		
 	}

@@ -53,7 +53,7 @@ public class ConnectionListener implements Runnable{
 				Integer numberOfConnections = ClientInterface.getInstance().connections.size();
 				System.out.println(ClientInterface.getInstance().username + ": the number of connections i see is " + numberOfConnections);
 				if(numberOfConnections >= MAX_CONNECTIONS) {
-					ClientInterface.getInstance().addConnection(connWrapper);
+					//ClientInterface.getInstance().addConnection(connWrapper);
 					ClientInterface.getInstance().redirectConnection(connWrapper);
 				}
 				else {
