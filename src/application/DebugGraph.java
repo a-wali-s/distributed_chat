@@ -29,7 +29,7 @@ public class DebugGraph {
 	public void addEdge(Message msg, String username){
 		String[] addresses = msg.getMsgText().replaceAll("/", "").split(" ");
 		String edge = "\"" + addresses[0] + "\" " + addresses[1] + " \"" + addresses[2] + "\"";
-		System.out.println("edge to add: " + edge);
+		System.out.println(ClientInterface.getInstance().username + ": " + "edge to add: " + edge);
 		listAddEdge(edge);
 //		write(username);
 	}
@@ -115,7 +115,7 @@ public class DebugGraph {
 	 */
 	private void listAddEdge(String edge){
 		edges.add(edge);
-		System.out.printf("Current edges: %s\n", edges.toString());
+		System.out.println(ClientInterface.getInstance().username + ": " + "Current edges: " + edges.toString());
 	}
 	
 	/**
@@ -129,14 +129,14 @@ public class DebugGraph {
 			try { 
 				for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
 					currentEdge = it.next();
-					System.out.println("Current edge to check for removal:" + currentEdge);
+					System.out.println(ClientInterface.getInstance().username + ": " + "Current edge to check for removal:" + currentEdge);
 					if (currentEdge.contains(vertex)) {
 						it.remove();
 					}
 				} 
 			} catch (Exception e) {}
 		}
-		System.out.printf("Current edges: %s", edges.toString());
+		System.out.printf(ClientInterface.getInstance().username + ": " + "Current edges: " + edges.toString());
 	}
 	
 	/**
@@ -160,10 +160,10 @@ public class DebugGraph {
 			writer.close();
 		}
 		catch (FileNotFoundException e){
-			System.out.printf("No Graph Found. Making new one");
+			System.out.println(ClientInterface.getInstance().username + ": " + "No Graph Found. Making new one");
 		}
 		catch (IOException e) {
-			System.out.printf("N34-Df+G33r");
+			System.out.println(ClientInterface.getInstance().username + ": " + "N34-Df+G33r");
 		}
 	}
 }
