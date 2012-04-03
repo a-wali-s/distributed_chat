@@ -116,6 +116,7 @@ public class TestingInterface implements GenericUI, Runnable {
 		try {
 			FileWriter writer = new FileWriter(testfile);
 			writer.write(content);
+			System.out.println(content);
 			writer.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
