@@ -30,7 +30,7 @@ public class DebugGraph {
 	public void addEdge(Message msg, String username){
 		String[] addresses = msg.getMsgText().replaceAll("/", "").split(" ");
 		String edge = "\"" + addresses[0] + "\" " + addresses[1] + " \"" + addresses[2] + "\"";
-		System.out.println(ClientInterface.getInstance().username + ": " + "edge to add: " + edge);
+//		System.out.println(ClientInterface.getInstance().username + ": " + "edge to add: " + edge);
 		listAddEdge(edge);
 //		write(username);
 	}
@@ -43,7 +43,7 @@ public class DebugGraph {
 	 */
 	public void removeVertex(Message msg, String username){
 		String vertex = msg.getMsgText();
-		System.out.println("vertex to remove: " + vertex);
+//		System.out.println("vertex to remove: " + vertex);
 		listRemoveVertex(vertex);
 //		write(username);
 	}
@@ -56,7 +56,7 @@ public class DebugGraph {
 	 */
 	public void readGraph(Message msg, String username){
 		if (msg.getMsgText().length() > 2){
-			System.out.println("new graph" + msg.getMsgText());
+//			System.out.println("new graph" + msg.getMsgText());
 			String graph[] = msg.getMsgText().replace("[","").replace("]","").split(",");
 			edges.clear();
 			for (int x = 0; x < graph.length; x++)
@@ -118,7 +118,7 @@ public class DebugGraph {
 	 */
 	private void listAddEdge(String edge){
 		edges.add(edge);
-		System.out.println(ClientInterface.getInstance().username + ": " + "Current edges: " + edges.toString());
+//		System.out.println(ClientInterface.getInstance().username + ": " + "Current edges: " + edges.toString());
 	}
 	
 	/**
@@ -132,14 +132,14 @@ public class DebugGraph {
 			try { 
 				for (ListIterator<String> it = edges.listIterator(); it.hasNext();){
 					currentEdge = it.next();
-					System.out.println(ClientInterface.getInstance().username + ": " + "Current edge to check for removal:" + currentEdge);
+//					System.out.println(ClientInterface.getInstance().username + ": " + "Current edge to check for removal:" + currentEdge);
 					if (currentEdge.contains(vertex)) {
 						it.remove();
 					}
 				} 
 			} catch (Exception e) {}
 		}
-		System.out.printf(ClientInterface.getInstance().username + ": " + "Current edges: " + edges.toString());
+//		System.out.printf(ClientInterface.getInstance().username + ": " + "Current edges: " + edges.toString());
 	}
 	
 	/**

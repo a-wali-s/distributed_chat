@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in {2..50}
+for i in `seq 2 50`
 do
         USERNAME=`echo peerName$i`
         PORT=$((23909+$i))
