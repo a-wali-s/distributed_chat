@@ -347,10 +347,14 @@ public class ChatWindow implements GenericUI {
 			}
 		}
 		displayText = "";
-		msgIterator = msgs.listIterator();
+		
+		for (Message m : msgs) {
+			displayText += getFormattedMessage(m);
+		}
+		/*msgIterator = msgs.listIterator();
 		while (msgIterator.hasNext()) {
 			displayText += getFormattedMessage(msgIterator.next());
-		}
+		}*/
 		// Prints message to the message field in the format of time stamp, user name, and received message
 		textArea.setText(displayText);	
 	}
