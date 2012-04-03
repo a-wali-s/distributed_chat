@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Scanner;
 
 import application.ChatController;
 import application.DebugGraph;
@@ -21,6 +22,7 @@ public class TestingInterface implements GenericUI, Runnable {
 	private int maxConnections = 0;
 	private String username;
 	private File testfile;
+	private boolean isStartSending = false;
 
 	public TestingInterface(String username, int ListeningPort, int maxConnections,
 			String connectingHost, int connectingPort, String testMessage,
@@ -73,6 +75,11 @@ public class TestingInterface implements GenericUI, Runnable {
 			usersMsgCount.put(username, new TestUserProperty(username, message.getTimestamp()));
 		} else {
 			usersMsgCount.get(username).update(message.getTimestamp());
+		}
+		if(message.getMsgText().equals("start")){
+			isStartSending = true;
+		}else if(message.getMsgText().equals("stop")){
+			isStartSending = false;
 		}
 	}
 
@@ -133,10 +140,10 @@ public class TestingInterface implements GenericUI, Runnable {
 	public void run() {
 		int runningSecond = 0;
 		try {
-			Thread.sleep(120000);
-			while (msPerMsg != -1 && numMessages != runningSecond ) {
-
+			while (msPerMsg != -1 && numMessages != runningSecond) {
+				
 				Thread.sleep(msPerMsg);
+				while(!isStartSending){};
 				sentMsg(testMessage);
 				runningSecond++;
 				if ((runningSecond % UPDATES_PER_FILE_WRITE) == 0) {
