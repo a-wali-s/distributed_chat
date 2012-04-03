@@ -121,10 +121,8 @@ public class TestingInterface implements GenericUI, Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(username.equals("Server")){
-			DebugGraph.getInstance().writeToFile(username);
-			System.out.println(username);
-		}
+		DebugGraph.getInstance().writeToFile(username);
+		System.out.println(username);
 //		System.out.println(content);
 	}
 
