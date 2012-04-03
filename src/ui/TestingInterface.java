@@ -123,6 +123,7 @@ public class TestingInterface implements GenericUI, Runnable {
 		}
 		if(username.equals("Server")){
 			DebugGraph.getInstance().writeToFile(username);
+			System.out.println(username);
 		}
 //		System.out.println(content);
 	}
