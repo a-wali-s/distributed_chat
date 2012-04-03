@@ -20,7 +20,7 @@ public class ConnectionListener implements Runnable{
 	}
 	public ConnectionListener(int port, int maxConnections){
 		this.port = port;
-		this.MAX_CONNECTIONS = maxConnections;
+		MAX_CONNECTIONS = maxConnections;
 	}
 	
 	public static int getMaxConnections(){

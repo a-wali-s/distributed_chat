@@ -62,7 +62,8 @@ public class ClientInterface{
 	
 	// disconnect from all connections and reinitialize the singleton instance
 	public void disconnect(){
-		for(Connection connect : connections){
+		for(int i = 0; i<connections.size();i++){
+			Connection connect = connections.get(i);
 			try {
 				connect.disconnect();
 				connect.in.close();
@@ -338,7 +339,7 @@ public class ClientInterface{
 			break;
 		case Message.MESSAGE_CODE_CONNECT_REDIRECT:
 			String[] addrAndPort = msg.getMsgText().split("/");
-			this.disconnect();
+			this.disconnectFromParent();
 			System.out.println(username + ": " + "creating a new connection!!!! to " + addrAndPort[1]);
 			this.createConnection(addrAndPort[0], Integer.parseInt(addrAndPort[1]), false);
 			break;
@@ -348,7 +349,21 @@ public class ClientInterface{
 		}
 			
 	}
-	
+	public void disconnectFromParent(){
+		for(int i=0;i<connections.size();i++){
+			Connection connection = connections.get(i);
+			if(connection.isParent){
+				connection.disconnect();
+				try {
+					connection.in.close();
+					connection.out.close();
+					connection.socket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 	public int numberOfChildConnections() {
 		int childCount = 0;
 		for(Connection conn : connections)
