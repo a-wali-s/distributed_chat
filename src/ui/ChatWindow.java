@@ -288,7 +288,7 @@ public class ChatWindow implements GenericUI {
 	/**
 	 * Returns Human readable message
 	 */
-	private static String getFormattedMessage(Message message) {
+	private String getFormattedMessage(Message message) {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		String result =  String.format("%s (%s): %s", message.getUsername(), sdf.format(message.getTimestamp()),
 				message.getMsgText() + "\n");
