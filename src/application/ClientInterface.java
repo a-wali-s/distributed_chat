@@ -249,7 +249,7 @@ public class ClientInterface{
 		}
 		if( netSplitStatus == true && (msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE) ){
 			netSplitMessageQueue.add(msg);
-			System.out.println("+1 msg in NSQ");
+//			System.out.println("+1 msg in NSQ");
 		}
 	}
 
