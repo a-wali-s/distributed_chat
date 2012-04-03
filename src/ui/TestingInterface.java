@@ -49,8 +49,7 @@ public class TestingInterface implements GenericUI, Runnable {
 		this.username = username;
 		chatController.addObserver(this);
 		chatController.setUsername(username);
-		chatController.initListener(ListeningPort);
-		this.maxConnections = maxConnections;
+		chatController.initListener(ListeningPort, maxConnections);
 	}
 
 	@Override
