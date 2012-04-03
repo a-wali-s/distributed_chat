@@ -108,10 +108,9 @@ public class TestingInterface implements GenericUI, Runnable {
 		String content = "";
 		testfile = new File(username + "-test.txt");
 		synchronized (this) {
-
-			for (Map.Entry<String, TestUserProperty> userEntry : usersMsgCount
-					.entrySet()) {
-				TestUserProperty property = userEntry.getValue();
+			Object[] values = usersMsgCount.values().toArray();
+			for (int i = 0; i < values.length; i++) {
+				TestUserProperty property = (TestUserProperty) values[i];
 				content += property.toString() + "\n";
 			}
 		}
