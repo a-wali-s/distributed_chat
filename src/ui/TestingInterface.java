@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Observable;
 
 import application.ChatController;
+import application.DebugGraph;
 import application.Message;
 
 public class TestingInterface implements GenericUI, Runnable {
@@ -118,6 +119,9 @@ public class TestingInterface implements GenericUI, Runnable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		if(username.equals("Server")){
+			DebugGraph.getInstance().writeToFile(username);
 		}
 //		System.out.println(content);
 	}
