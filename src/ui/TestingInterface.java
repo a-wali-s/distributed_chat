@@ -23,6 +23,7 @@ public class TestingInterface implements GenericUI, Runnable {
 	private String username;
 	private File testfile;
 	private boolean isStartSending = false;
+	private int count = 0;
 
 	public TestingInterface(String username, int ListeningPort, int maxConnections,
 			String connectingHost, int connectingPort, String testMessage,
@@ -81,6 +82,7 @@ public class TestingInterface implements GenericUI, Runnable {
 		}else if(message.getMsgText().equals("stop")){
 			isStartSending = false;
 		}
+		count++;
 	}
 
 	@Override
@@ -114,6 +116,7 @@ public class TestingInterface implements GenericUI, Runnable {
 		String content = "";
 		testfile = new File(username + "-test.txt");
 		synchronized (this) {
+			content += "Count: " + String.valueOf(count) + "\n";
 			Object[] values = usersMsgCount.values().toArray();
 			for (int i = 0; i < values.length; i++) {
 				TestUserProperty property = (TestUserProperty) values[i];
