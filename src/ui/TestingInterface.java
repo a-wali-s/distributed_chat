@@ -106,10 +106,13 @@ public class TestingInterface implements GenericUI, Runnable {
 	private void updateTestFile() {
 		String content = "";
 		testfile = new File(username + "-test.txt");
-		for (Map.Entry<String, TestUserProperty> userEntry : usersMsgCount
-				.entrySet()) {
-			TestUserProperty property = userEntry.getValue();
-			content += property.toString() + "\n";
+		synchronized (this) {
+
+			for (Map.Entry<String, TestUserProperty> userEntry : usersMsgCount
+					.entrySet()) {
+				TestUserProperty property = userEntry.getValue();
+				content += property.toString() + "\n";
+			}
 		}
 		try {
 			FileWriter writer = new FileWriter(testfile);
@@ -126,6 +129,7 @@ public class TestingInterface implements GenericUI, Runnable {
 	public void run() {
 		int runningSecond = 0;
 		try {
+			Thread.sleep(120000);
 			while (msPerMsg != -1 && numMessages != runningSecond ) {
 
 				Thread.sleep(msPerMsg);
