@@ -25,7 +25,8 @@ public class Connection implements Runnable {
 	public void run(){
 		try {
 			while(connected) {
-				//ChatController.getInstance().receiveDebugMessage("Wait for object"); 
+				//ChatController.getInstance().receiveDebugMessage("Wait for object");
+				
 				Object buffer = in.readObject();
 				if(buffer instanceof Message)
 				{
@@ -35,7 +36,14 @@ public class Connection implements Runnable {
 			}
 
 		}
+		catch(EOFException e){
+			e.printStackTrace();
+			run();
+			
+		}
 		catch(IOException e){
+			e.printStackTrace();
+			
 				ClientInterface.getInstance().netSplitStatus = true;
 				//ChatController.getInstance().error("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
 				System.out.println(ClientInterface.getInstance().username + ": " + "disconnect from " + this.getUsername() + " -- " + this.socket.getRemoteSocketAddress());
@@ -96,6 +104,8 @@ public class Connection implements Runnable {
 			if(connected)
 			{
 				out.writeObject(msg);
+				out.reset();
+				
 				return 0;
 			}
 			return -1;
@@ -116,6 +126,7 @@ public class Connection implements Runnable {
 			if(connected)
 			{
 				out.writeObject(msg);
+				out.reset();
 				ClientInterface.getInstance().incrementTotalMessages();
 				return 0;
 			}

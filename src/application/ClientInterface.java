@@ -70,6 +70,7 @@ public class ClientInterface{
 			connect.disconnect();
 			connect.socket.close();
 			connect.in.close();
+			connect.out.flush();
 			connect.out.close();
 		}
 		connections = new ArrayList<Connection>();
@@ -356,6 +357,7 @@ public class ClientInterface{
 				connection.disconnect();
 				connection.socket.close();
 				connection.in.close();
+				connection.out.flush();
 				connection.out.close();
 				connections.remove(i);
 				break;

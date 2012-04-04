@@ -149,6 +149,10 @@ public class Message implements Serializable {
 		//ensure that object state has not been corrupted or tampered with maliciously
 		validateState();
 	}
+	
+	private void readObjectNoData() {
+		
+	}
 
 	/**
 	 * Stub method for later validation
