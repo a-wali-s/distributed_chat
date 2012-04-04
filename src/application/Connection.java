@@ -99,7 +99,6 @@ public class Connection implements Runnable {
 			if(connected)
 			{
 				out.writeObject(msg);
-				out.reset();
 				
 				return 0;
 			}
@@ -121,7 +120,6 @@ public class Connection implements Runnable {
 			if(connected)
 			{
 				out.writeObject(msg);
-				out.reset();
 				ClientInterface.getInstance().incrementTotalMessages();
 				return 0;
 			}
