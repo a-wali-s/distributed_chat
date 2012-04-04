@@ -17,8 +17,10 @@ public class Connection implements Runnable {
 	
 	public Connection(Socket socket) throws IOException{
 		this.socket = socket;
-		out = new ObjectOutputStream(socket.getOutputStream());
+		out = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+		out.flush();
 		in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+
 		this.connPort = Integer.toString(socket.getPort()); 
 	}
 	
@@ -26,13 +28,27 @@ public class Connection implements Runnable {
 		try {
 			while(connected) {
 				//ChatController.getInstance().receiveDebugMessage("Wait for object");
-				
+				try {
 				Object buffer = in.readObject();
 				if(buffer instanceof Message)
 				{
 					inBuffer = (Message)buffer;
 					receiveMessage(inBuffer);
 				}
+				}
+				catch(EOFException e)
+				{
+					e.printStackTrace();
+				}
+				catch(OptionalDataException e)
+				{
+					e.printStackTrace();
+				}
+				catch(StreamCorruptedException e)
+				{
+					e.printStackTrace();
+				}
+
 			}
 
 		}
@@ -99,7 +115,7 @@ public class Connection implements Runnable {
 			if(connected)
 			{
 				out.writeObject(msg);
-				
+				out.flush();
 				return 0;
 			}
 			return -1;
@@ -120,6 +136,7 @@ public class Connection implements Runnable {
 			if(connected)
 			{
 				out.writeObject(msg);
+				out.flush();
 				ClientInterface.getInstance().incrementTotalMessages();
 				return 0;
 			}
