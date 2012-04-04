@@ -65,11 +65,14 @@ public class ConnectionListener implements Runnable{
 			}
 		}
 		catch(BindException bindException){
+			bindException.printStackTrace();
 			ChatController.getInstance().error(bindException.getMessage());
 		}catch(SocketException socketException){
+			socketException.printStackTrace();
 			ChatController.getInstance().error("Socket Closed");
 			
 		}catch(IOException ioException){
+			ioException.printStackTrace();
 			ChatController.getInstance().error(ioException.getMessage());
 		}
 		finally{

@@ -198,6 +198,7 @@ public class ClientInterface{
 			addConnection(conn);
 		}
 		catch(UnknownHostException unknownHost) {
+			unknownHost.printStackTrace();
 			System.err.println("You are trying to connect to an unknown host!");
 			return false;
 		}
@@ -643,6 +644,7 @@ public class ClientInterface{
 			}
 		}
 		catch( SocketException e){
+			e.printStackTrace();
 			System.out.println(username + ": " + "WARNING: failed to load local addresses");
 		}
 	}
