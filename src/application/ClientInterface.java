@@ -3,11 +3,14 @@ package application;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -608,19 +611,41 @@ public class ClientInterface{
 		if( !localAddresses.isEmpty() )
 			localAddresses.clear();
 		
-		InetAddress in;  String [] tmp;
-		try {
+		InetAddress in;  String tmp;
+		/*try {
 			in = InetAddress.getLocalHost();
 			InetAddress[] all = InetAddress.getAllByName(in.getHostName());
 			for (int i=0; i<all.length; i++) {
 				tmp = all[i].toString().split("/");
 				localAddresses.add(tmp[1]);
 			}
-			/*System.out.println("My local addresses:");
+			System.out.println("My local addresses:");
 			for( int i=0; i<localAddresses.size(); i++ ){
 				System.out.println(localAddresses.get(i));
-			}*/
+			}
 		} catch (UnknownHostException e) {
+			System.out.println(username + ": " + "WARNING: failed to load local addresses");
+		}*/
+		
+		try {
+			Enumeration<NetworkInterface> nifs = NetworkInterface.getNetworkInterfaces();
+			if( nifs == null )
+				return;
+			
+			while( nifs.hasMoreElements()){
+				NetworkInterface nif = nifs.nextElement();
+				Enumeration<InetAddress> adrs = nif.getInetAddresses();
+				while( adrs.hasMoreElements()){
+					InetAddress adr = adrs.nextElement();
+					if( adr != null && !adr.isLoopbackAddress() && (nif.isPointToPoint() || !adr.isLinkLocalAddress())){
+						tmp = adr.toString();
+						System.out.println(tmp.substring(1, tmp.length()));
+						localAddresses.add(tmp.substring(1, tmp.length()));
+					}
+				}
+			}
+		}
+		catch( SocketException e){
 			System.out.println(username + ": " + "WARNING: failed to load local addresses");
 		}
 	}
