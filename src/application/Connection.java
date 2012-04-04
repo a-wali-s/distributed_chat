@@ -25,10 +25,17 @@ public class Connection implements Runnable {
 	public void run(){
 		try {
 			while(connected) {
-				//ChatController.getInstance().receiveDebugMessage("Wait for object");
-				inBuffer = (Message)in.readObject();
-				receiveMessage(inBuffer);
+				//ChatController.getInstance().receiveDebugMessage("Wait for object"); 
+				Object buffer = in.readObject();
+				if(buffer instanceof Message)
+				{
+					inBuffer = (Message)buffer;
+					receiveMessage(inBuffer);
+				}
 			}
+			this.socket.close();
+			this.in.close();
+			this.out.close();
 		}
 		catch(IOException e){
 				ClientInterface.getInstance().netSplitStatus = true;
@@ -83,8 +90,13 @@ public class Connection implements Runnable {
 	 */
 	public int sendSystemMessage(Message msg, Integer messageCode) {
 		try {
-			out.writeObject(msg);
-			return 0;
+			if(connected)
+			{
+				out.writeObject(msg);
+				return 0;
+			}
+			return -1;
+			
 		}
 		catch (IOException e) {
 			return -1;
@@ -98,9 +110,14 @@ public class Connection implements Runnable {
 	 */
 	public int sendMessage(Message msg) {
 		try {
-			out.writeObject(msg);
-			ClientInterface.getInstance().incrementTotalMessages();
-			return 0;
+			if(connected)
+			{
+				out.writeObject(msg);
+				ClientInterface.getInstance().incrementTotalMessages();
+				return 0;
+			}
+			
+			return -1;
 		}catch (Exception e) {
 			return -1;
 		}

@@ -67,15 +67,7 @@ public class ClientInterface{
 	public void disconnect(){
 		for(int i = 0; i<connections.size();i++){
 			Connection connect = connections.get(i);
-			try {
-				connect.disconnect();
-				connect.socket.close();
-				connect.in.close();
-				connect.out.close();
-			} catch (IOException e) {
-				System.out.println("Could not disconnect");
-				ChatController.getInstance().error(e.getMessage());
-			}
+			connect.disconnect();
 		}
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
@@ -357,13 +349,6 @@ public class ClientInterface{
 			Connection connection = connections.get(i);
 			if(!connection.isChild){
 				connection.disconnect();
-				try {
-					connection.socket.close();
-					connection.in.close();
-					connection.out.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 			}
 		}
 	}
