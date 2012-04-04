@@ -64,10 +64,13 @@ public class ClientInterface{
 	}
 	
 	// disconnect from all connections and reinitialize the singleton instance
-	public void disconnect(){
+	public void disconnect() throws IOException{
 		for(int i = 0; i<connections.size();i++){
 			Connection connect = connections.get(i);
 			connect.disconnect();
+			connect.socket.close();
+			connect.in.close();
+			connect.out.close();
 		}
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
@@ -234,15 +237,17 @@ public class ClientInterface{
 		Connection thisConn = null;
 		for(int i = 0; i < connections.size(); i++) {
 			thisConn = connections.get(i);
-			if(thisConn != conn) // if it isn't from the connection that sent the message
+			if(thisConn != null && thisConn.socket != null && thisConn != conn) // if it isn't from the connection that sent the message
 			{
 				thisConn.sendMessage(msg);
 			}
 		}
+		
 		if( conn == null){
 			ChatController.getInstance().receiveMsg(msg);
 			messageNumber++;
 		}
+		
 		if( netSplitStatus == true && (msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE) ){
 			netSplitMessageQueue.add(msg);
 //			System.out.println("+1 msg in NSQ");
@@ -277,7 +282,7 @@ public class ClientInterface{
 	 * A new message has been received from one of the connections.
 	 * Check for the message originator.  If null, then this is a system message - do not send to UI
 	 */
-	void receiveMessage(Message msg, Connection conn)
+	void receiveMessage(Message msg, Connection conn) throws IOException
 	{
 		if(msg.messageNumber >= this.messageNumber)
 			this.messageNumber = msg.messageNumber+1;
@@ -344,11 +349,16 @@ public class ClientInterface{
 		}
 			
 	}
-	public void disconnectFromParent(){
+	public void disconnectFromParent() throws IOException{
 		for(int i=0;i<connections.size();i++){
 			Connection connection = connections.get(i);
 			if(!connection.isChild){
 				connection.disconnect();
+				connection.socket.close();
+				connection.in.close();
+				connection.out.close();
+				connections.remove(i);
+				break;
 			}
 		}
 	}

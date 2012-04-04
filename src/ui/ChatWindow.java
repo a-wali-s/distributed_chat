@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -197,7 +198,12 @@ public class ChatWindow implements GenericUI {
             public void actionPerformed(ActionEvent e)
             {
             	ChatController handler = ChatController.getInstance();
-            	handler.disconnect();
+            	try {
+					handler.disconnect();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             	toggleConnectionButton(button.getText());
             }
         });

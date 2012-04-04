@@ -1,5 +1,6 @@
 package application;
 
+import java.io.IOException;
 import java.util.Observable;
 import java.util.SortedSet;
 
@@ -57,7 +58,7 @@ public class ChatController extends Observable {
 			receiveMsg(new Message(sMessage, "SystemMsg", msgCode));
 		}
 	}
-	public void disconnect(){
+	public void disconnect() throws IOException{
 		server.stop();
 		client.disconnect();
 		int port = server.port;
