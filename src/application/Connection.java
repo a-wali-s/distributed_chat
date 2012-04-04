@@ -18,7 +18,7 @@ public class Connection implements Runnable {
 	public Connection(Socket socket) throws IOException{
 		this.socket = socket;
 		out = new ObjectOutputStream(socket.getOutputStream());
-		in = new ObjectInputStream(socket.getInputStream());
+		in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 		this.connPort = Integer.toString(socket.getPort()); 
 	}
 	
