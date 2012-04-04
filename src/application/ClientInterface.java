@@ -69,9 +69,9 @@ public class ClientInterface{
 			Connection connect = connections.get(i);
 			try {
 				connect.disconnect();
+				connect.socket.close();
 				connect.in.close();
 				connect.out.close();
-				connect.socket.close();
 			} catch (IOException e) {
 				System.out.println("Could not disconnect");
 				ChatController.getInstance().error(e.getMessage());
@@ -358,9 +358,9 @@ public class ClientInterface{
 			if(!connection.isChild){
 				connection.disconnect();
 				try {
+					connection.socket.close();
 					connection.in.close();
 					connection.out.close();
-					connection.socket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

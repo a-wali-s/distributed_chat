@@ -101,7 +101,7 @@ public class Connection implements Runnable {
 			out.writeObject(msg);
 			ClientInterface.getInstance().incrementTotalMessages();
 			return 0;
-		}catch (IOException e) {
+		}catch (Exception e) {
 			return -1;
 		}
 	}
