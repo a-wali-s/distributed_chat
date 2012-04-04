@@ -36,11 +36,6 @@ public class Connection implements Runnable {
 			}
 
 		}
-		catch(EOFException e){
-			e.printStackTrace();
-			run();
-			
-		}
 		catch(IOException e){
 			e.printStackTrace();
 			
