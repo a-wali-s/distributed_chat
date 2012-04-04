@@ -355,7 +355,7 @@ public class ClientInterface{
 	public void disconnectFromParent(){
 		for(int i=0;i<connections.size();i++){
 			Connection connection = connections.get(i);
-			if(connection.isParent){
+			if(!connection.isChild){
 				connection.disconnect();
 				try {
 					connection.in.close();
@@ -371,7 +371,7 @@ public class ClientInterface{
 		int childCount = 0;
 		for(Connection conn : connections)
 		{
-			if(conn.isParent)
+			if(conn.isChild)
 			{
 				childCount++;
 			}

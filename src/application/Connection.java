@@ -9,7 +9,7 @@ public class Connection implements Runnable {
 	public ObjectInputStream in = null;
 	public int childNumber;
 	public int nodeDepth = 1;
-	public boolean isParent = false;
+	public boolean isChild = false;
 	private boolean connected = true;
 	private String connPort = "";
 	private String username = "";

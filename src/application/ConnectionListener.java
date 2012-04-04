@@ -57,7 +57,7 @@ public class ConnectionListener implements Runnable{
 					ClientInterface.getInstance().redirectConnection(connWrapper);
 				}
 				else {
-					connWrapper.isParent = true;
+					connWrapper.isChild = true;
 					connWrapper.childNumber = nextChildNumber;
 					nextChildNumber++;
 					ClientInterface.getInstance().acceptConnection(connWrapper);
