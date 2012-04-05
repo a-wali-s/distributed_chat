@@ -2,6 +2,7 @@ package application;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class Connection implements Runnable {
 	public Socket socket = null;
@@ -31,29 +32,42 @@ public class Connection implements Runnable {
 				try {
 				Object buffer = in.readObject();
 				if(buffer instanceof Message)
-				{
-					inBuffer = (Message)buffer;
-					receiveMessage(inBuffer);
-				}
+					{
+						inBuffer = (Message)buffer;
+						receiveMessage(inBuffer);
+					}
 				}
 				catch(EOFException e)
 				{
-					e.printStackTrace();
+//					e.printStackTrace();
+					throw new IOException();
 				}
 				catch(OptionalDataException e)
 				{
-					e.printStackTrace();
+//					e.printStackTrace();
+					throw new IOException();
 				}
 				catch(StreamCorruptedException e)
 				{
-					e.printStackTrace();
+//					e.printStackTrace();
+					throw new IOException();
+				}
+				catch(SocketException e)
+				{
+//					e.printStackTrace();
+					throw new IOException();
 				}
 
 			}
-
+			System.out.println(ClientInterface.getInstance().username + ": " + "disconnect from network");
+			System.out.println(ClientInterface.getInstance().username + ": " + "Removing self from connections");
+			socket.close();
+			in.close();
+			out.close();
+			ClientInterface.getInstance().connections.remove(this);
 		}
 		catch(IOException e){
-			e.printStackTrace();
+//			e.printStackTrace();
 			
 				ClientInterface.getInstance().netSplitStatus = true;
 				//ChatController.getInstance().error("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());

@@ -353,8 +353,10 @@ public class ChatWindow implements GenericUI {
 			}
 		}
 		displayText = "";
-		
-		for (Message m : msgs) {
+		Message m = new Message();
+		msgIterator = msgs.listIterator();
+		while(msgIterator.hasNext()){
+			m = msgIterator.next();
 			displayText += getFormattedMessage(m);
 		}
 		/*msgIterator = msgs.listIterator();
