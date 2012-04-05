@@ -119,7 +119,7 @@ public class Connection implements Runnable {
 	 * Sends Message Object through this particular socket connection.
 	 * This should only be called if the connection is alive.
 	 */
-	public synchronized int sendSystemMessage(Message msg, Integer messageCode) {
+	public int sendSystemMessage(Message msg, Integer messageCode) {
 		try {
 			if(connected)
 			{
