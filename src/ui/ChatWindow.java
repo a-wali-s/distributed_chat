@@ -296,12 +296,15 @@ public class ChatWindow implements GenericUI {
 	 */
 	private String getFormattedMessage(Message message) {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		String result =  String.format("%s (%s): %s", message.getUsername(), sdf.format(message.getTimestamp()),
-				message.getMsgText() + "\n");
-		if(DistributedChat.DEBUG){
-			result = String.valueOf(message.getMessageNumber()) + "-" + result;
+		if (message != null){
+			String result =  String.format("%s (%s): %s", message.getUsername(), sdf.format(message.getTimestamp()),
+					message.getMsgText() + "\n");
+			if(DistributedChat.DEBUG){
+				result = String.valueOf(message.getMessageNumber()) + "-" + result;
+			}
+			return result;
 		}
-		return result;
+		return "";
 	}
 	
 	/*
@@ -353,8 +356,8 @@ public class ChatWindow implements GenericUI {
 			}
 		}
 		displayText = "";
-		
-		for (Message m : msgs) {
+		Message m = null;
+		for (msgIterator = msgs.listIterator(); msgIterator.hasNext(); m = msgIterator.next()) {
 			displayText += getFormattedMessage(m);
 		}
 		/*msgIterator = msgs.listIterator();
