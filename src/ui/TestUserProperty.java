@@ -3,7 +3,7 @@ package ui;
 import java.util.Date;
 
 public class TestUserProperty {
-	private Date currentTime;
+	private long currentTime;
 	private long totalLatency;
 	private int count;
 	private String username;
@@ -11,13 +11,13 @@ public class TestUserProperty {
 	public TestUserProperty(String username, long startTime){
 		count = 1;
 		this.startTime = startTime;
-		currentTime = new Date(System.currentTimeMillis());
-		totalLatency = currentTime.getTime() - startTime;
+		currentTime = System.currentTimeMillis();
+		totalLatency = currentTime - startTime;
 		this.username = username;
 	}
 	public void update(long l){
-		currentTime = new Date(System.currentTimeMillis());
-		totalLatency += currentTime.getTime() - l;
+		currentTime = System.currentTimeMillis();
+		totalLatency += currentTime - l;
 		count++;
 	}
 	public double getAvgRTT(){
@@ -25,6 +25,6 @@ public class TestUserProperty {
 	}
 	@Override
 	public String toString(){
-		return String.format("Username: %s AvgRTT: %f count: %d", username, getAvgRTT(), count);
+		return String.format("Username: %s Avg Latency: %f count: %d", username, getAvgRTT(), count);
 	}
 }

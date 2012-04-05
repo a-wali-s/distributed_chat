@@ -73,7 +73,7 @@ public class DebugGraph {
 		Connection lowestCountConnection = null;
 		for(int i = 0; i < connections.size(); i++) {
 			Connection conn = connections.get(i);
-			if(conn != incomingConnection && conn.isParent)
+			if(conn != incomingConnection && conn.isChild)
 			{
 				int count = 0;
 				for (ListIterator<String> it = edges.listIterator(); it.hasNext();){

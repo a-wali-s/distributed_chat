@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Scanner;
 
 import application.ChatController;
 import application.DebugGraph;
@@ -21,6 +22,8 @@ public class TestingInterface implements GenericUI, Runnable {
 	private int maxConnections = 0;
 	private String username;
 	private File testfile;
+	private boolean isStartSending = false;
+	private int count = 0;
 
 	public TestingInterface(String username, int ListeningPort, int maxConnections,
 			String connectingHost, int connectingPort, String testMessage,
@@ -74,6 +77,12 @@ public class TestingInterface implements GenericUI, Runnable {
 		} else {
 			usersMsgCount.get(username).update(message.getTimestamp());
 		}
+		if(message.getMsgText().equals("start")){
+			isStartSending = true;
+		}else if(message.getMsgText().equals("stop")){
+			isStartSending = false;
+		}
+		count++;
 	}
 
 	@Override
@@ -107,6 +116,7 @@ public class TestingInterface implements GenericUI, Runnable {
 		String content = "";
 		testfile = new File(username + "-test.txt");
 		synchronized (this) {
+			content += "Count: " + String.valueOf(count) + "\n";
 			Object[] values = usersMsgCount.values().toArray();
 			for (int i = 0; i < values.length; i++) {
 				TestUserProperty property = (TestUserProperty) values[i];
@@ -116,6 +126,7 @@ public class TestingInterface implements GenericUI, Runnable {
 		try {
 			FileWriter writer = new FileWriter(testfile);
 			writer.write(content);
+			System.out.println(content);
 			writer.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -132,10 +143,10 @@ public class TestingInterface implements GenericUI, Runnable {
 	public void run() {
 		int runningSecond = 0;
 		try {
-			Thread.sleep(120000);
-			while (msPerMsg != -1 && numMessages != runningSecond ) {
-
+			while (msPerMsg != -1 && numMessages != runningSecond) {
+				
 				Thread.sleep(msPerMsg);
+				while(!isStartSending){};
 				sentMsg(testMessage);
 				runningSecond++;
 				if ((runningSecond % UPDATES_PER_FILE_WRITE) == 0) {

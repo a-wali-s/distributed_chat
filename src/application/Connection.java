@@ -2,6 +2,7 @@ package application;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class Connection implements Runnable {
 	public Socket socket = null;
@@ -9,7 +10,7 @@ public class Connection implements Runnable {
 	public ObjectInputStream in = null;
 	public int childNumber;
 	public int nodeDepth = 1;
-	public boolean isParent = false;
+	public boolean isChild = false;
 	private boolean connected = true;
 	private String connPort = "";
 	private String username = "";
@@ -17,8 +18,10 @@ public class Connection implements Runnable {
 	
 	public Connection(Socket socket) throws IOException{
 		this.socket = socket;
-		out = new ObjectOutputStream(socket.getOutputStream());
-		in = new ObjectInputStream(socket.getInputStream());
+		out = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+		out.flush();
+		in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+
 		this.connPort = Integer.toString(socket.getPort()); 
 	}
 	
@@ -26,11 +29,46 @@ public class Connection implements Runnable {
 		try {
 			while(connected) {
 				//ChatController.getInstance().receiveDebugMessage("Wait for object");
-				inBuffer = (Message)in.readObject();
-				receiveMessage(inBuffer);
+				try {
+				Object buffer = in.readObject();
+				if(buffer instanceof Message)
+					{
+						inBuffer = (Message)buffer;
+						receiveMessage(inBuffer);
+					}
+				}
+				catch(EOFException e)
+				{
+//					e.printStackTrace();
+					throw new IOException();
+				}
+				catch(OptionalDataException e)
+				{
+//					e.printStackTrace();
+					throw new IOException();
+				}
+				catch(StreamCorruptedException e)
+				{
+//					e.printStackTrace();
+					throw new IOException();
+				}
+				catch(SocketException e)
+				{
+//					e.printStackTrace();
+					throw new IOException();
+				}
+
 			}
+			System.out.println(ClientInterface.getInstance().username + ": " + "disconnect from network");
+			System.out.println(ClientInterface.getInstance().username + ": " + "Removing self from connections");
+			socket.close();
+			in.close();
+			out.close();
+			ClientInterface.getInstance().connections.remove(this);
 		}
 		catch(IOException e){
+//			e.printStackTrace();
+			
 				ClientInterface.getInstance().netSplitStatus = true;
 				//ChatController.getInstance().error("disconnect from " + this.username + " -- " + this.socket.getRemoteSocketAddress());
 				System.out.println(ClientInterface.getInstance().username + ": " + "disconnect from " + this.getUsername() + " -- " + this.socket.getRemoteSocketAddress());
@@ -40,7 +78,12 @@ public class Connection implements Runnable {
 				if (DistributedChat.DEBUG){ 
 					DCMessage.setMsgText(this.getUsername());
 				}
-				receiveMessage(DCMessage);
+				try {
+					receiveMessage(DCMessage);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				// Only a client should bother trying to reconnect.  A node acting on server-side of a disconnect does not need to do anything
 				if( this.socket.getLocalPort() != ChatController.getInstance().getListenerPort() ){
 	//				try {
@@ -83,8 +126,14 @@ public class Connection implements Runnable {
 	 */
 	public int sendSystemMessage(Message msg, Integer messageCode) {
 		try {
-			out.writeObject(msg);
-			return 0;
+			if(connected)
+			{
+				out.writeObject(msg);
+				out.flush();
+				return 0;
+			}
+			return -1;
+			
 		}
 		catch (IOException e) {
 			return -1;
@@ -98,15 +147,21 @@ public class Connection implements Runnable {
 	 */
 	public int sendMessage(Message msg) {
 		try {
-			out.writeObject(msg);
-			ClientInterface.getInstance().incrementTotalMessages();
-			return 0;
-		}catch (IOException e) {
+			if(connected)
+			{
+				out.writeObject(msg);
+				out.flush();
+				ClientInterface.getInstance().incrementTotalMessages();
+				return 0;
+			}
+			
+			return -1;
+		}catch (Exception e) {
 			return -1;
 		}
 	}
 	
-	public void receiveMessage(Message msg) {
+	public void receiveMessage(Message msg) throws IOException {
 		if (DistributedChat.DEBUG_NETWORK_DELAY
 				&& msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE) {
 			try {

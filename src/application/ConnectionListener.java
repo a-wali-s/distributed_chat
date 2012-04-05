@@ -20,7 +20,7 @@ public class ConnectionListener implements Runnable{
 	}
 	public ConnectionListener(int port, int maxConnections){
 		this.port = port;
-		this.MAX_CONNECTIONS = maxConnections;
+		MAX_CONNECTIONS = maxConnections;
 	}
 	
 	public int getMaxConnections(){
@@ -57,7 +57,7 @@ public class ConnectionListener implements Runnable{
 					ClientInterface.getInstance().redirectConnection(connWrapper);
 				}
 				else {
-					connWrapper.isParent = true;
+					connWrapper.isChild = true;
 					connWrapper.childNumber = nextChildNumber;
 					nextChildNumber++;
 					ClientInterface.getInstance().acceptConnection(connWrapper);
@@ -65,11 +65,14 @@ public class ConnectionListener implements Runnable{
 			}
 		}
 		catch(BindException bindException){
+			bindException.printStackTrace();
 			ChatController.getInstance().error(bindException.getMessage());
 		}catch(SocketException socketException){
+			socketException.printStackTrace();
 			ChatController.getInstance().error("Socket Closed");
 			
 		}catch(IOException ioException){
+			ioException.printStackTrace();
 			ChatController.getInstance().error(ioException.getMessage());
 		}
 		finally{

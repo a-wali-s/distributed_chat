@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -197,7 +198,12 @@ public class ChatWindow implements GenericUI {
             public void actionPerformed(ActionEvent e)
             {
             	ChatController handler = ChatController.getInstance();
-            	handler.disconnect();
+            	try {
+					handler.disconnect();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             	toggleConnectionButton(button.getText());
             }
         });
@@ -290,12 +296,15 @@ public class ChatWindow implements GenericUI {
 	 */
 	private String getFormattedMessage(Message message) {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		String result =  String.format("%s (%s): %s", message.getUsername(), sdf.format(message.getTimestamp()),
-				message.getMsgText() + "\n");
-		if(DistributedChat.DEBUG){
-			result = String.valueOf(message.getMessageNumber()) + "-" + result;
+		if (message != null){
+			String result =  String.format("%s (%s): %s", message.getUsername(), sdf.format(message.getTimestamp()),
+					message.getMsgText() + "\n");
+			if(DistributedChat.DEBUG){
+				result = String.valueOf(message.getMessageNumber()) + "-" + result;
+			}
+			return result;
 		}
-		return result;
+		return "";
 	}
 	
 	/*
@@ -316,43 +325,47 @@ public class ChatWindow implements GenericUI {
 	{
 		Message iteratorMsg;
 		boolean inserted = false;
-		
+
 		if (msgs.isEmpty() == true) {
 			msgs.addLast(message);
 		}
 		else {
-			for(int i = 0; i < msgs.size(); i++)
-			{
-				if(!inserted) {
-					iteratorMsg = msgs.get(i);
-					if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
-						msgs.add(i-1, message);
-						inserted = true;
-					}
-					else if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && i == msgs.size()-1) {
-						msgs.addLast(message);
-						inserted = true;
-					}
-					else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
-						msgs.add(i-1, message);
-						inserted = true;
-					}
-					else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && i == msgs.size()-1) {
-						msgs.addLast(message);
-						inserted = true;
-					}
+			msgIterator = msgs.listIterator();
+			while (msgIterator.hasNext() && !inserted) {
+				iteratorMsg = msgIterator.next();
+				if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && message.getUsername().compareTo(iteratorMsg.getUsername()) < 0) {
+					msgs.add(msgIterator.previousIndex(), message);
+					inserted = true;
+				}
+				else if (iteratorMsg.getMessageNumber() == message.getMessageNumber() && !msgIterator.hasNext()) {
+					msgs.addLast(message);
+					inserted = true;
+				}
+				else if (iteratorMsg.getMessageNumber() > message.getMessageNumber()) {
+					msgs.add(msgIterator.previousIndex(), message);
+					inserted = true;
+				}
+				else if (iteratorMsg.getMessageNumber() < message.getMessageNumber() && !msgIterator.hasNext()) {
+					msgs.addLast(message);
+					inserted = true;
 				}
 			}
-			
+
 			if (msgs.size() >= 5000) {
 				msgs = new LinkedList<Message>();
 			}
 		}
 		displayText = "";
-		for(int i = 0; i < msgs.size(); i++)
-		{
-			displayText += getFormattedMessage(msgs.get(i));
+		Message m = new Message();
+		msgIterator = msgs.listIterator();
+		while(msgIterator.hasNext()){
+			m = msgIterator.next();
+			displayText += getFormattedMessage(m);
 		}
+		/*msgIterator = msgs.listIterator();
+		while (msgIterator.hasNext()) {
+			displayText += getFormattedMessage(msgIterator.next());
+		}*/
 		// Prints message to the message field in the format of time stamp, user name, and received message
 		textArea.setText(displayText);	
 	}

@@ -3,11 +3,14 @@ package application;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -61,17 +64,14 @@ public class ClientInterface{
 	}
 	
 	// disconnect from all connections and reinitialize the singleton instance
-	public void disconnect(){
-		for(Connection connect : connections){
-			try {
-				connect.disconnect();
-				connect.in.close();
-				connect.out.close();
-				connect.socket.close();
-			} catch (IOException e) {
-				System.out.println("Could not disconnect");
-				ChatController.getInstance().error(e.getMessage());
-			}
+	public void disconnect() throws IOException{
+		for(int i = 0; i<connections.size();i++){
+			Connection connect = connections.get(i);
+			connect.disconnect();
+			connect.socket.close();
+			connect.in.close();
+			connect.out.flush();
+			connect.out.close();
 		}
 		connections = new ArrayList<Connection>();
 		friends = new ArrayList<Friend>();
@@ -198,6 +198,7 @@ public class ClientInterface{
 			addConnection(conn);
 		}
 		catch(UnknownHostException unknownHost) {
+			unknownHost.printStackTrace();
 			System.err.println("You are trying to connect to an unknown host!");
 			return false;
 		}
@@ -238,15 +239,17 @@ public class ClientInterface{
 		Connection thisConn = null;
 		for(int i = 0; i < connections.size(); i++) {
 			thisConn = connections.get(i);
-			if(thisConn != conn) // if it isn't from the connection that sent the message
+			if(thisConn != null && thisConn.socket != null && thisConn != conn) // if it isn't from the connection that sent the message
 			{
 				thisConn.sendMessage(msg);
 			}
 		}
+		
 		if( conn == null){
 			ChatController.getInstance().receiveMsg(msg);
 			messageNumber++;
 		}
+		
 		if( netSplitStatus == true && (msg.getMessageCode() == Message.MESSAGE_CODE_REGULAR_MESSAGE) ){
 			netSplitMessageQueue.add(msg);
 //			System.out.println("+1 msg in NSQ");
@@ -281,7 +284,7 @@ public class ClientInterface{
 	 * A new message has been received from one of the connections.
 	 * Check for the message originator.  If null, then this is a system message - do not send to UI
 	 */
-	void receiveMessage(Message msg, Connection conn)
+	void receiveMessage(Message msg, Connection conn) throws IOException
 	{
 		if(msg.messageNumber >= this.messageNumber)
 			this.messageNumber = msg.messageNumber+1;
@@ -338,7 +341,7 @@ public class ClientInterface{
 			break;
 		case Message.MESSAGE_CODE_CONNECT_REDIRECT:
 			String[] addrAndPort = msg.getMsgText().split("/");
-			this.disconnect();
+			this.disconnectFromParent();
 			System.out.println(username + ": " + "creating a new connection!!!! to " + addrAndPort[1]);
 			this.createConnection(addrAndPort[0], Integer.parseInt(addrAndPort[1]), false);
 			break;
@@ -348,12 +351,25 @@ public class ClientInterface{
 		}
 			
 	}
-	
+	public void disconnectFromParent() throws IOException{
+		for(int i=0;i<connections.size();i++){
+			Connection connection = connections.get(i);
+			if(!connection.isChild){
+				connection.disconnect();
+				connection.socket.close();
+				connection.in.close();
+				connection.out.flush();
+				connection.out.close();
+				connections.remove(i);
+				break;
+			}
+		}
+	}
 	public int numberOfChildConnections() {
 		int childCount = 0;
 		for(Connection conn : connections)
 		{
-			if(conn.isParent)
+			if(conn.isChild)
 			{
 				childCount++;
 			}
@@ -593,19 +609,42 @@ public class ClientInterface{
 		if( !localAddresses.isEmpty() )
 			localAddresses.clear();
 		
-		InetAddress in;  String [] tmp;
-		try {
+		InetAddress in;  String tmp;
+		/*try {
 			in = InetAddress.getLocalHost();
 			InetAddress[] all = InetAddress.getAllByName(in.getHostName());
 			for (int i=0; i<all.length; i++) {
 				tmp = all[i].toString().split("/");
 				localAddresses.add(tmp[1]);
 			}
-			/*System.out.println("My local addresses:");
+			System.out.println("My local addresses:");
 			for( int i=0; i<localAddresses.size(); i++ ){
 				System.out.println(localAddresses.get(i));
-			}*/
+			}
 		} catch (UnknownHostException e) {
+			System.out.println(username + ": " + "WARNING: failed to load local addresses");
+		}*/
+		
+		try {
+			Enumeration<NetworkInterface> nifs = NetworkInterface.getNetworkInterfaces();
+			if( nifs == null )
+				return;
+			
+			while( nifs.hasMoreElements()){
+				NetworkInterface nif = nifs.nextElement();
+				Enumeration<InetAddress> adrs = nif.getInetAddresses();
+				while( adrs.hasMoreElements()){
+					InetAddress adr = adrs.nextElement();
+					if( adr != null && !adr.isLoopbackAddress() && (nif.isPointToPoint() || !adr.isLinkLocalAddress())){
+						tmp = adr.toString();
+						System.out.println(tmp.substring(1, tmp.length()));
+						localAddresses.add(tmp.substring(1, tmp.length()));
+					}
+				}
+			}
+		}
+		catch( SocketException e){
+			e.printStackTrace();
 			System.out.println(username + ": " + "WARNING: failed to load local addresses");
 		}
 	}
