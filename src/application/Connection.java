@@ -37,11 +37,6 @@ public class Connection implements Runnable {
 						receiveMessage(inBuffer);
 					}
 				}
-				catch(EOFException e)
-				{
-					e.printStackTrace();
-					//throw new IOException();
-				}
 				catch(OptionalDataException e)
 				{
 					e.printStackTrace();
