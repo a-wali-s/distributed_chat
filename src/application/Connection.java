@@ -39,23 +39,18 @@ public class Connection implements Runnable {
 				}
 				catch(EOFException e)
 				{
-//					e.printStackTrace();
-					throw new IOException();
+					e.printStackTrace();
+					//throw new IOException();
 				}
 				catch(OptionalDataException e)
 				{
-//					e.printStackTrace();
-					throw new IOException();
+					e.printStackTrace();
+					//throw new IOException();
 				}
 				catch(StreamCorruptedException e)
 				{
-//					e.printStackTrace();
-					throw new IOException();
-				}
-				catch(SocketException e)
-				{
-//					e.printStackTrace();
-					throw new IOException();
+					e.printStackTrace();
+					//throw new IOException();
 				}
 
 			}
@@ -124,7 +119,7 @@ public class Connection implements Runnable {
 	 * Sends Message Object through this particular socket connection.
 	 * This should only be called if the connection is alive.
 	 */
-	public int sendSystemMessage(Message msg, Integer messageCode) {
+	public synchronized int sendSystemMessage(Message msg, Integer messageCode) {
 		try {
 			if(connected)
 			{
@@ -146,19 +141,9 @@ public class Connection implements Runnable {
 	 * This should only be called if the connection is alive.
 	 */
 	public int sendMessage(Message msg) {
-		try {
-			if(connected)
-			{
-				out.writeObject(msg);
-				out.flush();
-				ClientInterface.getInstance().incrementTotalMessages();
-				return 0;
-			}
-			
-			return -1;
-		}catch (Exception e) {
-			return -1;
-		}
+		ClientInterface.getInstance().incrementTotalMessages();
+		return sendSystemMessage(msg, Message.MESSAGE_CODE_REGULAR_MESSAGE);
+
 	}
 	
 	public void receiveMessage(Message msg) throws IOException {
