@@ -45,7 +45,7 @@ public class Connection implements Runnable {
 				catch(StreamCorruptedException e)
 				{
 					e.printStackTrace();
-					throw new IOException();
+					if(!socket.isConnected()) throw new IOException();
 				}
 
 			}
