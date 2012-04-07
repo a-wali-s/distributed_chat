@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in `seq 2 50`
+for i in `seq 2 26`
 do
         USERNAME=`echo remoteName$i`
         PORT=$((23909+$i))
