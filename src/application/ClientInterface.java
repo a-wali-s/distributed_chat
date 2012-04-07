@@ -78,6 +78,7 @@ public class ClientInterface{
 		resetKnownUsers();
 		localAddresses = new ArrayList<String>();
 		netSplitMessageQueue = new ArrayList<Message>();
+		new DebugGraph();
 	}
 	
 	private void resetKnownUsers() {
