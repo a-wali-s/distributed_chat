@@ -39,13 +39,13 @@ public class Connection implements Runnable {
 				}
 				catch(OptionalDataException e)
 				{
-					e.printStackTrace();
+					//e.printStackTrace();
 					//throw new IOException();
 				}
 				catch(StreamCorruptedException e)
 				{
-					e.printStackTrace();
-					if(!socket.isConnected()) throw new IOException();
+					//e.printStackTrace();
+					//if(!socket.isConnected()) throw new IOException();
 				}
 
 			}

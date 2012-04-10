@@ -1,14 +1,18 @@
 package ui;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Scanner;
 
 import application.ChatController;
+import application.ClientInterface;
 import application.DebugGraph;
 import application.Message;
 
@@ -24,6 +28,7 @@ public class TestingInterface implements GenericUI, Runnable {
 	private File testfile;
 	private boolean isStartSending = false;
 	private int count = 0;
+	private long start_time = 0;
 
 	public TestingInterface(String username, int ListeningPort, int maxConnections,
 			String connectingHost, int connectingPort, String testMessage,
@@ -79,6 +84,8 @@ public class TestingInterface implements GenericUI, Runnable {
 		}
 		if(message.getMsgText().equals("start")){
 			isStartSending = true;
+			System.out.println("Received Start Message");
+			this.start_time = new Date().getTime();
 		}else if(message.getMsgText().equals("stop")){
 			isStartSending = false;
 		}
@@ -96,12 +103,26 @@ public class TestingInterface implements GenericUI, Runnable {
 			e.printStackTrace();
 		}
 		Thread t = new Thread(this);
-		t.run();
-		
+		t.start();
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		while(true)
+		{
+			try {
+				String message = br.readLine();
+				if(username.equals("Server")){
+					ClientInterface.getInstance().sendMessage(message);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	@Override
 	public void msgReceived(Message msg) {
+
 		// TODO Auto-generated method stub
 
 	}
@@ -141,22 +162,37 @@ public class TestingInterface implements GenericUI, Runnable {
 
 	@Override
 	public void run() {
+		boolean stop = false;
 		int runningSecond = 0;
 		try {
-			while (msPerMsg != -1 && numMessages != runningSecond) {
+			while (msPerMsg != -1 && numMessages != runningSecond && !stop) {
 				
 				Thread.sleep(msPerMsg);
 				while(!isStartSending){};
 				sentMsg(testMessage);
+				long time2 = new Date().getTime();
 				runningSecond++;
 				if ((runningSecond % UPDATES_PER_FILE_WRITE) == 0) {
-					updateTestFile();
+					if(this.start_time != 0 && (time2 - this.start_time) > 60000)
+					{
+						updateTestFile();
+						isStartSending = false;
+						this.start_time = 0;
+						stop = true;
+					}
 				}
 			}
-			while (true) {
+			while (true && !stop) {
 				// for root node
-				Thread.sleep(UPDATES_PER_FILE_WRITE * 1000);
-				updateTestFile();
+				Thread.sleep(UPDATES_PER_FILE_WRITE * 100);
+				long time2 = new Date().getTime();
+				System.out.println(this.start_time);
+				if(this.start_time != 0 && (time2 - this.start_time) > 60000)
+				{
+					updateTestFile();
+					isStartSending = false;
+					this.start_time = 0;
+				}
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -164,5 +200,8 @@ public class TestingInterface implements GenericUI, Runnable {
 		}
 
 	}
+	
+	
+	
 
 }

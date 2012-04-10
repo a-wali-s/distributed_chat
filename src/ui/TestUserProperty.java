@@ -25,6 +25,7 @@ public class TestUserProperty {
 	}
 	@Override
 	public String toString(){
-		return String.format("Username: %s Avg Latency: %f count: %d", username, getAvgRTT(), count);
+		return String.format("%f %d", getAvgRTT(), count);
+		//return String.format("Username: %s Avg Latency: %f count: %d", username, getAvgRTT(), count);
 	}
 }

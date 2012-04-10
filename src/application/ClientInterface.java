@@ -27,7 +27,7 @@ public class ClientInterface{
  	List<String> localAddresses;
 	SortedSet<String> knownUsers;
  	String message;	
- 	String username = "";
+ 	public String username = "";
 	private Integer nodeDepth = 1;
 	private Integer messageNumber = 1;
 	private boolean isHotNode = false;
