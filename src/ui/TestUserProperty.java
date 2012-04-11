@@ -17,7 +17,7 @@ public class TestUserProperty {
 	}
 	public void update(long l){
 		currentTime = System.currentTimeMillis();
-		totalLatency += currentTime - l;
+		totalLatency += (currentTime - l);
 		count++;
 	}
 	public double getAvgRTT(){

@@ -173,9 +173,10 @@ public class TestingInterface implements GenericUI, Runnable {
 				long time2 = new Date().getTime();
 				runningSecond++;
 				if ((runningSecond % UPDATES_PER_FILE_WRITE) == 0) {
+					updateTestFile();
 					if(this.start_time != 0 && (time2 - this.start_time) > 60000)
 					{
-						updateTestFile();
+						
 						isStartSending = false;
 						this.start_time = 0;
 						stop = true;
@@ -184,12 +185,13 @@ public class TestingInterface implements GenericUI, Runnable {
 			}
 			while (true && !stop) {
 				// for root node
-				Thread.sleep(UPDATES_PER_FILE_WRITE * 100);
+				Thread.sleep(UPDATES_PER_FILE_WRITE * 1000);
+				updateTestFile();
 				long time2 = new Date().getTime();
 				System.out.println(this.start_time);
 				if(this.start_time != 0 && (time2 - this.start_time) > 60000)
 				{
-					updateTestFile();
+					
 					isStartSending = false;
 					this.start_time = 0;
 				}
